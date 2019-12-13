@@ -7,7 +7,9 @@ class MainScreen extends Component {
     return (
       <View style={styles.mainContainer}>
         <Text> Main Screen </Text>
-        <AddButton />
+        <View style={styles.addShoppingListButtonContainer}>
+          <AddButton style={styles.addShoppingListButton} />
+        </View>
       </View>
     );
   }
@@ -18,7 +20,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'grey',
+    backgroundColor: '#edeef1',
+  },
+  addShoppingListButton: {},
+  addShoppingListButtonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    marginBottom: 10,
   },
 });
 
