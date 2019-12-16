@@ -2,14 +2,27 @@ import React, {Component} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import AddButton from '../components/AddButton';
 import EmptyMainScreen from '../components/EmptyMainScreen';
+import ListOfShoppingLists from '../components/ListOfShoppingLists';
 
 class MainScreen extends Component {
   render() {
+    const emptyMainScreenContent = (
+      <View style={styles.emptyMainScreenContent}>
+        <EmptyMainScreen />
+      </View>
+    );
+
+    const listOfShoppingLists = (
+      <View style={styles.listOfShoppingListContainer}>
+        <ListOfShoppingLists />
+      </View>
+    );
+
+    let mainScreenContent = listOfShoppingLists;
+
     return (
       <View style={styles.mainContainer}>
-        <View style={styles.mainScreenContent}>
-          <EmptyMainScreen />
-        </View>
+        {mainScreenContent}
         <View style={styles.addShoppingListButtonContainer}>
           <AddButton style={styles.addShoppingListButton} />
         </View>
@@ -31,7 +44,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     marginBottom: 10,
   },
-  mainScreenContent: {
+  emptyMainScreenContent: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -39,6 +52,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 83,
+  },
+  listOfShoppingListContainer: {
+    flex: 1,
+      alignItems: 'stretch',
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
 });
 

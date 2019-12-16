@@ -6,9 +6,9 @@ export default class EmptyMainScreen extends Component {
   render() {
     return (
       <View style={styles.mainContainer}>
-          <View style={styles.emptyIconContainer} >
-              <Image style={styles.emptyIcon} source={icons.cart}/>
-          </View>
+        <View style={styles.emptyIconContainer}>
+          <Image style={styles.emptyIcon} source={icons.cart} />
+        </View>
         <View style={styles.emptyTextContainer}>
           <Text style={styles.emptyHeaderText}>
             У вас нет ни одного списка покупок
@@ -45,9 +45,10 @@ const styles = StyleSheet.create({
     fontSize: 19,
     textAlign: 'center',
   },
-    emptyIcon: {
-        flex: 1,
-        width: undefined,
-        height: undefined,
-    },
+  emptyIcon: {
+    flex: 1,
+    width: undefined,
+    height: undefined,
+    resizeMode: 'contain',
+  },
 });
