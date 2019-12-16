@@ -7,9 +7,9 @@ class MainScreen extends Component {
   render() {
     return (
       <View style={styles.mainContainer}>
-          <View style={styles.mainScreenContent}>
-            <EmptyMainScreen/>
-          </View>
+        <View style={styles.mainScreenContent}>
+          <EmptyMainScreen />
+        </View>
         <View style={styles.addShoppingListButtonContainer}>
           <AddButton style={styles.addShoppingListButton} />
         </View>
@@ -31,15 +31,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     marginBottom: 10,
   },
-    mainScreenContent: {
+  mainScreenContent: {
     flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 20,
-        marginLeft: 20,
-        marginRight: 20,
-        marginBottom: 83,
-    },
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 83,
+  },
 });
 
 export default MainScreen;
