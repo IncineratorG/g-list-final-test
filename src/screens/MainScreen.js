@@ -6,19 +6,27 @@ import ListOfShoppingLists from '../components/ListOfShoppingLists';
 
 class MainScreen extends Component {
   render() {
+    const testList = [
+      // {id: 1, name: 'Список 1', completionStatus: 'not-finished'},
+      // {id: 2, name: 'Список 2', completionStatus: 'finished'},
+      // {id: 3, name: 'Список 3', completionStatus: 'not-finished'},
+      // {id: 4, name: 'Список 4', completionStatus: 'not-finished'},
+    ];
+
     const emptyMainScreenContent = (
       <View style={styles.emptyMainScreenContent}>
         <EmptyMainScreen />
       </View>
     );
 
-    let listOfShoppingLists = (
+    const listOfShoppingLists = (
       <View style={styles.listOfShoppingListContainer}>
-        <ListOfShoppingLists />
+        <ListOfShoppingLists list={testList} />
       </View>
     );
 
-    let mainScreenContent = listOfShoppingLists;
+    let mainScreenContent =
+      testList.length > 0 ? listOfShoppingLists : emptyMainScreenContent;
 
     return (
       <View style={styles.mainContainer}>
