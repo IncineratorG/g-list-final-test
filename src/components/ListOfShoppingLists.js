@@ -14,8 +14,9 @@ export default class ListOfShoppingLists extends Component {
     return (
       <View style={styles.mainContainer}>
         <FlatList
-            data={testList}
-            renderItem={({item}) => <ListOfShoppingListsItem listItem={item} />}
+          style={styles.list}
+          data={testList}
+          renderItem={item => <ListOfShoppingListsItem />}
         />
       </View>
     );
@@ -25,7 +26,11 @@ export default class ListOfShoppingLists extends Component {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    // justifyContent: 'flex-start',
-    // alignSelf: 'stretch',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  list: {
+    flex: 1,
   },
 });

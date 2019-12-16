@@ -6,8 +6,11 @@ export default class ListOfShoppingListsItem extends Component {
     return (
       <View style={styles.mainContainer}>
         <View style={styles.nameContainer}>
+          <Text style={styles.name}>kjasfkljasd;lf</Text>
         </View>
-        <View style={styles.statusContainer} />
+        <View style={styles.statusContainer}>
+          <View style={styles.status} />
+        </View>
       </View>
     );
   }
@@ -15,28 +18,40 @@ export default class ListOfShoppingListsItem extends Component {
 
 const styles = StyleSheet.create({
   mainContainer: {
-      width: 200,
-      height: 100,
-
-    // flex: 1,
-      // alignSelf: 'stretch',
-      backgroundColor: 'red',
-     // flexDirection: 'row',
-     marginTop: 20,
-    // // height: 50,
-    // backgroundColor: 'red',
-    // justifyContent: 'flex-start',
-    // alignItems: 'center',
+    backgroundColor: 'white',
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 7,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    borderRadius: 25,
+    flexDirection: 'row',
+    elevation: 1,
   },
   nameContainer: {
-     // flex: 1,
-     // alignSelf: 'stretch',
-     //  backgroundColor: 'green',
+    flex: 1,
+  },
+  name: {
+    marginLeft: 20,
+    marginRight: 10,
+    fontSize: 18,
+    color: '#424242',
   },
   statusContainer: {
-    // // alignSelf: 'stretch',
-    // height: 50,
-    //  width: 50,
-    //  backgroundColor: 'gold',
+    width: 50,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+  },
+  status: {
+    width: 30,
+    height: 30,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    elevation: 6,
+    marginRight: 10,
   },
 });

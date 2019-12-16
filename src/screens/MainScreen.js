@@ -12,7 +12,7 @@ class MainScreen extends Component {
       </View>
     );
 
-    const listOfShoppingLists = (
+    let listOfShoppingLists = (
       <View style={styles.listOfShoppingListContainer}>
         <ListOfShoppingLists />
       </View>
@@ -55,9 +55,11 @@ const styles = StyleSheet.create({
   },
   listOfShoppingListContainer: {
     flex: 1,
-      alignItems: 'stretch',
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 8,
+    marginRight: 8,
   },
 });
 
