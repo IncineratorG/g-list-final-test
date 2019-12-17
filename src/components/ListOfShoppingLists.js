@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList} from 'react-native';
 import ListOfShoppingListsItem from './ListOfShoppingListsItem';
 
 export default class ListOfShoppingLists extends Component {

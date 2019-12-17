@@ -23,6 +23,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   crossIcon: {
-    transform: [{rotate: '45deg'}, {scale: 1.5}],
+    transform: [{rotate: '45deg'}, {scale: 0.5}],
   },
 });

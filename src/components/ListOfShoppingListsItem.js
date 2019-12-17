@@ -7,7 +7,12 @@ export default class ListOfShoppingListsItem extends Component {
     const statusFinishedComponent = (
       <View style={styles.mainContainer}>
         <View style={styles.nameContainer}>
-          <Text style={styles.nameFinished}>{this.props.listItem.name}</Text>
+          <Text
+            style={styles.nameFinished}
+            numberOfLines={2}
+            elipsizeMode="tail">
+            {this.props.listItem.name}
+          </Text>
         </View>
         <View style={styles.statusContainer}>
           <View style={styles.statusFinished}>
@@ -20,7 +25,12 @@ export default class ListOfShoppingListsItem extends Component {
     const statusNotFinishedComponent = (
       <View style={styles.mainContainer}>
         <View style={styles.nameContainer}>
-          <Text style={styles.nameNotFinished}>{this.props.listItem.name}</Text>
+          <Text
+            style={styles.nameNotFinished}
+            numberOfLines={2}
+            elipsizeMode="tail">
+            {this.props.listItem.name}
+          </Text>
         </View>
         <View style={styles.statusContainer}>
           <View style={styles.statusNotFinished} />
