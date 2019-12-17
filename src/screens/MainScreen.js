@@ -7,10 +7,10 @@ import ListOfShoppingLists from '../components/ListOfShoppingLists';
 class MainScreen extends Component {
   render() {
     const testList = [
-      // {id: 1, name: 'Список 1', completionStatus: 'not-finished'},
-      // {id: 2, name: 'Список 2', completionStatus: 'finished'},
-      // {id: 3, name: 'Список 3', completionStatus: 'not-finished'},
-      // {id: 4, name: 'Список 4', completionStatus: 'not-finished'},
+      {id: '1', name: 'Список 1', completionStatus: 'not-finished'},
+      {id: '2', name: 'Список 2', completionStatus: 'finished'},
+      {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
+      {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
     ];
 
     const emptyMainScreenContent = (
@@ -37,6 +37,7 @@ class MainScreen extends Component {
       </View>
     );
   }
+
 }
 
 const styles = StyleSheet.create({

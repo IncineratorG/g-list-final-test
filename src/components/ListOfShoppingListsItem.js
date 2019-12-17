@@ -3,14 +3,23 @@ import {View, StyleSheet, Text} from 'react-native';
 
 export default class ListOfShoppingListsItem extends Component {
   render() {
+    const statusFinishedComponent = <View style={styles.statusFinished} />;
+
+    const statusNotFinishedComponent = (
+      <View style={styles.statusNotFinished} />
+    );
+
+    let statusComponent =
+      this.props.listItem.completionStatus === 'finished'
+        ? statusFinishedComponent
+        : statusNotFinishedComponent;
+
     return (
       <View style={styles.mainContainer}>
         <View style={styles.nameContainer}>
-          <Text style={styles.name}>kjasfkljasd;lf</Text>
+          <Text style={styles.name}>{this.props.listItem.name}</Text>
         </View>
-        <View style={styles.statusContainer}>
-          <View style={styles.status} />
-        </View>
+        <View style={styles.statusContainer}>{statusComponent}</View>
       </View>
     );
   }
@@ -46,10 +55,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'flex-start',
   },
-  status: {
+  statusNotFinished: {
     width: 30,
     height: 30,
     backgroundColor: 'white',
+    borderRadius: 15,
+    elevation: 6,
+    marginRight: 10,
+  },
+  statusFinished: {
+    width: 30,
+    height: 30,
+    backgroundColor: '#41D8B1',
     borderRadius: 15,
     elevation: 6,
     marginRight: 10,
