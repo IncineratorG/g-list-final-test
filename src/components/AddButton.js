@@ -8,7 +8,9 @@ export default class AddButton extends Component {
       <TouchableHighlight
         style={styles.touchable}
         onPress={() => {
-          this.props.onClick();
+          if (this.props.onClick !== undefined) {
+            this.props.onClick();
+          }
         }}>
         <View style={styles.mainContainer}>
           <Image style={styles.crossIcon} source={icons.cross} />
