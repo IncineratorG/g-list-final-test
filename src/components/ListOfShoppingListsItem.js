@@ -5,13 +5,27 @@ import {icons} from '../assets/icons';
 export default class ListOfShoppingListsItem extends Component {
   render() {
     const statusFinishedComponent = (
-      <View style={styles.statusFinished}>
-        <Image style={styles.checmarkIcon} source={icons.checkmark} />
+      <View style={styles.mainContainer}>
+        <View style={styles.nameContainer}>
+          <Text style={styles.nameFinished}>{this.props.listItem.name}</Text>
+        </View>
+        <View style={styles.statusContainer}>
+          <View style={styles.statusFinished}>
+            <Image style={styles.checmarkIcon} source={icons.checkmark} />
+          </View>
+        </View>
       </View>
     );
 
     const statusNotFinishedComponent = (
-      <View style={styles.statusNotFinished} />
+      <View style={styles.mainContainer}>
+        <View style={styles.nameContainer}>
+          <Text style={styles.nameNotFinished}>{this.props.listItem.name}</Text>
+        </View>
+        <View style={styles.statusContainer}>
+          <View style={styles.statusNotFinished} />
+        </View>
+      </View>
     );
 
     let statusComponent =
@@ -19,14 +33,7 @@ export default class ListOfShoppingListsItem extends Component {
         ? statusFinishedComponent
         : statusNotFinishedComponent;
 
-    return (
-      <View style={styles.mainContainer}>
-        <View style={styles.nameContainer}>
-          <Text style={styles.name}>{this.props.listItem.name}</Text>
-        </View>
-        <View style={styles.statusContainer}>{statusComponent}</View>
-      </View>
-    );
+    return statusComponent;
   }
 }
 
@@ -47,7 +54,7 @@ const styles = StyleSheet.create({
   nameContainer: {
     flex: 1,
   },
-  name: {
+  nameNotFinished: {
     marginLeft: 20,
     marginRight: 10,
     fontSize: 18,
@@ -80,5 +87,12 @@ const styles = StyleSheet.create({
   },
   checmarkIcon: {
     transform: [{scale: 0.7}],
+  },
+  nameFinished: {
+    marginLeft: 20,
+    marginRight: 10,
+    fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
 });
