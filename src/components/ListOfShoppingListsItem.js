@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 25,
     flexDirection: 'row',
-    elevation: 1,
+    elevation: 3,
   },
   nameContainer: {
     flex: 1,
