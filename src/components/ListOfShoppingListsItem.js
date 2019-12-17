@@ -1,9 +1,14 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Image} from 'react-native';
+import {icons} from '../assets/icons';
 
 export default class ListOfShoppingListsItem extends Component {
   render() {
-    const statusFinishedComponent = <View style={styles.statusFinished} />;
+    const statusFinishedComponent = (
+      <View style={styles.statusFinished}>
+        <Image style={styles.checmarkIcon} source={icons.checkmark} />
+      </View>
+    );
 
     const statusNotFinishedComponent = (
       <View style={styles.statusNotFinished} />
@@ -70,5 +75,10 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 6,
     marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checmarkIcon: {
+    transform: [{scale: 0.7}],
   },
 });
