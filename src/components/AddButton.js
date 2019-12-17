@@ -14,7 +14,7 @@ export default class AddButton extends Component {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: '#5dbcd2',
+    backgroundColor: '#4a9dec',
     height: 75,
     width: 75,
     borderRadius: 38,
