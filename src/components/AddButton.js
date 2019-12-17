@@ -20,9 +20,7 @@ const styles = StyleSheet.create({
     borderRadius: 38,
     justifyContent: 'center',
     alignItems: 'center',
-    // flex: 1,
-    // justifyContent: 'flex-end',
-    // alignItems: 'center',
+    elevation: 8,
   },
   crossIcon: {
     transform: [{rotate: '45deg'}, {scale: 1.5}],
