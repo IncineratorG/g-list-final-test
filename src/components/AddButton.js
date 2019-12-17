@@ -1,13 +1,19 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {icons} from '../assets/icons';
 
 export default class AddButton extends Component {
   render() {
     return (
-      <View style={styles.mainContainer}>
-        <Image style={styles.crossIcon} source={icons.cross} />
-      </View>
+      <TouchableHighlight
+        style={styles.touchable}
+        onPress={() => {
+          this.props.onClick();
+        }}>
+        <View style={styles.mainContainer}>
+          <Image style={styles.crossIcon} source={icons.cross} />
+        </View>
+      </TouchableHighlight>
     );
   }
 }
@@ -24,5 +30,8 @@ const styles = StyleSheet.create({
   },
   crossIcon: {
     transform: [{rotate: '45deg'}, {scale: 0.5}],
+  },
+  touchable: {
+    borderRadius: 38,
   },
 });

@@ -6,11 +6,22 @@ import ListOfShoppingLists from '../components/ListOfShoppingLists';
 
 class MainScreen extends Component {
   render() {
+    const {navigate} = this.props.navigation;
+
     const testList = [
-      {id: '1', name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все', completionStatus: 'not-finished'},
-      {id: '2', name: 'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка', completionStatus: 'finished'},
-      {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
-      {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
+      // {
+      //   id: '1',
+      //   name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
+      //   completionStatus: 'not-finished',
+      // },
+      // {
+      //   id: '2',
+      //   name:
+      //     'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка',
+      //   completionStatus: 'finished',
+      // },
+      // {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
+      // {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
     ];
 
     const emptyMainScreenContent = (
@@ -32,12 +43,16 @@ class MainScreen extends Component {
       <View style={styles.mainContainer}>
         {mainScreenContent}
         <View style={styles.addShoppingListButtonContainer}>
-          <AddButton style={styles.addShoppingListButton} />
+          <AddButton
+            style={styles.addShoppingListButton}
+            onClick={() => {
+              navigate('ShoppingList');
+            }}
+          />
         </View>
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({
