@@ -1,3 +1,6 @@
+/* Компонент, который отображается при отсутствии данных списка списков покупок на стартовом экране.
+ * */
+
 import React, {Component} from 'react';
 import {Text, View, StyleSheet, Image} from 'react-native';
 import {icons} from '../assets/icons';

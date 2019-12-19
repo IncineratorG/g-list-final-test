@@ -1,3 +1,8 @@
+/* Кнопка добавления.
+Кнопка ожидает, что компонент использующий её передаст в неё параметр onClick, в котором будет описана функция,
+выполняемая при нажатии на эту кнопку.
+* */
+
 import React, {Component} from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {icons} from '../assets/icons';

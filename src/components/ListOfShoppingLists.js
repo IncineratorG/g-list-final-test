@@ -1,3 +1,6 @@
+/* Компонент, отображающий список списков покупок на стартовом экране.
+ * */
+
 import React, {Component} from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
 import ListOfShoppingListsItem from './ListOfShoppingListsItem';

@@ -1,3 +1,8 @@
+/* Экран списка покупок.
+Здесь происходит загрузка списка покупок из хранилища данных и выбор компонента для отображения на основании
+загруженных данных (либо компонент пустого экрана, либо список покупок).
+* */
+
 import React, {Component} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import AddButton from '../components/AddButton';

@@ -1,3 +1,6 @@
+/* Компонент, отображающий элемент списка списков покупок на стартовом экране (один список покупок).
+ * */
+
 import React, {Component} from 'react';
 import {View, StyleSheet, Text, Image} from 'react-native';
 import {icons} from '../assets/icons';
