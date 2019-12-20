@@ -124,19 +124,19 @@ const styles = StyleSheet.create({
   },
   // строка с единицей измерения кол-ва продукта
   quantityUnit: {
-     // marginLeft: 8,
-       marginRight: 2,
+    // marginLeft: 8,
+    marginRight: 2,
     fontSize: 18,
   },
   // конт-р, в котором распологается примечание к продукту.
   noteContainer: {
     flex: 1,
     alignSelf: 'stretch',
-      borderTopColor: 'grey',
-      borderTopWidth: 0.5,
+    borderTopColor: 'grey',
+    borderTopWidth: 0.5,
   },
-    note: {
+  note: {
     margin: 4,
-        color: 'grey',
-    },
+    color: 'grey',
+  },
 });
