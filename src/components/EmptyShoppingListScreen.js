@@ -1,23 +1,21 @@
-/* Компонент, который отображается при отсутствии данных списка списков покупок на стартовом экране.
+/* Компонент, который отображается при отсутствии данных списка покупок на экране списка покупок.
  * */
 
 import React, {Component} from 'react';
 import {Text, View, StyleSheet, Image} from 'react-native';
 import {icons} from '../assets/icons';
 
-export default class EmptyMainScreen extends Component {
+export default class EmptyShoppingListScreen extends Component {
   render() {
     return (
       <View style={styles.mainContainer}>
         <View style={styles.emptyIconContainer}>
-          <Image style={styles.emptyIcon} source={icons.cart} />
+          <Image style={styles.emptyIcon} source={icons.cartWithArrow} />
         </View>
         <View style={styles.emptyTextContainer}>
-          <Text style={styles.emptyHeaderText}>
-            У вас нет ни одного списка покупок
-          </Text>
+          <Text style={styles.emptyHeaderText}>Список пуст</Text>
           <Text style={styles.emptyExplanationText}>
-            Создайте новый список, он отобразится здесь
+            Добавьте сюда то, что вы планируете купить
           </Text>
         </View>
       </View>
@@ -35,6 +33,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
   },
+  emptyIcon: {
+    flex: 1,
+    width: undefined,
+    height: undefined,
+    resizeMode: 'contain',
+  },
   emptyTextContainer: {
     margin: 23,
     alignItems: 'center',
@@ -47,11 +51,5 @@ const styles = StyleSheet.create({
     marginTop: 7,
     fontSize: 19,
     textAlign: 'center',
-  },
-  emptyIcon: {
-    flex: 1,
-    width: undefined,
-    height: undefined,
-    resizeMode: 'contain',
   },
 });

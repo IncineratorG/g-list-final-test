@@ -1,11 +1,11 @@
-/* Компонент, отображающий список списков покупок на стартовом экране.
+/* Компонент, отображающий список покупок на экране списка покупок.
  * */
 
 import React, {Component} from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
-import ListOfShoppingListsItem from './ListOfShoppingListsItem';
+import ShoppingListItem from './ShoppingListItem';
 
-export default class ListOfShoppingLists extends Component {
+export default class ShoppingList extends Component {
   render() {
     return (
       <View style={styles.mainContainer}>
@@ -13,7 +13,7 @@ export default class ListOfShoppingLists extends Component {
           style={styles.list}
           data={this.props.list}
           renderItem={({item}) => {
-            return <ListOfShoppingListsItem listItem={item} />;
+            return <ShoppingListItem listItem={item} />;
           }}
           keyExtractor={item => item.id}
         />
