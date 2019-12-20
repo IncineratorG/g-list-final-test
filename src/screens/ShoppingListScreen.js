@@ -7,16 +7,45 @@ import React, {Component} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import AddButton from '../components/AddButton';
 import EmptyShoppingListScreen from '../components/EmptyShoppingListScreen';
+import ShoppingList from '../components/ShoppingList';
 
 export default class ShoppingListScreen extends Component {
   render() {
+    const testList = [
+      {
+        id: '1',
+        name: 'Хлеб',
+        quantity: 2,
+        unit: 'шт.',
+        note: '',
+        category: 'other',
+        completionStatus: 'not-finished',
+      },
+      {
+        id: '2',
+        name: 'Молоко',
+        quantity: 2,
+        unit: 'л.',
+        note: 'домик в деревне',
+        category: 'other',
+        completionStatus: 'finished',
+      },
+    ];
+
     const emptyShoppingListScreenContent = (
       <View style={styles.emptyShoppingListScreenContent}>
         <EmptyShoppingListScreen />
       </View>
     );
 
-    const shoppingListScreenContent = emptyShoppingListScreenContent;
+    const shoppingList = (
+      <View style={styles.shoppingListContainer}>
+        <ShoppingList list={testList} />
+      </View>
+    );
+
+    const shoppingListScreenContent =
+      testList.length > 0 ? shoppingList : emptyShoppingListScreenContent;
 
     return (
       <View style={styles.mainContainer}>
@@ -50,5 +79,13 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 83,
+  },
+  shoppingListContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 8,
+    marginRight: 8,
   },
 });

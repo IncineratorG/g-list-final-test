@@ -14,11 +14,11 @@ class MainScreen extends Component {
     const {navigate} = this.props.navigation;
 
     const testList = [
-      // {
-      //   id: '1',
-      //   name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
-      //   completionStatus: 'not-finished',
-      // },
+       {
+         id: '1',
+         name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
+         completionStatus: 'not-finished',
+      },
       // {
       //   id: '2',
       //   name:
