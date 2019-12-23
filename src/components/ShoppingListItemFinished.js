@@ -1,65 +1,59 @@
-/* Компонент, отображающий элемент списка покупок на экране списка покупок.
- * */
+// Компонент для отображения не активного элемента списка покупок.
 
 import React, {Component} from 'react';
 import {View, StyleSheet, Text, Image} from 'react-native';
-import ShoppingListItemNotFinished from './ShoppingListItemNotFinished';
-import ShoppingListItemFinished from './ShoppingListItemFinished';
-import ShoppingListItemExpanded from './ShoppingListItemExpanded';
+import {icons} from '../assets/icons';
 
-export default class ShoppingListItem extends Component {
+export default class ShoppingListItemFinished extends Component {
   render() {
-    const finishedItem = <ShoppingListItemFinished itemToRender={this.props.listItem}/>;
-    const notFinishedItem = <ShoppingListItemNotFinished itemToRender={this.props.listItem}/>;
-    // const expandedItem = <ShoppingListItemExpanded />;
+    const noteExistComponent = (
+      <View style={styles.noteContainer}>
+        <Text style={styles.note}>{this.props.itemToRender.note}</Text>
+      </View>
+    );
 
-    let item = <View />;
-    if (this.props.listItem.completionStatus === 'finished') {
-      item = finishedItem;
-    } else if (this.props.listItem.completionStatus === 'not-finished') {
-      item = notFinishedItem;
-    }
-    // console.log(this.props.listItem.)
+    const noteNotExistComponent = <View />;
 
-    return item;
+    const noteComponent =
+      this.props.itemToRender.note.length > 0
+        ? noteExistComponent
+        : noteNotExistComponent;
+
+    return (
+      <View style={styles.mainContainer}>
+        <View style={styles.infoContainer}>
+          <View style={styles.majorInfoContainer}>
+            <View style={styles.productNameContainer}>
+              <Text
+                style={styles.productName}
+                numberOfLines={1}
+                elipsizeMode="tail">
+                {this.props.itemToRender.name}
+              </Text>
+            </View>
+            <View style={styles.quantityContainer}>
+              <View style={styles.quantityCountContainer}>
+                <Text style={styles.quantityCount} numberOfLines={1}>
+                  {this.props.itemToRender.quantity}
+                </Text>
+              </View>
+              <View style={styles.quantityUnitContainer}>
+                <Text style={styles.quantityUnit} numberOfLines={1}>
+                  {this.props.itemToRender.unit}
+                </Text>
+              </View>
+            </View>
+          </View>
+          {noteComponent}
+        </View>
+        <View style={styles.statusContainer}>
+          <View style={styles.statusFinished}>
+            <Image style={styles.checmarkIcon} source={icons.checkmark} />
+          </View>
+        </View>
+      </View>
+    );
   }
-
-  // render() {
-  //   return (
-  //     <View style={styles.mainContainer}>
-  //       <View style={styles.infoContainer}>
-  //         <View style={styles.majorInfoContainer}>
-  //           <View style={styles.productNameContainer}>
-  //             <Text
-  //               style={styles.productName}
-  //               numberOfLines={1}
-  //               elipsizeMode="tail">
-  //               Хлеб
-  //             </Text>
-  //           </View>
-  //           <View style={styles.quantityContainer}>
-  //             <View style={styles.quantityCountContainer}>
-  //               <Text style={styles.quantityCount} numberOfLines={1}>
-  //                 4
-  //               </Text>
-  //             </View>
-  //             <View style={styles.quantityUnitContainer}>
-  //               <Text style={styles.quantityUnit} numberOfLines={1}>
-  //                 кг
-  //               </Text>
-  //             </View>
-  //           </View>
-  //         </View>
-  //         <View style={styles.noteContainer}>
-  //           <Text style={styles.note}>Примечание</Text>
-  //         </View>
-  //       </View>
-  //       <View style={styles.statusContainer}>
-  //         <View style={styles.statusNotFinished} />
-  //       </View>
-  //     </View>
-  //   );
-  // }
 }
 
 const styles = StyleSheet.create({
@@ -78,13 +72,18 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     // backgroundColor: 'green',
   },
-  statusNotFinished: {
+  statusFinished: {
     width: 30,
     height: 30,
-    backgroundColor: 'white',
+    backgroundColor: '#41D8B1',
     borderRadius: 15,
     elevation: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
     // marginRight: 10,
+  },
+  checmarkIcon: {
+    transform: [{scale: 0.7}],
   },
   // контэйнер, в кот-ом распологается название продукта, кол-во и примечание.
   infoContainer: {
@@ -110,6 +109,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginRight: 8,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается кол-во и ед-ца измерения продукта.
   quantityContainer: {
@@ -131,6 +132,8 @@ const styles = StyleSheet.create({
     marginLeft: 2,
     marginRight: 2,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается ед-ца измерения продукта.
   quantityUnitContainer: {
@@ -145,6 +148,8 @@ const styles = StyleSheet.create({
     // marginLeft: 8,
     marginRight: 2,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается примечание к продукту.
   noteContainer: {
@@ -155,6 +160,7 @@ const styles = StyleSheet.create({
   },
   note: {
     margin: 4,
-    color: 'grey',
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
 });
