@@ -1,3 +1,5 @@
+// Кнопка применяемая для подтверждения действий
+
 import React, {Component} from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {icons} from '../assets/icons';
