@@ -8,9 +8,12 @@ import {View, StyleSheet, Text} from 'react-native';
 import AddButton from '../components/AddButton';
 import EmptyShoppingListScreen from '../components/EmptyShoppingListScreen';
 import ShoppingList from '../components/ShoppingList';
+import EditScreen from './EditScreen';
 
 export default class ShoppingListScreen extends Component {
   render() {
+    const {navigate} = this.props.navigation;
+
     const testList = [
       {
         id: '1',
@@ -51,7 +54,12 @@ export default class ShoppingListScreen extends Component {
       <View style={styles.mainContainer}>
         {shoppingListScreenContent}
         <View style={styles.addShoppingListItemButtonContainer}>
-          <AddButton style={styles.addShoppingListItemButton} />
+          <AddButton
+            style={styles.addShoppingListItemButton}
+            onClick={() => {
+              navigate('Edit');
+            }}
+          />
         </View>
       </View>
     );
