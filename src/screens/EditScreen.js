@@ -3,6 +3,11 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, TextInput} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
+import {
+  TextField,
+  FilledTextField,
+  OutlinedTextField,
+} from 'react-native-material-textfield';
 import ModalDropdown from 'react-native-modal-dropdown';
 import ConfirmButton from '../components/ConfirmButton';
 import CancelButton from '../components/CancelButton';
@@ -25,25 +30,27 @@ export default class EditScreen extends Component {
       <View style={styles.mainContainer}>
         <View style={styles.inputFieldsContainer}>
           <View style={styles.nameInputContainer}>
-            <TextInput
-              style={styles.nameInput}
-              placeholder="Название продукта"
+            <TextField
+              // style={styles.nameInput}
+              label="Название продукта"
+              fontSize={20}
             />
           </View>
           <View style={styles.quantityContainer}>
             <View style={styles.quantityCountContainer}>
-              <TextInput
-                style={styles.quantityCountInput}
-                placeholder="Кол-во"
+              <TextField
+                // style={styles.quantityCountInput}
+                label="Кол-во"
+                fontSize={20}
               />
             </View>
             <View style={styles.quantityUnitContainer}>
-              <Dropdown label='колбаса'
-              data={data}/>
+              <Dropdown label="колбаса" data={data}
+                        fontSize={20}/>
             </View>
           </View>
           <View style={styles.noteContainer}>
-            <TextInput style={styles.noteInput} placeholder="Примечание" />
+            <TextField label="Примечание" fontSize={20}           />
           </View>
         </View>
         <View style={styles.buttonsContainer}>
@@ -91,8 +98,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: 50,
     // backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: 'grey',
     margin: 10,
   },
   nameInput: {
@@ -111,9 +116,7 @@ const styles = StyleSheet.create({
   quantityCountContainer: {
     flex: 1,
     alignSelf: 'stretch',
-    borderBottomColor: 'grey',
-    borderBottomWidth: 1,
-    marginRight: 10,
+       marginRight: 10,
   },
   quantityCountInput: {
     flex: 1,
@@ -123,8 +126,6 @@ const styles = StyleSheet.create({
   quantityUnitContainer: {
     flex: 1,
     alignSelf: 'stretch',
-    borderBottomColor: 'grey',
-    borderBottomWidth: 1,
   },
   quantityUnitInput: {
     flex: 1,
@@ -137,8 +138,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 10,
-    borderBottomColor: 'grey',
-    borderBottomWidth: 1,
   },
   noteInput: {
     flex: 1,
