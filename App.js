@@ -3,12 +3,13 @@ import {createStackNavigator} from 'react-navigation-stack';
 import MainScreen from './src/screens/MainScreen';
 import ShoppingListScreen from './src/screens/ShoppingListScreen';
 import EditScreen from './src/screens/EditScreen';
+import EditScreenV3 from './src/screens/EditScreenV3';
 
 const navigator = createStackNavigator(
   {
     Main: MainScreen,
     ShoppingList: ShoppingListScreen,
-    Edit: EditScreen,
+    Edit: EditScreenV3,
   },
   {
     initialRouteName: 'Main',
