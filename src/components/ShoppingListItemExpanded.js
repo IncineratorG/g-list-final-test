@@ -1,10 +1,10 @@
 // Компонент для отображения всей информации (не полностью вошедей) элемента списка покупок.
 
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View} from 'react-native';
 
 export const ShoppingListItemExpanded = () => {
   return <View />;
 };
 
-const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({});

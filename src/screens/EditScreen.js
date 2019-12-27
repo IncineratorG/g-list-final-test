@@ -1,14 +1,9 @@
 // Экран создания\редактирования эелемента списка покупок.
 
 import React, {Component} from 'react';
-import {View, StyleSheet, TextInput} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import {
-  TextField,
-  FilledTextField,
-  OutlinedTextField,
-} from 'react-native-material-textfield';
-import ModalDropdown from 'react-native-modal-dropdown';
+import {TextField} from 'react-native-material-textfield';
 import {ConfirmButton} from '../components/ConfirmButton';
 import {CancelButton} from '../components/CancelButton';
 

@@ -10,7 +10,6 @@ import {EmptyMainScreen} from '../components/EmptyMainScreen';
 import {ListOfShoppingLists} from '../components/ListOfShoppingLists';
 
 const MainScreen = ({navigation}) => {
-
   const {navigate} = navigation;
   const testList = [
     {
