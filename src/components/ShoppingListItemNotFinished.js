@@ -1,57 +1,53 @@
 // Компонент для отображения активного элемента списка покупок.
 
-import React, {Component} from 'react';
-import {View, StyleSheet, Text, Image} from 'react-native';
+import React from 'react';
+import {View, StyleSheet, Text} from 'react-native';
 
-export default class ShoppingListItemNotFinished extends Component {
-  render() {
-    const noteExistComponent = (
-      <View style={styles.noteContainer}>
-        <Text style={styles.note}>{this.props.itemToRender.note}</Text>
-      </View>
-    );
+export const ShoppingListItemNotFinished = ({itemToRender}) => {
+  const noteExistComponent = (
+    <View style={styles.noteContainer}>
+      <Text style={styles.note}>{itemToRender.note}</Text>
+    </View>
+  );
 
-    const noteNotExistComponent = <View />;
+  const noteNotExistComponent = <View />;
 
-    const noteComponent =
-      this.props.itemToRender.note.length > 0
-        ? noteExistComponent
-        : noteNotExistComponent;
+  const noteComponent =
+    itemToRender.note.length > 0 ? noteExistComponent : noteNotExistComponent;
 
-    return (
-      <View style={styles.mainContainer}>
-        <View style={styles.infoContainer}>
-          <View style={styles.majorInfoContainer}>
-            <View style={styles.productNameContainer}>
-              <Text
-                style={styles.productName}
-                numberOfLines={1}
-                elipsizeMode="tail">
-                {this.props.itemToRender.name}
+  return (
+    <View style={styles.mainContainer}>
+      <View style={styles.infoContainer}>
+        <View style={styles.majorInfoContainer}>
+          <View style={styles.productNameContainer}>
+            <Text
+              style={styles.productName}
+              numberOfLines={1}
+              elipsizeMode="tail">
+              {itemToRender.name}
+            </Text>
+          </View>
+          <View style={styles.quantityContainer}>
+            <View style={styles.quantityCountContainer}>
+              <Text style={styles.quantityCount} numberOfLines={1}>
+                {itemToRender.quantity}
               </Text>
             </View>
-            <View style={styles.quantityContainer}>
-              <View style={styles.quantityCountContainer}>
-                <Text style={styles.quantityCount} numberOfLines={1}>
-                  {this.props.itemToRender.quantity}
-                </Text>
-              </View>
-              <View style={styles.quantityUnitContainer}>
-                <Text style={styles.quantityUnit} numberOfLines={1}>
-                  {this.props.itemToRender.unit}
-                </Text>
-              </View>
+            <View style={styles.quantityUnitContainer}>
+              <Text style={styles.quantityUnit} numberOfLines={1}>
+                {itemToRender.unit}
+              </Text>
             </View>
           </View>
-          {noteComponent}
         </View>
-        <View style={styles.statusContainer}>
-          <View style={styles.statusNotFinished} />
-        </View>
+        {noteComponent}
       </View>
-    );
-  }
-}
+      <View style={styles.statusContainer}>
+        <View style={styles.statusNotFinished} />
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {

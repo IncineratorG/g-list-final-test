@@ -9,8 +9,8 @@ import {
   OutlinedTextField,
 } from 'react-native-material-textfield';
 import ModalDropdown from 'react-native-modal-dropdown';
-import ConfirmButton from '../components/ConfirmButton';
-import CancelButton from '../components/CancelButton';
+import {ConfirmButton} from '../components/ConfirmButton';
+import {CancelButton} from '../components/CancelButton';
 
 export default class EditScreen extends Component {
   render() {

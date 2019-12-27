@@ -4,23 +4,21 @@ import React, {Component} from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {icons} from '../assets/icons';
 
-export default class CancelButton extends Component {
-  render() {
-    return (
-      <TouchableHighlight
-        style={styles.touchable}
-        onPress={() => {
-          if (this.props.onClick !== undefined) {
-            this.props.onClick();
-          }
-        }}>
-        <View style={styles.mainContainer}>
-          <Image style={styles.crossIcon} source={icons.cross} />
-        </View>
-      </TouchableHighlight>
-    );
-  }
-}
+export const CancelButton = ({onClick}) => {
+  return (
+    <TouchableHighlight
+      style={styles.touchable}
+      onPress={() => {
+        if (onClick !== undefined) {
+          onClick();
+        }
+      }}>
+      <View style={styles.mainContainer}>
+        <Image style={styles.crossIcon} source={icons.cross} />
+      </View>
+    </TouchableHighlight>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {

@@ -1,66 +1,65 @@
 /* Компонент, отображающий элемент списка покупок на экране списка покупок.
  * */
 
-import React, {Component} from 'react';
-import {View, StyleSheet, Text, Image} from 'react-native';
-import ShoppingListItemNotFinished from './ShoppingListItemNotFinished';
-import ShoppingListItemFinished from './ShoppingListItemFinished';
-import ShoppingListItemExpanded from './ShoppingListItemExpanded';
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
+import {ShoppingListItemNotFinished} from './ShoppingListItemNotFinished';
+import {ShoppingListItemFinished} from './ShoppingListItemFinished';
 
-export default class ShoppingListItem extends Component {
-  render() {
-    const finishedItem = <ShoppingListItemFinished itemToRender={this.props.listItem}/>;
-    const notFinishedItem = <ShoppingListItemNotFinished itemToRender={this.props.listItem}/>;
-    // const expandedItem = <ShoppingListItemExpanded />;
+export const ShoppingListItem = ({listItem}) => {
+  const finishedItem = <ShoppingListItemFinished itemToRender={listItem} />;
+  const notFinishedItem = (
+    <ShoppingListItemNotFinished itemToRender={listItem} />
+  );
+  // const expandedItem = <ShoppingListItemExpanded />;
 
-    let item = <View />;
-    if (this.props.listItem.completionStatus === 'finished') {
-      item = finishedItem;
-    } else if (this.props.listItem.completionStatus === 'not-finished') {
-      item = notFinishedItem;
-    }
-    // console.log(this.props.listItem.)
-
-    return item;
+  let item = <View />;
+  if (listItem.completionStatus === 'finished') {
+    item = finishedItem;
+  } else if (listItem.completionStatus === 'not-finished') {
+    item = notFinishedItem;
   }
+  // console.log(this.props.listItem.)
 
-  // render() {
-  //   return (
-  //     <View style={styles.mainContainer}>
-  //       <View style={styles.infoContainer}>
-  //         <View style={styles.majorInfoContainer}>
-  //           <View style={styles.productNameContainer}>
-  //             <Text
-  //               style={styles.productName}
-  //               numberOfLines={1}
-  //               elipsizeMode="tail">
-  //               Хлеб
-  //             </Text>
-  //           </View>
-  //           <View style={styles.quantityContainer}>
-  //             <View style={styles.quantityCountContainer}>
-  //               <Text style={styles.quantityCount} numberOfLines={1}>
-  //                 4
-  //               </Text>
-  //             </View>
-  //             <View style={styles.quantityUnitContainer}>
-  //               <Text style={styles.quantityUnit} numberOfLines={1}>
-  //                 кг
-  //               </Text>
-  //             </View>
-  //           </View>
-  //         </View>
-  //         <View style={styles.noteContainer}>
-  //           <Text style={styles.note}>Примечание</Text>
-  //         </View>
-  //       </View>
-  //       <View style={styles.statusContainer}>
-  //         <View style={styles.statusNotFinished} />
-  //       </View>
-  //     </View>
-  //   );
-  // }
-}
+  return item;
+};
+
+// render() {
+//   return (
+//     <View style={styles.mainContainer}>
+//       <View style={styles.infoContainer}>
+//         <View style={styles.majorInfoContainer}>
+//           <View style={styles.productNameContainer}>
+//             <Text
+//               style={styles.productName}
+//               numberOfLines={1}
+//               elipsizeMode="tail">
+//               Хлеб
+//             </Text>
+//           </View>
+//           <View style={styles.quantityContainer}>
+//             <View style={styles.quantityCountContainer}>
+//               <Text style={styles.quantityCount} numberOfLines={1}>
+//                 4
+//               </Text>
+//             </View>
+//             <View style={styles.quantityUnitContainer}>
+//               <Text style={styles.quantityUnit} numberOfLines={1}>
+//                 кг
+//               </Text>
+//             </View>
+//           </View>
+//         </View>
+//         <View style={styles.noteContainer}>
+//           <Text style={styles.note}>Примечание</Text>
+//         </View>
+//       </View>
+//       <View style={styles.statusContainer}>
+//         <View style={styles.statusNotFinished} />
+//       </View>
+//     </View>
+//   );
+// }
 
 const styles = StyleSheet.create({
   mainContainer: {
