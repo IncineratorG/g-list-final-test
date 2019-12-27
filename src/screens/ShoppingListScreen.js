@@ -3,68 +3,65 @@
 загруженных данных (либо компонент пустого экрана, либо список покупок).
 * */
 
-import React, {Component} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import AddButton from '../components/AddButton';
-import EmptyShoppingListScreen from '../components/EmptyShoppingListScreen';
-import ShoppingList from '../components/ShoppingList';
-import EditScreen from './EditScreen';
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
+import {AddButton} from '../components/AddButton';
+import {EmptyShoppingListScreen} from '../components/EmptyShoppingListScreen';
+import {ShoppingList} from '../components/ShoppingList';
 
-export default class ShoppingListScreen extends Component {
-  render() {
-    const {navigate} = this.props.navigation;
+const ShoppingListScreen = ({navigation}) => {
+  const {navigate} = navigation;
 
-    const testList = [
-      {
-        id: '1',
-        name: 'Хлеб',
-        quantity: 2,
-        unit: 'шт.',
-        note: '',
-        category: 'other',
-        completionStatus: 'not-finished',
-      },
-      {
-        id: '2',
-        name: 'Молоко',
-        quantity: 2,
-        unit: 'л.',
-        note: 'домик в деревне',
-        category: 'other',
-        completionStatus: 'finished',
-      },
-    ];
+  const testList = [
+    {
+      id: '1',
+      name: 'Хлеб',
+      quantity: 2,
+      unit: 'шт.',
+      note: '',
+      category: 'other',
+      completionStatus: 'not-finished',
+    },
+    {
+      id: '2',
+      name: 'Молоко',
+      quantity: 2,
+      unit: 'л.',
+      note: 'домик в деревне',
+      category: 'other',
+      completionStatus: 'finished',
+    },
+  ];
 
-    const emptyShoppingListScreenContent = (
-      <View style={styles.emptyShoppingListScreenContent}>
-        <EmptyShoppingListScreen />
+  const emptyShoppingListScreenContent = (
+    <View style={styles.emptyShoppingListScreenContent}>
+      <EmptyShoppingListScreen />
+    </View>
+  );
+
+  const shoppingList = (
+    <View style={styles.shoppingListContainer}>
+      <ShoppingList list={testList} />
+    </View>
+  );
+
+  const shoppingListScreenContent =
+    testList.length > 0 ? shoppingList : emptyShoppingListScreenContent;
+
+  return (
+    <View style={styles.mainContainer}>
+      {shoppingListScreenContent}
+      <View style={styles.addShoppingListItemButtonContainer}>
+        <AddButton
+          style={styles.addShoppingListItemButton}
+          onClick={() => {
+            navigate('Edit');
+          }}
+        />
       </View>
-    );
-
-    const shoppingList = (
-      <View style={styles.shoppingListContainer}>
-        <ShoppingList list={testList} />
-      </View>
-    );
-
-    const shoppingListScreenContent =
-      testList.length > 0 ? shoppingList : emptyShoppingListScreenContent;
-
-    return (
-      <View style={styles.mainContainer}>
-        {shoppingListScreenContent}
-        <View style={styles.addShoppingListItemButtonContainer}>
-          <AddButton
-            style={styles.addShoppingListItemButton}
-            onClick={() => {
-              navigate('Edit');
-            }}
-          />
-        </View>
-      </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -97,3 +94,5 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
 });
+
+export default ShoppingListScreen;
