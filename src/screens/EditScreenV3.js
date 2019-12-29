@@ -1,77 +1,65 @@
 // Экран создания\редактирования эелемента списка покупок.
 
-import React, {Component} from 'react';
+import React from 'react';
 import {View, StyleSheet, TextInput, Text} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import {
-  TextField,
-  FilledTextField,
-  OutlinedTextField,
-} from 'react-native-material-textfield';
-import ModalDropdown from 'react-native-modal-dropdown';
-import ConfirmButton from '../components/ConfirmButton';
-import CancelButton from '../components/CancelButton';
+import {ConfirmButton} from '../components/ConfirmButton';
 
-export default class EditScreenV3 extends Component {
-  render() {
-    let data = [
-      {
-        value: 'кг',
-      },
-      {
-        value: 'л',
-      },
-      {
-        value: 'г',
-      },
-    ];
-    return (
-      <View style={styles.mainContainer}>
-        <View style={styles.inputFieldsContainer}>
-          <Text style={styles.nameInputLabel}>Название продукта </Text>
-          <View style={styles.nameInputContainer}>
-            <TextInput
-              style={styles.nameInput}
-              placeholder="Название продукта"
-            />
-          </View>
-          <View style={styles.quantityContainerWrapper}>
-            <Text style={styles.quantityContainerLabel}>Количество </Text>
-            <View style={styles.quantityContainer}>
-              <View style={styles.quantityCountContainer}>
-                <TextInput
-                  style={styles.quantityCountInput}
-                  placeholder="Кол-во"
-                />
-              </View>
-              <View style={styles.quantityUnitContainer}>
-                <Dropdown
-                  style={styles.quantityUnitDropdown}
-                  label=""
-                  data={data}
-                  fontSize={20}
-                  lineWidth={0}
-                  activeLineWidth={0}
-                  dropdownOffset={{top: -8, left: 0}}
-                  rippleOpacity={0}
-                  overlayStyle={{flex: 1, alignItems: 'center'}}
-                />
-              </View>
+const EditScreenV3 = () => {
+  let data = [
+    {
+      value: 'кг',
+    },
+    {
+      value: 'л',
+    },
+    {
+      value: 'г',
+    },
+  ];
+  return (
+    <View style={styles.mainContainer}>
+      <View style={styles.inputFieldsContainer}>
+        <Text style={styles.nameInputLabel}>Название продукта </Text>
+        <View style={styles.nameInputContainer}>
+          <TextInput style={styles.nameInput} placeholder="Название продукта" />
+        </View>
+        <View style={styles.quantityContainerWrapper}>
+          <Text style={styles.quantityContainerLabel}>Количество </Text>
+          <View style={styles.quantityContainer}>
+            <View style={styles.quantityCountContainer}>
+              <TextInput
+                style={styles.quantityCountInput}
+                placeholder="Кол-во"
+              />
+            </View>
+            <View style={styles.quantityUnitContainer}>
+              <Dropdown
+                style={styles.quantityUnitDropdown}
+                label=""
+                data={data}
+                fontSize={20}
+                lineWidth={0}
+                activeLineWidth={0}
+                dropdownOffset={{top: -8, left: 0}}
+                rippleOpacity={0}
+                overlayStyle={{flex: 1, alignItems: 'center'}}
+              />
             </View>
           </View>
-          <Text style={styles.noteInputLabel}>Примечание </Text>
-          <View style={styles.noteContainer}>
-            <TextInput style={styles.noteInput} placeholder="Примечание" />
-          </View>
         </View>
-        <View style={styles.buttonsContainer}>
-          <ConfirmButton style={styles.confirmButton} />
-          <View />
+        <Text style={styles.noteInputLabel}>Примечание </Text>
+        <View style={styles.noteContainer}>
+          <TextInput style={styles.noteInput} placeholder="Примечание" />
         </View>
       </View>
-    );
-  }
-}
+      <View style={styles.buttonsContainer}>
+        <ConfirmButton style={styles.confirmButton} />
+        <View />
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -190,3 +178,5 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
 });
+
+export default EditScreenV3;

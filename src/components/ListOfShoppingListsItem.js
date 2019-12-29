@@ -1,54 +1,49 @@
 /* Компонент, отображающий элемент списка списков покупок на стартовом экране (один список покупок).
  * */
 
-import React, {Component} from 'react';
+import React from 'react';
 import {View, StyleSheet, Text, Image} from 'react-native';
 import {icons} from '../assets/icons';
 
-export default class ListOfShoppingListsItem extends Component {
-  render() {
-    const statusFinishedComponent = (
-      <View style={styles.mainContainer}>
-        <View style={styles.nameContainer}>
-          <Text
-            style={styles.nameFinished}
-            numberOfLines={2}
-            elipsizeMode="tail">
-            {this.props.listItem.name}
-          </Text>
-        </View>
-        <View style={styles.statusContainer}>
-          <View style={styles.statusFinished}>
-            <Image style={styles.checmarkIcon} source={icons.checkmark} />
-          </View>
+export const ListOfShoppingListsItem = ({listItem}) => {
+  const statusFinishedComponent = (
+    <View style={styles.mainContainer}>
+      <View style={styles.nameContainer}>
+        <Text style={styles.nameFinished} numberOfLines={2} elipsizeMode="tail">
+          {listItem.name}
+        </Text>
+      </View>
+      <View style={styles.statusContainer}>
+        <View style={styles.statusFinished}>
+          <Image style={styles.checmarkIcon} source={icons.checkmark} />
         </View>
       </View>
-    );
+    </View>
+  );
 
-    const statusNotFinishedComponent = (
-      <View style={styles.mainContainer}>
-        <View style={styles.nameContainer}>
-          <Text
-            style={styles.nameNotFinished}
-            numberOfLines={2}
-            elipsizeMode="tail">
-            {this.props.listItem.name}
-          </Text>
-        </View>
-        <View style={styles.statusContainer}>
-          <View style={styles.statusNotFinished} />
-        </View>
+  const statusNotFinishedComponent = (
+    <View style={styles.mainContainer}>
+      <View style={styles.nameContainer}>
+        <Text
+          style={styles.nameNotFinished}
+          numberOfLines={2}
+          elipsizeMode="tail">
+          {listItem.name}
+        </Text>
       </View>
-    );
+      <View style={styles.statusContainer}>
+        <View style={styles.statusNotFinished} />
+      </View>
+    </View>
+  );
 
-    let statusComponent =
-      this.props.listItem.completionStatus === 'finished'
-        ? statusFinishedComponent
-        : statusNotFinishedComponent;
+  let statusComponent =
+    listItem.completionStatus === 'finished'
+      ? statusFinishedComponent
+      : statusNotFinishedComponent;
 
-    return statusComponent;
-  }
-}
+  return statusComponent;
+};
 
 const styles = StyleSheet.create({
   mainContainer: {

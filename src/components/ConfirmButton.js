@@ -1,10 +1,10 @@
 // Кнопка применяемая для подтверждения действий
 
-import React, {Component} from 'react';
+import React from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {icons} from '../assets/icons';
 
-export default class ConfirmButton extends Component {
+export const ConfirmButton = ({onClick}) => {
   // render() {
   //   return (
   //       <View style={styles.mainContainer}>
@@ -22,24 +22,23 @@ export default class ConfirmButton extends Component {
   //       </View>
   //   );
   // }
-  render() {
-    return (
-      <View style={styles.mainContainer}>
-        <TouchableHighlight
-          style={styles.touchable}
-          onPress={() => {
-            if (this.props.onClick !== undefined) {
-              this.props.onClick();
-            }
-          }}>
-          <View style={styles.imageContainer}>
-            <Image style={styles.crossIcon} source={icons.checkmark} />
-          </View>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-}
+
+  return (
+    <View style={styles.mainContainer}>
+      <TouchableHighlight
+        style={styles.touchable}
+        onPress={() => {
+          if (onClick !== undefined) {
+            onClick();
+          }
+        }}>
+        <View style={styles.imageContainer}>
+          <Image style={styles.crossIcon} source={icons.checkmark} />
+        </View>
+      </TouchableHighlight>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {

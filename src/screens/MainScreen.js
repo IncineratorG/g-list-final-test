@@ -3,84 +3,59 @@
 загруженных данных (либо компонент пустого экрана, либо список списков покупок).
 * */
 
-import React, {Component} from 'react';
+import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import AddButton from '../components/AddButton';
-import EmptyMainScreen from '../components/EmptyMainScreen';
-import ListOfShoppingLists from '../components/ListOfShoppingLists';
-import AsyncStorage from '@react-native-community/async-storage';
+import {AddButton} from '../components/AddButton';
+import {EmptyMainScreen} from '../components/EmptyMainScreen';
+import {ListOfShoppingLists} from '../components/ListOfShoppingLists';
 
-class MainScreen extends Component {
-  render() {
-    const {navigate} = this.props.navigation;
+const MainScreen = ({navigation}) => {
+  const {navigate} = navigation;
+  const testList = [
+    {
+      id: '1',
+      name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
+      completionStatus: 'not-finished',
+    },
+    // {
+    //   id: '2',
+    //   name:
+    //     'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка',
+    //   completionStatus: 'finished',
+    // },
+    // {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
+    // {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
+  ];
 
-    const testList = [
-      // {
-      //   id: '1',
-      //   name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
-      //   completionStatus: 'not-finished',
-      // },
-      // {
-      //   id: '2',
-      //   name:
-      //     'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка',
-      //   completionStatus: 'finished',
-      // },
-      // {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
-      // {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
-    ];
+  const emptyMainScreenContent = (
+    <View style={styles.emptyMainScreenContent}>
+      <EmptyMainScreen />
+    </View>
+  );
 
-    const emptyMainScreenContent = (
-      <View style={styles.emptyMainScreenContent}>
-        <EmptyMainScreen />
+  const listOfShoppingLists = (
+    <View style={styles.listOfShoppingListContainer}>
+      <ListOfShoppingLists list={testList} />
+    </View>
+  );
+
+  let mainScreenContent =
+    testList.length > 0 ? listOfShoppingLists : emptyMainScreenContent;
+
+  return (
+    <View style={styles.mainContainer}>
+      {mainScreenContent}
+      <View style={styles.addShoppingListButtonContainer}>
+        <AddButton
+          style={styles.addShoppingListButton}
+          onClick={() => {
+            navigate('ShoppingList');
+          }}
+        />
       </View>
-    );
-
-    const listOfShoppingLists = (
-      <View style={styles.listOfShoppingListContainer}>
-        <ListOfShoppingLists list={testList} />
-      </View>
-    );
-
-    let mainScreenContent =
-      testList.length > 0 ? listOfShoppingLists : emptyMainScreenContent;
-
-    return (
-      <View style={styles.mainContainer}>
-        {mainScreenContent}
-        <View style={styles.addShoppingListButtonContainer}>
-          <AddButton
-            style={styles.addShoppingListButton}
-            onClick={() => {
-              const storedDataKey = 'myKey';
-
-              this.storeData(storedDataKey, () => {
-                console.log('DATA_STORED');
-
-                // navigate('ShoppingList', {
-                //   key: storedDataKey,
-                // });
-              });
-
-              navigate('ShoppingList', {
-                key: storedDataKey,
-              });
-            }}
-          />
-        </View>
-      </View>
-    );
-  }
-
-  storeData = async (key, callback) => {
-    try {
-      AsyncStorage.clear();
-      await AsyncStorage.setItem(key, 'My stored value', callback);
-    } catch (e) {
-      // saving error
-    }
-  };
-}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {

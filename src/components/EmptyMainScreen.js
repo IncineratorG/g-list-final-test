@@ -1,29 +1,27 @@
 /* Компонент, который отображается при отсутствии данных списка списков покупок на стартовом экране.
  * */
 
-import React, {Component} from 'react';
+import React from 'react';
 import {Text, View, StyleSheet, Image} from 'react-native';
 import {icons} from '../assets/icons';
 
-export default class EmptyMainScreen extends Component {
-  render() {
-    return (
-      <View style={styles.mainContainer}>
-        <View style={styles.emptyIconContainer}>
-          <Image style={styles.emptyIcon} source={icons.cart} />
-        </View>
-        <View style={styles.emptyTextContainer}>
-          <Text style={styles.emptyHeaderText}>
-            У вас нет ни одного списка покупок
-          </Text>
-          <Text style={styles.emptyExplanationText}>
-            Создайте новый список, он отобразится здесь
-          </Text>
-        </View>
+export const EmptyMainScreen = () => {
+  return (
+    <View style={styles.mainContainer}>
+      <View style={styles.emptyIconContainer}>
+        <Image style={styles.emptyIcon} source={icons.cart} />
       </View>
-    );
-  }
-}
+      <View style={styles.emptyTextContainer}>
+        <Text style={styles.emptyHeaderText}>
+          У вас нет ни одного списка покупок
+        </Text>
+        <Text style={styles.emptyExplanationText}>
+          Создайте новый список, он отобразится здесь
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {

@@ -3,92 +3,65 @@
 загруженных данных (либо компонент пустого экрана, либо список покупок).
 * */
 
-import React, {Component} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import AddButton from '../components/AddButton';
-import EmptyShoppingListScreen from '../components/EmptyShoppingListScreen';
-import ShoppingList from '../components/ShoppingList';
-import AsyncStorage from '@react-native-community/async-storage';
-import {call} from 'react-native-reanimated';
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
+import {AddButton} from '../components/AddButton';
+import {EmptyShoppingListScreen} from '../components/EmptyShoppingListScreen';
+import {ShoppingList} from '../components/ShoppingList';
 
-export default class ShoppingListScreen extends Component {
+const ShoppingListScreen = ({navigation}) => {
+  const {navigate} = navigation;
 
-  getData = async (key, callback) => {
-    try {
-      const value = await AsyncStorage.getItem('myKey', callback);
-      // console.log('getData() -> VALUE: ' + value);
-    } catch (e) {
-      console.log('ERROR: ' + e);
-    }
-  };
+  const testList = [
+    {
+      id: '1',
+      name: 'Хлеб',
+      quantity: 2,
+      unit: 'шт.',
+      note: '',
+      category: 'other',
+      completionStatus: 'not-finished',
+    },
+    {
+      id: '2',
+      name: 'Молоко',
+      quantity: 2,
+      unit: 'л.',
+      note: 'домик в деревне',
+      category: 'other',
+      completionStatus: 'finished',
+    },
+  ];
 
-  componentDidMount() {
-    const {navigation} = this.props;
+  const emptyShoppingListScreenContent = (
+    <View style={styles.emptyShoppingListScreenContent}>
+      <EmptyShoppingListScreen />
+    </View>
+  );
 
-    const passedStoredKey = navigation.getParam('key', 'NO-KEY');
+  const shoppingList = (
+    <View style={styles.shoppingListContainer}>
+      <ShoppingList list={testList} />
+    </View>
+  );
 
-    console.log('componentDidMount(): ' + passedStoredKey);
+  const shoppingListScreenContent =
+    testList.length > 0 ? shoppingList : emptyShoppingListScreenContent;
 
-    this.getData(passedStoredKey, (error, result) => {
-      console.log('RESULT: ' + result);
-      console.log('ERROR: ' + error);
-    });
-  }
-
-  render() {
-    const {navigate} = this.props.navigation;
-
-    const testList = [
-      {
-        id: '1',
-        name: 'Хлеб',
-        quantity: 2,
-        unit: 'шт.',
-        note: '',
-        category: 'other',
-        completionStatus: 'not-finished',
-      },
-      {
-        id: '2',
-        name: 'Молоко',
-        quantity: 2,
-        unit: 'л.',
-        note: 'домик в деревне',
-        category: 'other',
-        completionStatus: 'finished',
-      },
-    ];
-
-    const emptyShoppingListScreenContent = (
-      <View style={styles.emptyShoppingListScreenContent}>
-        <EmptyShoppingListScreen />
+  return (
+    <View style={styles.mainContainer}>
+      {shoppingListScreenContent}
+      <View style={styles.addShoppingListItemButtonContainer}>
+        <AddButton
+          style={styles.addShoppingListItemButton}
+          onClick={() => {
+            navigate('Edit');
+          }}
+        />
       </View>
-    );
-
-    const shoppingList = (
-      <View style={styles.shoppingListContainer}>
-        <ShoppingList list={testList} />
-      </View>
-    );
-
-    const shoppingListScreenContent =
-      testList.length > 0 ? shoppingList : emptyShoppingListScreenContent;
-
-    return (
-      <View style={styles.mainContainer}>
-        {shoppingListScreenContent}
-        <View style={styles.addShoppingListItemButtonContainer}>
-          <AddButton
-            style={styles.addShoppingListItemButton}
-            onClick={() => {
-              navigate('Edit');
-            }}
-          />
-        </View>
-      </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -121,3 +94,5 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
 });
+
+export default ShoppingListScreen;
