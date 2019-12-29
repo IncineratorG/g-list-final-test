@@ -8,17 +8,18 @@ import {View, StyleSheet} from 'react-native';
 import AddButton from '../components/AddButton';
 import EmptyMainScreen from '../components/EmptyMainScreen';
 import ListOfShoppingLists from '../components/ListOfShoppingLists';
+import AsyncStorage from '@react-native-community/async-storage';
 
 class MainScreen extends Component {
   render() {
     const {navigate} = this.props.navigation;
 
     const testList = [
-      {
-        id: '1',
-        name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
-        completionStatus: 'not-finished',
-      },
+      // {
+      //   id: '1',
+      //   name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
+      //   completionStatus: 'not-finished',
+      // },
       // {
       //   id: '2',
       //   name:
@@ -51,13 +52,34 @@ class MainScreen extends Component {
           <AddButton
             style={styles.addShoppingListButton}
             onClick={() => {
-              navigate('ShoppingList');
+              const storedDataKey = 'myKey';
+
+              this.storeData(storedDataKey, () => {
+                console.log('DATA_STORED');
+
+                // navigate('ShoppingList', {
+                //   key: storedDataKey,
+                // });
+              });
+
+              navigate('ShoppingList', {
+                key: storedDataKey,
+              });
             }}
           />
         </View>
       </View>
     );
   }
+
+  storeData = async (key, callback) => {
+    try {
+      AsyncStorage.clear();
+      await AsyncStorage.setItem(key, 'My stored value', callback);
+    } catch (e) {
+      // saving error
+    }
+  };
 }
 
 const styles = StyleSheet.create({

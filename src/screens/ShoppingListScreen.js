@@ -8,9 +8,33 @@ import {View, StyleSheet, Text} from 'react-native';
 import AddButton from '../components/AddButton';
 import EmptyShoppingListScreen from '../components/EmptyShoppingListScreen';
 import ShoppingList from '../components/ShoppingList';
-import EditScreen from './EditScreen';
+import AsyncStorage from '@react-native-community/async-storage';
+import {call} from 'react-native-reanimated';
 
 export default class ShoppingListScreen extends Component {
+
+  getData = async (key, callback) => {
+    try {
+      const value = await AsyncStorage.getItem('myKey', callback);
+      // console.log('getData() -> VALUE: ' + value);
+    } catch (e) {
+      console.log('ERROR: ' + e);
+    }
+  };
+
+  componentDidMount() {
+    const {navigation} = this.props;
+
+    const passedStoredKey = navigation.getParam('key', 'NO-KEY');
+
+    console.log('componentDidMount(): ' + passedStoredKey);
+
+    this.getData(passedStoredKey, (error, result) => {
+      console.log('RESULT: ' + result);
+      console.log('ERROR: ' + error);
+    });
+  }
+
   render() {
     const {navigate} = this.props.navigation;
 
