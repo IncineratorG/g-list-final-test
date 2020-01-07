@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {AppLoading} from '../components/AppLoading';
+import {AppLoading} from '../../components/common/AppLoading';
 
 const MainScreen_V2 = ({navigation}) => {
   const [isReady, setIsReady] = useState(false);

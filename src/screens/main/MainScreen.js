@@ -5,12 +5,12 @@
 
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {AddButton} from '../components/AddButton';
-import {EmptyMainScreen} from '../components/EmptyMainScreen';
-import {ListOfShoppingLists} from '../components/ListOfShoppingLists';
-import {Storage} from '../services/storage/Storage';
-import {SqliteStorageImpl_V2} from '../services/storage/sqlite-storage/SqliteStorageImpl_V2';
-import {SqliteStorageHelper} from '../services/storage/sqlite-storage/SqliteStorageHelper';
+import {AddButton} from '../../components/common/AddButton';
+import {EmptyMainScreen} from '../../components/main-screen/EmptyMainScreen';
+import {ListOfShoppingLists} from '../../components/list-of-shopping-list/ListOfShoppingLists';
+import {Storage} from '../../services/storage/Storage';
+import {SqliteStorageImpl_V2} from '../../services/storage/sqlite-storage/SqliteStorageImpl_V2';
+import {SqliteStorageHelper} from '../../services/storage/sqlite-storage/SqliteStorageHelper';
 
 const MainScreen = ({navigation}) => {
   const {navigate} = navigation;
@@ -135,7 +135,7 @@ const MainScreen = ({navigation}) => {
             //   });
             // });
 
-            // navigate('ShoppingList');
+            navigate('ShoppingList');
           }}
         />
       </View>

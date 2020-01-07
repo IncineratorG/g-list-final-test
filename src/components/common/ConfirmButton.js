@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
-import {icons} from '../assets/icons';
+import {icons} from '../../assets/icons';
 
 export const ConfirmButton = ({onClick}) => {
   // render() {

@@ -3,7 +3,7 @@
 
 import React from 'react';
 import {Text, View, StyleSheet, Image} from 'react-native';
-import {icons} from '../assets/icons';
+import {icons} from '../../assets/icons';
 
 export const EmptyMainScreen = () => {
   return (

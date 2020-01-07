@@ -5,9 +5,9 @@
 
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {AddButton} from '../components/AddButton';
-import {EmptyShoppingListScreen} from '../components/EmptyShoppingListScreen';
-import {ShoppingList} from '../components/ShoppingList';
+import {AddButton} from '../../components/common/AddButton';
+import {EmptyShoppingListScreen} from '../../components/shopping-list-screen/EmptyShoppingListScreen';
+import {ShoppingList} from '../../components/shopping-list-screen/ShoppingList';
 
 const ShoppingListScreen = ({navigation}) => {
   const {navigate} = navigation;
