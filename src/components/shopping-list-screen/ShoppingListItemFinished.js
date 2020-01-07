@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {View, StyleSheet, Text, Image} from 'react-native';
-import {icons} from '../assets/icons';
+import {icons} from '../../assets/icons';
 
 export const ShoppingListItemFinished = ({itemToRender}) => {
   const noteExistComponent = (

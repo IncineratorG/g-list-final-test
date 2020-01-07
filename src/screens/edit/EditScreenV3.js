@@ -3,7 +3,7 @@
 import React from 'react';
 import {View, StyleSheet, TextInput, Text} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import {ConfirmButton} from '../components/ConfirmButton';
+import {ConfirmButton} from '../../components/common/ConfirmButton';
 
 const EditScreenV3 = () => {
   let data = [

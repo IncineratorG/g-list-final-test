@@ -1,21 +1,20 @@
-import {createAppContainer} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
-import MainScreen from './src/screens/MainScreen';
-import ShoppingListScreen from './src/screens/ShoppingListScreen';
-import EditScreen from './src/screens/EditScreen';
-import EditScreenV3 from './src/screens/EditScreenV3';
+import React, {useState} from 'react';
+import {AppLoading} from './src/components/common/AppLoading';
+import AppNavigation from './src/components/navigation/AppNavigation';
+import Bootstrap from './src/services/bootstrap/Bootstrap';
 
-const navigator = createStackNavigator(
-  {
-    Main: MainScreen,
-    ShoppingList: ShoppingListScreen,
-    Edit: EditScreenV3,
-  },
-  {
-    initialRouteName: 'Main',
-  },
-);
+export default function App() {
+  const [isReady, setIsReady] = useState(false);
 
-const App = createAppContainer(navigator);
+  if (!isReady) {
+    return (
+      <AppLoading
+        startAsync={Bootstrap.start}
+        onFinish={() => setIsReady(true)}
+        onError={err => console.log(err)}
+      />
+    );
+  }
 
-export default App;
+  return <AppNavigation />;
+}

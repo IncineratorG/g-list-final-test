@@ -1,13 +1,10 @@
-/* Кнопка добавления.
-Кнопка ожидает, что компонент использующий её передаст в неё параметр onClick, в котором будет описана функция,
-выполняемая при нажатии на эту кнопку.
-* */
+// Кнопка применяемая для отмены действий
 
 import React from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
-import {icons} from '../assets/icons';
+import {icons} from '../../assets/icons';
 
-export const AddButton = ({onClick}) => {
+export const CancelButton = ({onClick}) => {
   return (
     <TouchableHighlight
       style={styles.touchable}
@@ -25,7 +22,7 @@ export const AddButton = ({onClick}) => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: '#4a9dec',
+    backgroundColor: 'red',
     height: 75,
     width: 75,
     borderRadius: 38,
@@ -34,11 +31,9 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   crossIcon: {
-    transform: [{rotate: '45deg'}, {scale: 0.5}],
+    transform: [{scale: 0.5}],
   },
   touchable: {
     borderRadius: 38,
   },
 });
-
-// export default AddButton;
