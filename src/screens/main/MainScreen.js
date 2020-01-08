@@ -3,34 +3,26 @@
 загруженных данных (либо компонент пустого экрана, либо список списков покупок).
 * */
 
-import React, {useState} from 'react';
-import {View, StyleSheet, TextInput} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {AddButton} from '../../components/common/AddButton';
 import {EmptyMainScreen} from '../../components/main-screen/EmptyMainScreen';
 import {ListOfShoppingLists} from '../../components/list-of-shopping-list/ListOfShoppingLists';
-import {Storage} from '../../services/storage/Storage';
-import {SqliteStorageImpl_V2} from '../../services/storage/sqlite-storage/SqliteStorageImpl_V2';
-import {SqliteStorageHelper} from '../../services/storage/sqlite-storage/SqliteStorageHelper';
-import {ConfirmDialog} from 'react-native-simple-dialogs';
-import ListCreationDialog from '../../components/main-screen/ListCreationDialog';
+import {loadAllShoppingLists} from '../../store/actions/shoppingListActions';
 
 const MainScreen = ({navigation}) => {
   const {navigate} = navigation;
-  const testList = [
-    // {
-    //   id: '1',
-    //   name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
-    //   completionStatus: 'not-finished',
-    // },
-    // {
-    //   id: '2',
-    //   name:
-    //     'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка',
-    //   completionStatus: 'finished',
-    // },
-    // {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
-    // {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
-  ];
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadAllShoppingLists());
+  }, [dispatch]);
+
+  const shoppingLists = useSelector(
+    state => state.shoppingList.allShoppingLists,
+  );
 
   const emptyMainScreenContent = (
     <View style={styles.emptyMainScreenContent}>
@@ -40,37 +32,26 @@ const MainScreen = ({navigation}) => {
 
   const listOfShoppingLists = (
     <View style={styles.listOfShoppingListContainer}>
-      <ListOfShoppingLists list={testList} />
+      <ListOfShoppingLists list={shoppingLists} />
     </View>
   );
 
   let mainScreenContent =
-    testList.length > 0 ? listOfShoppingLists : emptyMainScreenContent;
-
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const listCreationDialog = (
-    <View style={{position: 'absolute', zIndex: 20}}>
-      <ListCreationDialog
-        visible={modalVisible}
-        onPositiveButton={() => {
-          setModalVisible(false);
-          navigate('ShoppingList');
-        }}
-        onTouchOutside={() => setModalVisible(false)}
-      />
-    </View>
-  );
+    shoppingLists.length > 0 ? listOfShoppingLists : emptyMainScreenContent;
 
   return (
     <View style={styles.mainContainer}>
       {mainScreenContent}
-      {listCreationDialog}
-      <View style={styles.addShoppingListButtonContainer}>
+      <View
+        style={styles.addShoppingListButtonContainer}
+        enabled={false}
+        behavior={'position'}>
         <AddButton
           style={styles.addShoppingListButton}
           onClick={() => {
-            setModalVisible(true);
+            navigate('CreateShoppingList');
+
+            // setModalVisible(true);
 
             // SqliteStorageImpl_V2.getShoppingLists().then(value => {
             //   for (let i = 0; i < value.length; ++i) {
@@ -84,6 +65,10 @@ const MainScreen = ({navigation}) => {
     </View>
   );
 };
+
+MainScreen.navigationOptions = ({navigation}) => ({
+  headerTitle: 'Мои покупки',
+});
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -195,3 +180,22 @@ export default MainScreen;
 //     console.log('============');
 //   });
 // });
+
+// const testList = [
+//   // {
+//   //   id: '1',
+//   //   name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
+//   //   completionStatus: 'not-finished',
+//   // },
+//   // {
+//   //   id: '2',
+//   //   name:
+//   //     'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка',
+//   //   completionStatus: 'finished',
+//   // },
+//   // {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
+//   // {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
+//   // {id: '5', name: 'Список 5', completionStatus: 'not-finished'},
+//   // {id: '6', name: 'Список 6', completionStatus: 'not-finished'},
+//   // {id: '7', name: 'Список 7', completionStatus: 'not-finished'},
+// ];

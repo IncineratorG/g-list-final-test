@@ -7,7 +7,13 @@ import React from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {icons} from '../../assets/icons';
 
-export const AddButton = ({onClick}) => {
+export const AddButton = ({onClick, visible}) => {
+  if (visible === undefined) {
+    visible = true;
+  }
+
+  const visibilityMode = visible ? 'flex' : 'none';
+
   return (
     <TouchableHighlight
       style={styles.touchable}
@@ -16,7 +22,7 @@ export const AddButton = ({onClick}) => {
           onClick();
         }
       }}>
-      <View style={styles.mainContainer}>
+      <View style={[styles.mainContainer, {display: visibilityMode}]}>
         <Image style={styles.crossIcon} source={icons.cross} />
       </View>
     </TouchableHighlight>

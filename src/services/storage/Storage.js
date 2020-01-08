@@ -10,6 +10,10 @@ export class Storage {
     return SqliteStorageImpl_V2.init();
   }
 
+  static getAllShoppingLists() {
+    return SqliteStorageImpl_V2.getShoppingLists();
+  }
+
   static getListOfShoppingLists() {
     const uuid = require('uuid/v1');
     AsyncStorageImpl.get({type: ListOfShoppingList, uuid: uuid()});

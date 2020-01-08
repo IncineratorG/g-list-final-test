@@ -1,18 +1,13 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Button,
-  ScrollView,
-  Keyboard,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
-import {ConfirmDialog, Dialog} from 'react-native-simple-dialogs';
-import DialogInput from 'react-native-dialog-input';
+import {StyleSheet, TextInput} from 'react-native';
+import {ConfirmDialog} from 'react-native-simple-dialogs';
 
-const ListCreationDialog = ({visible, onTouchOutside, onPositiveButton}) => {
+const ListCreationDialog = ({
+  visible,
+  onTouchOutside,
+  onPositiveButton,
+  onNegativeButton,
+}) => {
   return (
     <ConfirmDialog
       keyboardShouldPersistTaps={'always'}
@@ -22,6 +17,11 @@ const ListCreationDialog = ({visible, onTouchOutside, onPositiveButton}) => {
         title: 'Создать',
         titleStyle: styles.positiveButton,
         onPress: onPositiveButton,
+      }}
+      negativeButton={{
+        title: 'Отмена',
+        titleStyle: styles.negativeButton,
+        onPress: onNegativeButton,
       }}>
       <TextInput
         placeholder="Новый список"
@@ -37,6 +37,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   positiveButton: {
+    color: '#4a9dec',
+  },
+  negativeButton: {
     color: '#4a9dec',
   },
 });

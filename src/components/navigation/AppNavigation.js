@@ -3,8 +3,9 @@ import {createStackNavigator} from 'react-navigation-stack';
 import MainScreen from '../../screens/main/MainScreen';
 import ShoppingListScreen from '../../screens/shopping-list/ShoppingListScreen';
 import EditScreenV3 from '../../screens/edit/EditScreenV3';
+import CreateShoppingListScreen from '../../screens/create-shopping-list/CreateShoppingLisScreen';
 
-const navigator = createStackNavigator(
+const MainStack = createStackNavigator(
   {
     Main: MainScreen,
     ShoppingList: ShoppingListScreen,
@@ -15,6 +16,21 @@ const navigator = createStackNavigator(
   },
 );
 
-const AppNavigation = createAppContainer(navigator);
+const ModalStack = createStackNavigator(
+  {
+    Main: {
+      screen: MainStack,
+    },
+    CreateShoppingList: {
+      screen: CreateShoppingListScreen,
+    },
+  },
+  {
+    mode: 'modal',
+    headerMode: 'none',
+  },
+);
+
+const AppNavigation = createAppContainer(ModalStack);
 
 export default AppNavigation;
