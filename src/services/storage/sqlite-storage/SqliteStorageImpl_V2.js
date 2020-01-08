@@ -103,6 +103,25 @@ export class SqliteStorageImpl_V2 {
     });
   }
 
+  static isInitialized() {
+    // const isInitializedStatement = 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'table_name}\'';
+    const isInitializedStatement =
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
+      SHOPPING_LISTS_TABLE +
+      "'";
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          isInitializedStatement,
+          [],
+          (_, result) => resolve(result.rows),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
   static addUnit(unitName) {
     const addUnitStatement =
       'INSERT INTO ' +

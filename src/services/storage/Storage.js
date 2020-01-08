@@ -1,30 +1,19 @@
-import {
-  AsyncStorageImpl,
-  ListOfShoppingList,
-  ShoppingList,
-} from './async-storage/AsyncStorageImpl';
 import {SqliteStorageImpl_V2} from './sqlite-storage/SqliteStorageImpl_V2';
+import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
 
 export class Storage {
-  static init() {
-    return SqliteStorageImpl_V2.init();
+  static async isInitialized() {
+    const result = await SqliteStorageImpl_V2.isInitialized();
+    return result.length > 0;
+  }
+
+  static async init() {
+    await SqliteStorageImpl_V2.init();
+    await SqliteStorageHelper.insertInitialUnits();
+    await SqliteStorageHelper.insertInitialClases();
   }
 
   static getAllShoppingLists() {
     return SqliteStorageImpl_V2.getShoppingLists();
-  }
-
-  static getListOfShoppingLists() {
-    const uuid = require('uuid/v1');
-    AsyncStorageImpl.get({type: ListOfShoppingList, uuid: uuid()});
-  }
-
-  static createShoppingList() {
-    const object = {name: 'MyName', age: 23};
-    return AsyncStorageImpl.add({type: ShoppingList, object: object});
-  }
-
-  static getShoppingList(id) {
-    return AsyncStorageImpl.get({type: ShoppingList, id: id});
   }
 }

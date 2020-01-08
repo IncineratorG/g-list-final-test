@@ -20,9 +20,13 @@ const MainScreen = ({navigation}) => {
     dispatch(loadAllShoppingLists());
   }, [dispatch]);
 
-  const shoppingLists = useSelector(
+  let shoppingLists = useSelector(
     state => state.shoppingList.allShoppingLists,
   );
+  if (!shoppingLists) {
+    shoppingLists = [];
+  }
+  // console.log('MainScreen->SHOPPING_LISTS: ' + shoppingLists.length);
 
   const emptyMainScreenContent = (
     <View style={styles.emptyMainScreenContent}>
@@ -32,7 +36,7 @@ const MainScreen = ({navigation}) => {
 
   const listOfShoppingLists = (
     <View style={styles.listOfShoppingListContainer}>
-      <ListOfShoppingLists list={shoppingLists} />
+      {/*<ListOfShoppingLists list={shoppingLists} />*/}
     </View>
   );
 
@@ -50,15 +54,6 @@ const MainScreen = ({navigation}) => {
           style={styles.addShoppingListButton}
           onClick={() => {
             navigate('CreateShoppingList');
-
-            // setModalVisible(true);
-
-            // SqliteStorageImpl_V2.getShoppingLists().then(value => {
-            //   for (let i = 0; i < value.length; ++i) {
-            //     console.log(value.item(i).list_name);
-            //   }
-            // });
-            // navigate('ShoppingList');
           }}
         />
       </View>

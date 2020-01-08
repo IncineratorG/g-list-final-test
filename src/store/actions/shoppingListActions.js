@@ -6,10 +6,10 @@ import {Storage} from '../../services/storage/Storage';
 
 export const loadAllShoppingLists = () => {
   return async dispatch => {
-    let shoppingLists = await Storage.getShoppingList();
-    if (!shoppingLists) {
-      shoppingLists = [];
-    }
+    let shoppingLists = await Storage.getAllShoppingLists();
+    // if (!shoppingLists) {
+    //   shoppingLists = [];
+    // }
 
     // const testList = [
     //   {

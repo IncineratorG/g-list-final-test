@@ -13,7 +13,7 @@ export default function App() {
       <AppLoading
         startAsync={Bootstrap.start}
         onFinish={() => setIsReady(true)}
-        onError={err => console.log(err)}
+        onError={err => console.log('App.js: ' + err)}
       />
     );
   }

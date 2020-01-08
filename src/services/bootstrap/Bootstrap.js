@@ -1,11 +1,10 @@
 import {Storage} from '../storage/Storage';
 
 export default class Bootstrap {
-  static start() {
-    return new Promise((resolve, reject) => {
-      Storage.init().then(result => {
-        resolve();
-      });
-    });
+  static async start() {
+    const storageInitialized = await Storage.isInitialized();
+    if (!storageInitialized) {
+      await Storage.init();
+    }
   }
 }
