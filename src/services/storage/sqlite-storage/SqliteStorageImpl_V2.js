@@ -8,22 +8,22 @@ const UNITS_TABLE = 'units';
 const UNITS_TABLE_ID = 'id';
 const UNITS_TABLE_UNIT_NAME = 'name';
 
-const SHOPPING_LISTS_TABLE = 'shopping_lists';
+const SHOPPING_LISTS_TABLE = 'shoppingLists';
 const SHOPPING_LISTS_TABLE_ID = 'id';
-const SHOPPING_LISTS_TABLE_LIST_NAME = 'list_name';
-const SHOPPING_LISTS_TABLE_COMPLETION_STATUS = 'completion_status';
-const SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP = 'create_timestamp';
-const SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP = 'update_timestamp';
+const SHOPPING_LISTS_TABLE_LIST_NAME = 'listName';
+const SHOPPING_LISTS_TABLE_COMPLETION_STATUS = 'completionStatus';
+const SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP = 'createTimestamp';
+const SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP = 'updateTimestamp';
 
-const SHOPPING_LIST_ITEM_TABLE = 'shopping_list_item';
+const SHOPPING_LIST_ITEM_TABLE = 'shoppingListItem';
 const SHOPPING_LIST_ITEM_TABLE_ID = 'id';
-const SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID = 'parent_id';
-const SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME = 'product_name';
-const SHOPPING_LIST_ITEM_TABLE_UNIT_ID = 'unit_id';
-const SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT = 'product_count';
-const SHOPPING_LIST_ITEM_TABLE_CLASS_ID = 'class_id';
+const SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID = 'parentId';
+const SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME = 'productName';
+const SHOPPING_LIST_ITEM_TABLE_UNIT_ID = 'unitId';
+const SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT = 'productCount';
+const SHOPPING_LIST_ITEM_TABLE_CLASS_ID = 'classId';
 const SHOPPING_LIST_ITEM_TABLE_NOTE = 'note';
-const SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS = 'completion_status';
+const SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS = 'completionStatus';
 
 const SQlite = require('react-native-sqlite-storage');
 const db = SQlite.openDatabase(DB_NAME);

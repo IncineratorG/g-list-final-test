@@ -4,13 +4,14 @@
 import React from 'react';
 import {View, StyleSheet, Text, Image} from 'react-native';
 import {icons} from '../../assets/icons';
+import {SHOPPING_LIST_COMPLETED} from '../../services/storage/data/shoppingListStatus';
 
 export const ListOfShoppingListsItem = ({listItem}) => {
-  const statusFinishedComponent = (
+  const statusCompletedComponent = (
     <View style={styles.mainContainer}>
       <View style={styles.nameContainer}>
         <Text style={styles.nameFinished} numberOfLines={2} elipsizeMode="tail">
-          {listItem.name}
+          {listItem.listName}
         </Text>
       </View>
       <View style={styles.statusContainer}>
@@ -21,14 +22,14 @@ export const ListOfShoppingListsItem = ({listItem}) => {
     </View>
   );
 
-  const statusNotFinishedComponent = (
+  const statusNotCompletedComponent = (
     <View style={styles.mainContainer}>
       <View style={styles.nameContainer}>
         <Text
           style={styles.nameNotFinished}
           numberOfLines={2}
           elipsizeMode="tail">
-          {listItem.name}
+          {listItem.listName}
         </Text>
       </View>
       <View style={styles.statusContainer}>
@@ -38,9 +39,9 @@ export const ListOfShoppingListsItem = ({listItem}) => {
   );
 
   let statusComponent =
-    listItem.completionStatus === 'finished'
-      ? statusFinishedComponent
-      : statusNotFinishedComponent;
+    listItem.completionStatus === SHOPPING_LIST_COMPLETED
+      ? statusCompletedComponent
+      : statusNotCompletedComponent;
 
   return statusComponent;
 };

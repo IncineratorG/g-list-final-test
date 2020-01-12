@@ -6,10 +6,7 @@ import {Storage} from '../../services/storage/Storage';
 
 export const loadAllShoppingLists = () => {
   return async dispatch => {
-    let shoppingLists = await Storage.getAllShoppingLists();
-    // if (!shoppingLists) {
-    //   shoppingLists = [];
-    // }
+    const shoppingLists = await Storage.getAllShoppingLists();
 
     // const testList = [
     //   {
@@ -37,8 +34,22 @@ export const loadAllShoppingLists = () => {
   };
 };
 
-export const createShoppingList = () => {
-  return {
+export const createShoppingList = listName => async dispatch => {
+  let shoppingListId = -1;
+  try {
+    shoppingListId = await Storage.createShoppingList({listName: listName});
+  } catch (e) {
+    console.log('shoppingListActions->createShoppingList() ERROR: ' + e);
+  }
+
+  dispatch({
     type: CREATE_SHOPPING_LIST,
-  };
+    payload: shoppingListId,
+  });
 };
+
+// export const createShoppingList = () => {
+//   return {
+//     type: CREATE_SHOPPING_LIST,
+//   };
+// };

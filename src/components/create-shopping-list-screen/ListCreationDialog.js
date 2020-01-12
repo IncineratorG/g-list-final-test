@@ -3,6 +3,8 @@ import {StyleSheet, TextInput} from 'react-native';
 import {ConfirmDialog} from 'react-native-simple-dialogs';
 
 const ListCreationDialog = ({
+  listName,
+  setListName,
   visible,
   onTouchOutside,
   onPositiveButton,
@@ -27,6 +29,8 @@ const ListCreationDialog = ({
         placeholder="Новый список"
         style={styles.listNameInput}
         autoFocus={true}
+        onChangeText={text => setListName(text)}
+        value={listName}
       />
     </ConfirmDialog>
   );
