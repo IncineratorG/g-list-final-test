@@ -1,4 +1,4 @@
-import {SqliteStorageImpl_V2} from './sqlite-storage/SqliteStorageImpl_V2';
+import {SqliteStorageImpl} from './sqlite-storage/SqliteStorageImpl';
 import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
 import {
   SHOPPING_LIST_COMPLETED,
@@ -7,18 +7,18 @@ import {
 
 export class Storage {
   static async isInitialized() {
-    const result = await SqliteStorageImpl_V2.isInitialized();
+    const result = await SqliteStorageImpl.isInitialized();
     return result.length > 0;
   }
 
   static async init() {
-    await SqliteStorageImpl_V2.init();
+    await SqliteStorageImpl.init();
     await SqliteStorageHelper.insertInitialUnits();
-    await SqliteStorageHelper.insertInitialClases();
+    await SqliteStorageHelper.insertInitialClasses();
   }
 
   static async getAllShoppingLists() {
-    const shoppingListsTableData = await SqliteStorageImpl_V2.getShoppingLists();
+    const shoppingListsTableData = await SqliteStorageImpl.getShoppingLists();
 
     const shoppingLists = [];
     for (let i = 0; i < shoppingListsTableData.length; ++i) {
@@ -30,7 +30,7 @@ export class Storage {
 
   static async createShoppingList({listName}) {
     try {
-      return await SqliteStorageImpl_V2.addShoppingList({
+      return await SqliteStorageImpl.addShoppingList({
         name: listName,
         status: SHOPPING_LIST_NOT_COMPLETED,
         timestamp: Date.now(),
@@ -42,7 +42,7 @@ export class Storage {
 
   static async getUnits() {
     try {
-      const unitsData = await SqliteStorageImpl_V2.getUnits();
+      const unitsData = await SqliteStorageImpl.getUnits();
 
       const units = [];
       for (let i = 0; i < unitsData.length; ++i) {
@@ -52,6 +52,60 @@ export class Storage {
       return units;
     } catch (e) {
       throw Error('Storage->getUnits(): ' + e);
+    }
+  }
+
+  static async getClasses() {
+    try {
+      const classesData = await SqliteStorageImpl.getClasses();
+
+      const classes = [];
+      for (let i = 0; i < classesData.length; ++i) {
+        classes.push(classesData.item(i));
+      }
+
+      return classes;
+    } catch (e) {
+      throw Error('Storage->getClasses(): ' + e);
+    }
+  }
+
+  static async addProduct({
+    shoppingListId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+  }) {
+    try {
+      return await SqliteStorageImpl.addProduct({
+        shoppingListId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+      });
+    } catch (e) {
+      throw Error('Storage->addProduct(): ' + e);
+    }
+  }
+
+  static async getProductsList(shoppingListId) {
+    try {
+      const productsListData = await SqliteStorageImpl.getShoppingListItems(
+        shoppingListId,
+      );
+
+      const productsList = [];
+      for (let i = 0; i < productsListData.length; ++i) {
+        productsList.push(productsListData.item(i));
+      }
+
+      return productsList;
+    } catch (e) {
+      throw Error('Storage->getProductsList(): ' + e);
     }
   }
 }

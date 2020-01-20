@@ -1,6 +1,8 @@
 import {
+  ADD_PRODUCT,
   CREATE_SHOPPING_LIST,
   LOAD_ALL_SHOPPING_LISTS,
+  LOAD_CLASSES,
   LOAD_UNITS,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
@@ -8,25 +10,6 @@ import {Storage} from '../../services/storage/Storage';
 export const loadAllShoppingLists = () => {
   return async dispatch => {
     const shoppingLists = await Storage.getAllShoppingLists();
-
-    // const testList = [
-    //   {
-    //     id: '1',
-    //     name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
-    //     completionStatus: 'not-finished',
-    //   },
-    //   {
-    //     id: '2',
-    //     name:
-    //       'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка',
-    //     completionStatus: 'finished',
-    //   },
-    //   {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
-    //   {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
-    //   {id: '5', name: 'Список 5', completionStatus: 'not-finished'},
-    //   {id: '6', name: 'Список 6', completionStatus: 'not-finished'},
-    //   {id: '7', name: 'Список 7', completionStatus: 'not-finished'},
-    // ];
 
     dispatch({
       type: LOAD_ALL_SHOPPING_LISTS,
@@ -62,5 +45,48 @@ export const loadUnits = () => {
       type: LOAD_UNITS,
       payload: units,
     });
+  };
+};
+
+export const loadClasses = () => {
+  return async dispatch => {
+    let classes = [];
+    try {
+      classes = await Storage.getClasses();
+    } catch (e) {
+      console.log('shoppingListActions->loadClasses() ERROR: ' + e);
+    }
+
+    dispatch({type: LOAD_CLASSES, payload: classes});
+  };
+};
+
+export const addProduct = ({
+  shoppingListId,
+  name,
+  quantity,
+  unitId,
+  note,
+  classId,
+}) => {
+  return async dispatch => {
+    let productsList = [];
+
+    try {
+      await Storage.addProduct({
+        shoppingListId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+      });
+
+      productsList = await Storage.getProductsList(shoppingListId);
+    } catch (e) {
+      console.log('shoppingListActions->addProduct() ERROR: ' + e);
+    }
+
+    dispatch({type: ADD_PRODUCT, payload: productsList});
   };
 };

@@ -43,7 +43,9 @@ const InputArea = ({onInputAreaHide, onSubmitValues, units}) => {
 
     const values = {
       productName: state.values.productName,
-      quantityValue: state.values.quantityValue,
+      quantityValue: state.values.quantityValue
+        ? state.values.quantityValue
+        : 1,
       quantityUnit: state.values.quantityUnit,
       note: state.values.note,
     };

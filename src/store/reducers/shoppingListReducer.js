@@ -1,13 +1,17 @@
 import {
+  ADD_PRODUCT,
   CREATE_SHOPPING_LIST,
   LOAD_ALL_SHOPPING_LISTS,
+  LOAD_CLASSES,
   LOAD_UNITS,
 } from '../types/shoppingListTypes';
 
 const initialState = {
+  units: [],
+  classes: [],
   allShoppingLists: [],
   currentShoppingListId: undefined,
-  units: [],
+  currentShoppingListItems: [],
 };
 
 export const shoppingListReducer = (state = initialState, action) => {
@@ -22,6 +26,14 @@ export const shoppingListReducer = (state = initialState, action) => {
 
     case LOAD_UNITS: {
       return {...state, units: action.payload};
+    }
+
+    case ADD_PRODUCT: {
+      return {...state, currentShoppingListItems: action.payload};
+    }
+
+    case LOAD_CLASSES: {
+      return {...state, classes: action.payload};
     }
 
     default: {

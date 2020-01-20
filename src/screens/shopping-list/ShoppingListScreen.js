@@ -10,7 +10,11 @@ import {EmptyShoppingListScreen} from '../../components/shopping-list-screen/Emp
 import {ShoppingList} from '../../components/shopping-list-screen/ShoppingList';
 import InputArea from '../../components/shopping-list-screen/input-area/InputArea';
 import {useSelector, useDispatch} from 'react-redux';
-import {loadUnits} from '../../store/actions/shoppingListActions';
+import {
+  addProduct,
+  loadClasses,
+  loadUnits,
+} from '../../store/actions/shoppingListActions';
 
 const ShoppingListScreen = ({navigation}) => {
   const {navigate} = navigation;
@@ -20,27 +24,28 @@ const ShoppingListScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   let units = useSelector(state => state.shoppingList.units);
+  let classes = useSelector(state => state.shoppingList.classes);
+  let shoppingListId = useSelector(
+    state => state.shoppingList.currentShoppingListId,
+  );
+  let productsList = useSelector(
+    state => state.shoppingList.currentShoppingListItems,
+  );
 
-  const testList = [
-    {
-      id: '1',
-      name: 'Хлеб',
-      quantity: 2,
-      unit: 'шт.',
-      note: '',
-      category: 'other',
-      completionStatus: 'not-finished',
-    },
-    {
-      id: '2',
-      name: 'Молоко',
-      quantity: 2,
-      unit: 'л.',
-      note: 'домик в деревне',
-      category: 'other',
-      completionStatus: 'finished',
-    },
-  ];
+  const products = productsList
+    .map(product => {
+      return {
+        id: product.id,
+        listId: product.parentId,
+        name: product.name,
+        quantity: product.quantity,
+        unit: units.filter(unit => unit.id === product.unitId)[0].name,
+        note: product.note,
+        category: classes.filter(cl => cl.id === product.classId)[0].name,
+        completionStatus: product.completionStatus,
+      };
+    })
+    .sort((p1, p2) => p1.id < p2.id);
 
   const addProductButtonHandler = () => {
     setInputAreaVisible(true);
@@ -51,17 +56,22 @@ const ShoppingListScreen = ({navigation}) => {
   };
 
   const inputAreaSubmitValuesHandler = values => {
-    console.log(
-      'inputAreaSubmitValuesHandler(): ' +
-        values.productName +
-        ' ' +
-        values.quantityValue +
-        ' ' +
-        values.quantityUnit +
-        ' ' +
-        values.note,
+    dispatch(
+      addProduct({
+        shoppingListId: shoppingListId,
+        name: values.productName,
+        quantity: values.quantityValue,
+        unitId: values.quantityUnit,
+        note: values.note,
+        classId: 1,
+      }),
     );
   };
+
+  useEffect(() => {
+    dispatch(loadUnits());
+    dispatch(loadClasses());
+  }, [dispatch]);
 
   const emptyShoppingListScreenContent = (
     <View style={styles.emptyShoppingListScreenContent}>
@@ -71,17 +81,16 @@ const ShoppingListScreen = ({navigation}) => {
 
   const shoppingList = (
     <View style={styles.shoppingListContainer}>
-      <ShoppingList list={testList} />
+      <ShoppingList list={products} />
     </View>
   );
 
   const shoppingListScreenContent =
-    testList.length > 0 ? shoppingList : emptyShoppingListScreenContent;
+    products.length > 0 ? shoppingList : emptyShoppingListScreenContent;
 
-  // ===
-  useEffect(() => {
-    dispatch(loadUnits());
-  }, [dispatch]);
+  const shadedBackground = inputAreaVisible ? (
+    <View style={styles.shadedBackground} />
+  ) : null;
 
   const inputAreaComponent = inputAreaVisible ? (
     <View style={styles.inputAreaContainer}>
@@ -92,18 +101,18 @@ const ShoppingListScreen = ({navigation}) => {
       />
     </View>
   ) : null;
-  // ===
 
   return (
     <View style={styles.mainContainer}>
       {shoppingListScreenContent}
       <View style={styles.addShoppingListItemButtonContainer}>
         <AddButton
-          style={styles.addShoppingListItemButton}
+          style={[styles.addShoppingListItemButton, {zIndex: 20}]}
           onClick={addProductButtonHandler}
         />
       </View>
       {inputAreaComponent}
+      {shadedBackground}
     </View>
   );
 };
@@ -142,6 +151,16 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: 100,
     position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
+  shadedBackground: {
+    backgroundColor: 'black',
+    opacity: 0.5,
+    position: 'absolute',
+    top: 0,
     bottom: 0,
     left: 0,
     right: 0,

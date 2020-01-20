@@ -14,7 +14,7 @@ export const ShoppingList = ({list}) => {
         renderItem={({item}) => {
           return <ShoppingListItem listItem={item} />;
         }}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id.toString()}
       />
     </View>
   );
