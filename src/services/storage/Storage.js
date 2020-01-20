@@ -39,4 +39,19 @@ export class Storage {
       throw Error('Storage->createShoppingList(): ' + e);
     }
   }
+
+  static async getUnits() {
+    try {
+      const unitsData = await SqliteStorageImpl_V2.getUnits();
+
+      const units = [];
+      for (let i = 0; i < unitsData.length; ++i) {
+        units.push(unitsData.item(i));
+      }
+
+      return units;
+    } catch (e) {
+      throw Error('Storage->getUnits(): ' + e);
+    }
+  }
 }

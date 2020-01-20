@@ -1,6 +1,7 @@
 import {
   CREATE_SHOPPING_LIST,
   LOAD_ALL_SHOPPING_LISTS,
+  LOAD_UNITS,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 
@@ -48,8 +49,18 @@ export const createShoppingList = listName => async dispatch => {
   });
 };
 
-// export const createShoppingList = () => {
-//   return {
-//     type: CREATE_SHOPPING_LIST,
-//   };
-// };
+export const loadUnits = () => {
+  return async dispatch => {
+    let units = [];
+    try {
+      units = await Storage.getUnits();
+    } catch (e) {
+      console.log('shoppingListActions->loadUnits() ERROR: ' + e);
+    }
+
+    dispatch({
+      type: LOAD_UNITS,
+      payload: units,
+    });
+  };
+};
