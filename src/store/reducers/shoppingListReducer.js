@@ -3,6 +3,7 @@ import {
   CREATE_SHOPPING_LIST,
   LOAD_ALL_SHOPPING_LISTS,
   LOAD_CLASSES,
+  LOAD_SHOPPING_LIST,
   LOAD_UNITS,
 } from '../types/shoppingListTypes';
 
@@ -10,8 +11,11 @@ const initialState = {
   units: [],
   classes: [],
   allShoppingLists: [],
-  currentShoppingListId: undefined,
-  currentShoppingListItems: [],
+  currentShoppingList: {
+    id: undefined,
+    name: '',
+    products: [],
+  },
 };
 
 export const shoppingListReducer = (state = initialState, action) => {
@@ -21,19 +25,46 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case CREATE_SHOPPING_LIST: {
-      return {...state, currentShoppingListId: action.payload};
+      return {
+        ...state,
+        allShoppingLists: action.payload.shoppingLists,
+        currentShoppingList: {
+          ...state.currentShoppingList,
+          id: action.payload.shoppingListId,
+          name: action.payload.name,
+          products: [],
+        },
+      };
     }
 
     case LOAD_UNITS: {
       return {...state, units: action.payload};
     }
 
-    case ADD_PRODUCT: {
-      return {...state, currentShoppingListItems: action.payload};
-    }
-
     case LOAD_CLASSES: {
       return {...state, classes: action.payload};
+    }
+
+    case ADD_PRODUCT: {
+      return {
+        ...state,
+        currentShoppingList: {
+          ...state.currentShoppingList,
+          products: action.payload,
+        },
+      };
+    }
+
+    case LOAD_SHOPPING_LIST: {
+      return {
+        ...state,
+        currentShoppingList: {
+          ...state.currentShoppingList,
+          id: action.payload.shoppingListId,
+          name: action.payload.shoppingListName,
+          products: action.payload.productsList,
+        },
+      };
     }
 
     default: {

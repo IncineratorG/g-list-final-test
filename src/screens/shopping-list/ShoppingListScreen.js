@@ -15,6 +15,7 @@ import {
   loadClasses,
   loadUnits,
 } from '../../store/actions/shoppingListActions';
+import MainScreen from '../main/MainScreen';
 
 const ShoppingListScreen = ({navigation}) => {
   const {navigate} = navigation;
@@ -26,11 +27,24 @@ const ShoppingListScreen = ({navigation}) => {
   let units = useSelector(state => state.shoppingList.units);
   let classes = useSelector(state => state.shoppingList.classes);
   let shoppingListId = useSelector(
-    state => state.shoppingList.currentShoppingListId,
+    state => state.shoppingList.currentShoppingList.id,
+  );
+  let shoppingListName = useSelector(
+    state => state.shoppingList.currentShoppingList.name,
   );
   let productsList = useSelector(
-    state => state.shoppingList.currentShoppingListItems,
+    state => state.shoppingList.currentShoppingList.products,
   );
+
+  const getUnitName = unitId => {
+    const filteredUnits = units.filter(unit => unit.id === unitId);
+    return filteredUnits.length ? filteredUnits[0].name : '';
+  };
+
+  const getCategoryName = classId => {
+    const filteredClasses = classes.filter(cl => cl.id === classId);
+    return filteredClasses.length ? filteredClasses[0].name : '';
+  };
 
   const products = productsList
     .map(product => {
@@ -39,9 +53,9 @@ const ShoppingListScreen = ({navigation}) => {
         listId: product.parentId,
         name: product.name,
         quantity: product.quantity,
-        unit: units.filter(unit => unit.id === product.unitId)[0].name,
+        unit: getUnitName(product.unitId),
         note: product.note,
-        category: classes.filter(cl => cl.id === product.classId)[0].name,
+        category: getCategoryName(product.classId),
         completionStatus: product.completionStatus,
       };
     })
@@ -72,6 +86,10 @@ const ShoppingListScreen = ({navigation}) => {
     dispatch(loadUnits());
     dispatch(loadClasses());
   }, [dispatch]);
+
+  useEffect(() => {
+    navigation.setParams({shoppingListName});
+  }, [shoppingListName]);
 
   const emptyShoppingListScreenContent = (
     <View style={styles.emptyShoppingListScreenContent}>
@@ -115,6 +133,13 @@ const ShoppingListScreen = ({navigation}) => {
       {shadedBackground}
     </View>
   );
+};
+
+ShoppingListScreen.navigationOptions = ({navigation}) => {
+  const shoppingListName = navigation.getParam('shoppingListName');
+  return {
+    headerTitle: shoppingListName ? shoppingListName : '',
+  };
 };
 
 const styles = StyleSheet.create({

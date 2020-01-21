@@ -3,29 +3,33 @@
 загруженных данных (либо компонент пустого экрана, либо список списков покупок).
 * */
 
-import React, {useEffect, useLayoutEffect} from 'react';
+import React, {useEffect} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {AddButton} from '../../components/common/AddButton';
 import {EmptyMainScreen} from '../../components/main-screen/EmptyMainScreen';
 import {ListOfShoppingLists} from '../../components/main-screen/ListOfShoppingLists';
-import {loadAllShoppingLists} from '../../store/actions/shoppingListActions';
+import {
+  loadAllShoppingLists,
+  loadShoppingList,
+} from '../../store/actions/shoppingListActions';
 
 const MainScreen = ({navigation}) => {
-  // console.log('MainScreen');
-
   const {navigate} = navigation;
 
   const dispatch = useDispatch();
 
+  let shoppingLists = useSelector(state => state.shoppingList.allShoppingLists);
+  shoppingLists.sort((s1, s2) => s2.timerStamp > s1.timeStamp);
+
+  const listItemPressHandler = listItemId => {
+    dispatch(loadShoppingList(listItemId));
+    navigate('ShoppingList');
+  };
+
   useEffect(() => {
     dispatch(loadAllShoppingLists());
-  });
-
-  let shoppingLists = useSelector(state => state.shoppingList.allShoppingLists);
-  // if (!shoppingLists) {
-  //   shoppingLists = [];
-  // }
+  }, [dispatch]);
 
   const shoppingListLoading = (
     <View style={styles.mainContainer}>
@@ -41,12 +45,13 @@ const MainScreen = ({navigation}) => {
 
   const listOfShoppingLists = (
     <View style={styles.listOfShoppingListContainer}>
-      <ListOfShoppingLists list={shoppingLists} />
+      <ListOfShoppingLists
+        list={shoppingLists}
+        onItemPress={listItemPressHandler}
+      />
     </View>
   );
 
-  // let mainScreenContent =
-  //   shoppingLists.length > 0 ? listOfShoppingLists : emptyMainScreenContent;
   let mainScreenContent =
     shoppingLists === false
       ? shoppingListLoading

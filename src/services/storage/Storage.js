@@ -1,9 +1,6 @@
 import {SqliteStorageImpl} from './sqlite-storage/SqliteStorageImpl';
 import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
-import {
-  SHOPPING_LIST_COMPLETED,
-  SHOPPING_LIST_NOT_COMPLETED,
-} from './data/shoppingListStatus';
+import {SHOPPING_LIST_NOT_COMPLETED} from './data/shoppingListStatus';
 
 export class Storage {
   static async isInitialized() {
@@ -33,10 +30,25 @@ export class Storage {
       return await SqliteStorageImpl.addShoppingList({
         name: listName,
         status: SHOPPING_LIST_NOT_COMPLETED,
-        timestamp: Date.now(),
       });
     } catch (e) {
       throw Error('Storage->createShoppingList(): ' + e);
+    }
+  }
+
+  static async getShoppingListName(shoppingListId) {
+    try {
+      const nameData = await SqliteStorageImpl.getShoppingListName(
+        shoppingListId,
+      );
+
+      if (nameData.length) {
+        return nameData.item(0).listName;
+      } else {
+        return '';
+      }
+    } catch (e) {
+      throw Error('Storage->getShoppingListName(): ' + e);
     }
   }
 
@@ -79,7 +91,7 @@ export class Storage {
     classId,
   }) {
     try {
-      return await SqliteStorageImpl.addProduct({
+      return await SqliteStorageImpl.addShoppingListItem({
         shoppingListId,
         name,
         quantity,

@@ -1,31 +1,40 @@
-import {PRODUCT_NOT_COMPLETED} from '../data/productStatus';
+import {
+  CLASSES_TABLE,
+  CLASSES_TABLE_ID,
+  CLASSES_TABLE_CLASS_NAME,
+} from './tables-description/classesTableDescription';
+import {
+  UNITS_TABLE,
+  UNITS_TABLE_ID,
+  UNITS_TABLE_UNIT_NAME,
+} from './tables-description/unitsTableDescription';
+import {
+  SHOPPING_LISTS_TABLE,
+  SHOPPING_LISTS_TABLE_ID,
+  SHOPPING_LISTS_TABLE_LIST_NAME,
+  SHOPPING_LISTS_TABLE_COMPLETION_STATUS,
+  SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP,
+  SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP,
+} from './tables-description/shoppingListsTableDescription';
+import {
+  SHOPPING_LIST_ITEM_TABLE,
+  SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID,
+  SHOPPING_LIST_ITEM_TABLE_CLASS_ID,
+  SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS,
+  SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP,
+  SHOPPING_LIST_ITEM_TABLE_ID,
+  SHOPPING_LIST_ITEM_TABLE_NOTE,
+  SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT,
+  SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME,
+  SHOPPING_LIST_ITEM_TABLE_UNIT_ID,
+  SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP,
+} from './tables-description/shoppingListItemTableDescription';
+import {UnitsTableOperations} from './operations-implementation/UnitsTableOperations';
+import {ClassesTableOperations} from './operations-implementation/ClassesTableOperations';
+import {ShoppingListsTableOperations} from './operations-implementation/ShoppingListsTableOperations';
+import {ShoppingListItemsTableOperations} from './operations-implementation/ShoppingListItemsTableOperations';
 
 const DB_NAME = 'glist.db';
-
-const CLASSES_TABLE = 'classes';
-const CLASSES_TABLE_ID = 'id';
-const CLASSES_TABLE_CLASS_NAME = 'name';
-
-const UNITS_TABLE = 'units';
-const UNITS_TABLE_ID = 'id';
-const UNITS_TABLE_UNIT_NAME = 'name';
-
-const SHOPPING_LISTS_TABLE = 'shoppingLists';
-const SHOPPING_LISTS_TABLE_ID = 'id';
-const SHOPPING_LISTS_TABLE_LIST_NAME = 'listName';
-const SHOPPING_LISTS_TABLE_COMPLETION_STATUS = 'completionStatus';
-const SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP = 'createTimestamp';
-const SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP = 'updateTimestamp';
-
-const SHOPPING_LIST_ITEM_TABLE = 'shoppingListItem';
-const SHOPPING_LIST_ITEM_TABLE_ID = 'id';
-const SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID = 'parentId';
-const SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME = 'name';
-const SHOPPING_LIST_ITEM_TABLE_UNIT_ID = 'unitId';
-const SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT = 'quantity';
-const SHOPPING_LIST_ITEM_TABLE_CLASS_ID = 'classId';
-const SHOPPING_LIST_ITEM_TABLE_NOTE = 'note';
-const SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS = 'completionStatus';
 
 const SQlite = require('react-native-sqlite-storage');
 const db = SQlite.openDatabase(DB_NAME);
@@ -86,7 +95,11 @@ export class SqliteStorageImpl {
       SHOPPING_LIST_ITEM_TABLE_NOTE +
       ' TEXT, ' +
       SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
-      ' TEXT)';
+      ' TEXT, ' +
+      SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP +
+      ' INTEGER NOT_NULL, ' +
+      SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP +
+      ' INTEGER NOT_NULL)';
 
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
@@ -106,214 +119,83 @@ export class SqliteStorageImpl {
   }
 
   static isInitialized() {
-    // const isInitializedStatement = 'SELECT name FROM sqlite_master WHERE type=\'table\' AND name=\'table_name}\'';
-    const isInitializedStatement =
-      "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
-      SHOPPING_LISTS_TABLE +
-      "'";
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          isInitializedStatement,
-          [],
-          (_, result) => resolve(result.rows),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    return ShoppingListsTableOperations.isInitialized(db);
   }
 
   static addUnit(unitName) {
-    const addUnitStatement =
-      'INSERT INTO ' +
-      UNITS_TABLE +
-      ' (' +
-      UNITS_TABLE_UNIT_NAME +
-      ') VALUES (?)';
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          addUnitStatement,
-          [unitName],
-          (_, result) => resolve(result.insertId),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    return UnitsTableOperations.addUnit(db, unitName);
   }
 
   static removeUnit(unitName) {
-    const removeUnitStatement =
-      'DELETE FROM ' +
-      UNITS_TABLE +
-      ' WHERE ' +
-      UNITS_TABLE_UNIT_NAME +
-      ' LIKE ?';
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          removeUnitStatement,
-          [unitName],
-          (_, result) => resolve(result.rowsAffected),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    UnitsTableOperations.removeUnit(db, unitName);
   }
 
   static getUnits() {
-    const getUnitsStatement = 'SELECT * FROM ' + UNITS_TABLE;
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          getUnitsStatement,
-          [],
-          (_, result) => resolve(result.rows),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    return UnitsTableOperations.getUnits(db);
   }
 
   static addClass(className) {
-    const addClassStatement =
-      'INSERT INTO ' +
-      CLASSES_TABLE +
-      ' (' +
-      CLASSES_TABLE_CLASS_NAME +
-      ') VALUES (?)';
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          addClassStatement,
-          [className],
-          (_, result) => resolve(result.insertId),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    return ClassesTableOperations.addClass(db, className);
   }
 
   static getClasses() {
-    const getClassesStatement = 'SELECT * FROM ' + CLASSES_TABLE;
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          getClassesStatement,
-          [],
-          (_, result) => resolve(result.rows),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    return ClassesTableOperations.getClasses(db);
   }
 
-  static addShoppingList({name, status, timestamp}) {
-    const addShoppingListStatement =
-      'INSERT INTO ' +
-      SHOPPING_LISTS_TABLE +
-      ' (' +
-      SHOPPING_LISTS_TABLE_LIST_NAME +
-      ', ' +
-      SHOPPING_LISTS_TABLE_COMPLETION_STATUS +
-      ', ' +
-      SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP +
-      ', ' +
-      SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
-      ') VALUES (?, ?, ?, ?)';
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          addShoppingListStatement,
-          [name, status, timestamp, timestamp],
-          (_, result) => resolve(result.insertId),
-          (_, error) => reject(error),
-        );
-      });
-    });
+  static addShoppingList({name, status}) {
+    return ShoppingListsTableOperations.addShoppingList(db, name, status);
   }
 
   static getShoppingLists() {
-    const getShoppingListsStatement = 'SELECT * FROM ' + SHOPPING_LISTS_TABLE;
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          getShoppingListsStatement,
-          [],
-          (_, result) => resolve(result.rows),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    return ShoppingListsTableOperations.getShoppingLists(db);
   }
 
-  static addProduct({shoppingListId, name, quantity, unitId, note, classId}) {
-    const addProductStatement =
-      'INSERT INTO ' +
-      SHOPPING_LIST_ITEM_TABLE +
-      ' (' +
-      SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
-      ', ' +
-      SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
-      ', ' +
-      SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
-      ', ' +
-      SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
-      ', ' +
-      SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
-      ', ' +
-      SHOPPING_LIST_ITEM_TABLE_NOTE +
-      ', ' +
-      SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
-      ') VALUES (?, ?, ?, ?, ?, ?, ?)';
+  static async addShoppingListItem({
+    shoppingListId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+  }) {
+    const insertedId = await ShoppingListItemsTableOperations.addItem(
+      db,
+      shoppingListId,
+      name,
+      quantity,
+      unitId,
+      note,
+      classId,
+    );
 
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          addProductStatement,
-          [
-            shoppingListId,
-            name,
-            quantity,
-            unitId,
-            classId,
-            note,
-            PRODUCT_NOT_COMPLETED,
-          ],
-          (_, result) => resolve(result.insertId),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    await ShoppingListsTableOperations.updateShoppingListUpdateTimestamp(
+      db,
+      shoppingListId,
+    );
+
+    return insertedId;
   }
 
   static getShoppingListItems(shoppingListId) {
-    console.log('SqliteStorageImpl->getShoppingListItems()');
-
-    const getShoppingListItemsStatement =
-      'SELECT * FROM ' +
-      SHOPPING_LIST_ITEM_TABLE +
-      ' WHERE ' +
-      SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
-      ' = ?';
-
-    return new Promise((resolve, reject) => {
-      db.transaction(tx => {
-        tx.executeSql(
-          getShoppingListItemsStatement,
-          [shoppingListId],
-          (_, result) => resolve(result.rows),
-          (_, error) => reject(error),
-        );
-      });
-    });
+    return ShoppingListItemsTableOperations.getItems(db, shoppingListId);
   }
+
+  static getShoppingListName(shoppingListId) {
+    return ShoppingListsTableOperations.getShoppingListName(db, shoppingListId);
+  }
+
+  // static test() {
+  //   const testStatement = 'PRAGMA table_info(' + SHOPPING_LISTS_TABLE + ')';
+  //
+  //   return new Promise((resolve, reject) => {
+  //     db.transaction(tx => {
+  //       tx.executeSql(
+  //         testStatement,
+  //         [],
+  //         (_, result) => resolve(result.rows),
+  //         (_, error) => reject(error),
+  //       );
+  //     });
+  //   });
+  // }
 }

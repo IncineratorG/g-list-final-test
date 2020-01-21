@@ -3,6 +3,7 @@ import {
   CREATE_SHOPPING_LIST,
   LOAD_ALL_SHOPPING_LISTS,
   LOAD_CLASSES,
+  LOAD_SHOPPING_LIST,
   LOAD_UNITS,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
@@ -20,15 +21,22 @@ export const loadAllShoppingLists = () => {
 
 export const createShoppingList = listName => async dispatch => {
   let shoppingListId = -1;
+  let shoppingLists = [];
+
   try {
     shoppingListId = await Storage.createShoppingList({listName: listName});
+    shoppingLists = await Storage.getAllShoppingLists();
   } catch (e) {
     console.log('shoppingListActions->createShoppingList() ERROR: ' + e);
   }
 
   dispatch({
     type: CREATE_SHOPPING_LIST,
-    payload: shoppingListId,
+    payload: {
+      shoppingListId: shoppingListId,
+      name: listName,
+      shoppingLists: shoppingLists,
+    },
   });
 };
 
@@ -88,5 +96,28 @@ export const addProduct = ({
     }
 
     dispatch({type: ADD_PRODUCT, payload: productsList});
+  };
+};
+
+export const loadShoppingList = id => {
+  return async dispatch => {
+    let productsList = [];
+    let shoppingListName = '';
+
+    try {
+      productsList = await Storage.getProductsList(id);
+      shoppingListName = await Storage.getShoppingListName(id);
+    } catch (e) {
+      console.log('shoppingListActions->loadShoppingList() ERROR: ' + e);
+    }
+
+    dispatch({
+      type: LOAD_SHOPPING_LIST,
+      payload: {
+        shoppingListId: id,
+        shoppingListName: shoppingListName,
+        productsList: productsList,
+      },
+    });
   };
 };
