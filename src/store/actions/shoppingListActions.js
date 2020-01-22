@@ -1,21 +1,31 @@
 import {
   ADD_PRODUCT,
   CREATE_SHOPPING_LIST,
-  LOAD_ALL_SHOPPING_LISTS,
+  LOAD_ALL_SHOPPING_LISTS_BEGIN,
+  LOAD_ALL_SHOPPING_LISTS_ERROR,
+  LOAD_ALL_SHOPPING_LISTS_FINISHED,
   LOAD_CLASSES,
-  LOAD_SHOPPING_LIST,
+  LOAD_SHOPPING_LIST_BEGIN,
+  LOAD_SHOPPING_LIST_ERROR,
+  LOAD_SHOPPING_LIST_FINISHED,
   LOAD_UNITS,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 
 export const loadAllShoppingLists = () => {
   return async dispatch => {
-    const shoppingLists = await Storage.getAllShoppingLists();
+    dispatch({type: LOAD_ALL_SHOPPING_LISTS_BEGIN});
 
-    dispatch({
-      type: LOAD_ALL_SHOPPING_LISTS,
-      payload: shoppingLists,
-    });
+    try {
+      const shoppingLists = await Storage.getAllShoppingLists();
+
+      dispatch({
+        type: LOAD_ALL_SHOPPING_LISTS_FINISHED,
+        payload: shoppingLists,
+      });
+    } catch (e) {
+      dispatch({type: LOAD_ALL_SHOPPING_LISTS_ERROR, payload: e});
+    }
   };
 };
 
@@ -101,23 +111,24 @@ export const addProduct = ({
 
 export const loadShoppingList = id => {
   return async dispatch => {
-    let productsList = [];
-    let shoppingListName = '';
+    dispatch({type: LOAD_SHOPPING_LIST_BEGIN});
 
     try {
-      productsList = await Storage.getProductsList(id);
-      shoppingListName = await Storage.getShoppingListName(id);
+      const productsList = await Storage.getProductsList(id);
+      const shoppingListName = await Storage.getShoppingListName(id);
+
+      dispatch({
+        type: LOAD_SHOPPING_LIST_FINISHED,
+        payload: {
+          shoppingListId: id,
+          shoppingListName: shoppingListName,
+          productsList: productsList,
+        },
+      });
     } catch (e) {
       console.log('shoppingListActions->loadShoppingList() ERROR: ' + e);
-    }
 
-    dispatch({
-      type: LOAD_SHOPPING_LIST,
-      payload: {
-        shoppingListId: id,
-        shoppingListName: shoppingListName,
-        productsList: productsList,
-      },
-    });
+      dispatch({type: LOAD_SHOPPING_LIST_ERROR, payload: e});
+    }
   };
 };

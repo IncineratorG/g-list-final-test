@@ -3,8 +3,8 @@
 загруженных данных (либо компонент пустого экрана, либо список покупок).
 * */
 
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import {View, StyleSheet, Text} from 'react-native';
 import {AddButton} from '../../components/common/AddButton';
 import {EmptyShoppingListScreen} from '../../components/shopping-list-screen/EmptyShoppingListScreen';
 import {ShoppingList} from '../../components/shopping-list-screen/ShoppingList';
@@ -15,7 +15,6 @@ import {
   loadClasses,
   loadUnits,
 } from '../../store/actions/shoppingListActions';
-import MainScreen from '../main/MainScreen';
 
 const ShoppingListScreen = ({navigation}) => {
   const {navigate} = navigation;
@@ -24,16 +23,19 @@ const ShoppingListScreen = ({navigation}) => {
 
   const dispatch = useDispatch();
 
-  let units = useSelector(state => state.shoppingList.units);
-  let classes = useSelector(state => state.shoppingList.classes);
-  let shoppingListId = useSelector(
+  const units = useSelector(state => state.shoppingList.units);
+  const classes = useSelector(state => state.shoppingList.classes);
+  const shoppingListId = useSelector(
     state => state.shoppingList.currentShoppingList.id,
   );
-  let shoppingListName = useSelector(
+  const shoppingListName = useSelector(
     state => state.shoppingList.currentShoppingList.name,
   );
-  let productsList = useSelector(
+  const productsList = useSelector(
     state => state.shoppingList.currentShoppingList.products,
+  );
+  const listLoading = useSelector(
+    state => state.shoppingList.currentShoppingList.loading,
   );
 
   const getUnitName = unitId => {
@@ -89,24 +91,28 @@ const ShoppingListScreen = ({navigation}) => {
 
   useEffect(() => {
     navigation.setParams({shoppingListName});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shoppingListName]);
 
-  const emptyShoppingListScreenContent = (
+  const loadingComponent = (
+    <View style={styles.mainContainer}>
+      <Text>Loading...</Text>
+    </View>
+  );
+
+  const emptyShoppingListScreenComponent = (
     <View style={styles.emptyShoppingListScreenContent}>
       <EmptyShoppingListScreen />
     </View>
   );
 
-  const shoppingList = (
+  const shoppingListComponent = (
     <View style={styles.shoppingListContainer}>
       <ShoppingList list={products} />
     </View>
   );
 
-  const shoppingListScreenContent =
-    products.length > 0 ? shoppingList : emptyShoppingListScreenContent;
-
-  const shadedBackground = inputAreaVisible ? (
+  const shadedBackgroundComponent = inputAreaVisible ? (
     <View style={styles.shadedBackground} />
   ) : null;
 
@@ -120,6 +126,17 @@ const ShoppingListScreen = ({navigation}) => {
     </View>
   ) : null;
 
+  const shoppingListScreenContent = listLoading
+    ? loadingComponent
+    : products.length > 0
+    ? shoppingListComponent
+    : emptyShoppingListScreenComponent;
+
+  // const shoppingListScreenContent =
+  //     products.length > 0
+  //         ? shoppingListComponent
+  //         : emptyShoppingListScreenComponent;
+
   return (
     <View style={styles.mainContainer}>
       {shoppingListScreenContent}
@@ -130,7 +147,7 @@ const ShoppingListScreen = ({navigation}) => {
         />
       </View>
       {inputAreaComponent}
-      {shadedBackground}
+      {shadedBackgroundComponent}
     </View>
   );
 };

@@ -19,8 +19,13 @@ const MainScreen = ({navigation}) => {
 
   const dispatch = useDispatch();
 
-  let shoppingLists = useSelector(state => state.shoppingList.allShoppingLists);
-  shoppingLists.sort((s1, s2) => s2.timerStamp > s1.timeStamp);
+  const shoppingListsLoading = useSelector(
+    state => state.shoppingList.allShoppingLists.loading,
+  );
+  const shoppingLists = useSelector(
+    state => state.shoppingList.allShoppingLists.data,
+  );
+  shoppingLists.sort((s1, s2) => s2.updateTimestamp > s1.updateTimestamp);
 
   const listItemPressHandler = listItemId => {
     dispatch(loadShoppingList(listItemId));
@@ -31,19 +36,19 @@ const MainScreen = ({navigation}) => {
     dispatch(loadAllShoppingLists());
   }, [dispatch]);
 
-  const shoppingListLoading = (
+  const loadingComponent = (
     <View style={styles.mainContainer}>
-      <Text>LOADING</Text>
+      <Text>Loading...</Text>
     </View>
   );
 
-  const emptyMainScreenContent = (
+  const emptyMainScreenComponent = (
     <View style={styles.emptyMainScreenContent}>
       <EmptyMainScreen />
     </View>
   );
 
-  const listOfShoppingLists = (
+  const listOfShoppingListsComponent = (
     <View style={styles.listOfShoppingListContainer}>
       <ListOfShoppingLists
         list={shoppingLists}
@@ -52,12 +57,11 @@ const MainScreen = ({navigation}) => {
     </View>
   );
 
-  let mainScreenContent =
-    shoppingLists === false
-      ? shoppingListLoading
-      : shoppingLists.length > 0
-      ? listOfShoppingLists
-      : emptyMainScreenContent;
+  const mainScreenContent = shoppingListsLoading
+    ? loadingComponent
+    : shoppingLists.length > 0
+    ? listOfShoppingListsComponent
+    : emptyMainScreenComponent;
 
   return (
     <View style={styles.mainContainer}>
@@ -78,7 +82,7 @@ const MainScreen = ({navigation}) => {
 };
 
 MainScreen.navigationOptions = ({navigation}) => ({
-  headerTitle: 'Мои покупки',
+  headerTitle: 'Списки покупок',
 });
 
 const styles = StyleSheet.create({
