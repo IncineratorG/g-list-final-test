@@ -184,6 +184,22 @@ export class SqliteStorageImpl {
     return ShoppingListsTableOperations.getShoppingListName(db, shoppingListId);
   }
 
+  static async removeShoppingList(shoppingListId) {
+    const removedShoppingListsCount = await ShoppingListsTableOperations.removeShoppingList(
+      db,
+      shoppingListId,
+    );
+    console.log('REMOVED_SHOPPING_LIST_COUNT: ' + removedShoppingListsCount);
+
+    const removedProductsCount = await ShoppingListItemsTableOperations.removeItemsWithShoppingListId(
+      db,
+      shoppingListId,
+    );
+    console.log('REMOVED_PRODUCTS_COUNT: ' + removedProductsCount);
+
+    return {removedShoppingListsCount, removedProductsCount};
+  }
+
   // static test() {
   //   const testStatement = 'PRAGMA table_info(' + SHOPPING_LISTS_TABLE + ')';
   //

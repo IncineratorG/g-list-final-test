@@ -95,7 +95,7 @@ const ShoppingListScreen = ({navigation}) => {
   }, [shoppingListName]);
 
   const loadingComponent = (
-    <View style={styles.mainContainer}>
+    <View style={[styles.mainContainer, {backgroundColor: 'transparent'}]}>
       <Text>Loading...</Text>
     </View>
   );

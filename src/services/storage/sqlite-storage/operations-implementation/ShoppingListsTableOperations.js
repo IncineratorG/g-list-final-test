@@ -114,4 +114,24 @@ export class ShoppingListsTableOperations {
       });
     });
   }
+
+  static removeShoppingList(db, shoppingListId) {
+    const removeShoppingListStatement =
+      'DELETE FROM ' +
+      SHOPPING_LISTS_TABLE +
+      ' WHERE ' +
+      SHOPPING_LISTS_TABLE_ID +
+      ' = ?';
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          removeShoppingListStatement,
+          [shoppingListId],
+          (_, result) => resolve(result.rowsAffected),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
 }

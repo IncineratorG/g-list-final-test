@@ -3,19 +3,28 @@
 загруженных данных (либо компонент пустого экрана, либо список списков покупок).
 * */
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {AddButton} from '../../components/common/AddButton';
 import {EmptyMainScreen} from '../../components/main-screen/EmptyMainScreen';
 import {ListOfShoppingLists} from '../../components/main-screen/ListOfShoppingLists';
+import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
 import {
   loadAllShoppingLists,
   loadShoppingList,
+  removeShoppingList,
 } from '../../store/actions/shoppingListActions';
 
 const MainScreen = ({navigation}) => {
   const {navigate} = navigation;
+
+  const [
+    removeConfirmationDialogVisible,
+    setRemoveConfirmationDialogVisible,
+  ] = useState(false);
+  const [removeItemName, setRemoveItemName] = useState('');
+  const [removeItemId, setRemoveItemId] = useState(-1);
 
   const dispatch = useDispatch();
 
@@ -32,9 +41,37 @@ const MainScreen = ({navigation}) => {
     navigate('ShoppingList');
   };
 
+  const listItemRemoveHandler = listItem => {
+    setRemoveItemName(listItem.listName);
+    setRemoveItemId(listItem.id);
+    setRemoveConfirmationDialogVisible(true);
+  };
+
   useEffect(() => {
     dispatch(loadAllShoppingLists());
   }, [dispatch]);
+
+  const removeConfirmationDialog = (
+    <ConfirmDialog
+      title="Удаление списка"
+      message={'Удалить список ' + removeItemName + '?'}
+      visible={removeConfirmationDialogVisible}
+      onTouchOutside={() => setRemoveConfirmationDialogVisible(false)}
+      positiveButton={{
+        title: 'Да',
+        onPress: () => {
+          dispatch(removeShoppingList(removeItemId));
+          setRemoveConfirmationDialogVisible(false);
+        },
+      }}
+      negativeButton={{
+        title: 'Нет',
+        onPress: () => {
+          setRemoveConfirmationDialogVisible(false);
+        },
+      }}
+    />
+  );
 
   const loadingComponent = (
     <View style={styles.mainContainer}>
@@ -53,6 +90,7 @@ const MainScreen = ({navigation}) => {
       <ListOfShoppingLists
         list={shoppingLists}
         onItemPress={listItemPressHandler}
+        onRemovePress={listItemRemoveHandler}
       />
     </View>
   );
@@ -66,6 +104,7 @@ const MainScreen = ({navigation}) => {
   return (
     <View style={styles.mainContainer}>
       {mainScreenContent}
+      {removeConfirmationDialog}
       <View
         style={styles.addShoppingListButtonContainer}
         enabled={false}

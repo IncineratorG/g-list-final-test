@@ -5,10 +5,11 @@ import {
   LOAD_ALL_SHOPPING_LISTS_ERROR,
   LOAD_ALL_SHOPPING_LISTS_FINISHED,
   LOAD_CLASSES,
+  LOAD_UNITS,
   LOAD_SHOPPING_LIST_BEGIN,
   LOAD_SHOPPING_LIST_ERROR,
   LOAD_SHOPPING_LIST_FINISHED,
-  LOAD_UNITS,
+  REMOVE_SHOPPING_LIST,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 
@@ -130,5 +131,20 @@ export const loadShoppingList = id => {
 
       dispatch({type: LOAD_SHOPPING_LIST_ERROR, payload: e});
     }
+  };
+};
+
+export const removeShoppingList = id => {
+  return async dispatch => {
+    let shoppingLists = [];
+
+    try {
+      await Storage.removeShoppingList(id);
+      shoppingLists = await Storage.getAllShoppingLists();
+    } catch (e) {
+      console.log('shoppingListActions->removeShoppingList() ERROR: ' + e);
+    }
+
+    dispatch({type: REMOVE_SHOPPING_LIST, payload: shoppingLists});
   };
 };

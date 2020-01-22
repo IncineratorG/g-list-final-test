@@ -9,6 +9,7 @@ import {
   LOAD_SHOPPING_LIST_ERROR,
   LOAD_SHOPPING_LIST_FINISHED,
   LOAD_UNITS,
+  REMOVE_SHOPPING_LIST,
 } from '../types/shoppingListTypes';
 
 const initialState = {
@@ -129,6 +130,13 @@ export const shoppingListReducer = (state = initialState, action) => {
           loading: false,
           error: action.payload,
         },
+      };
+    }
+
+    case REMOVE_SHOPPING_LIST: {
+      return {
+        ...state,
+        allShoppingLists: {...state.allShoppingLists, data: action.payload},
       };
     }
 

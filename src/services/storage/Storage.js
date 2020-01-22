@@ -120,4 +120,12 @@ export class Storage {
       throw Error('Storage->getProductsList(): ' + e);
     }
   }
+
+  static async removeShoppingList(shoppingListId) {
+    try {
+      await SqliteStorageImpl.removeShoppingList(shoppingListId);
+    } catch (e) {
+      throw Error('Storage->removeShoppingList(): ' + e);
+    }
+  }
 }
