@@ -59,7 +59,8 @@ const MainScreen = ({navigation}) => {
       visible={removeConfirmationDialogVisible}
       onTouchOutside={() => setRemoveConfirmationDialogVisible(false)}
       positiveButton={{
-        title: 'Да',
+        title: 'Удалить',
+        titleStyle: {color: 'red'},
         onPress: () => {
           dispatch(removeShoppingList(removeItemId));
           setRemoveConfirmationDialogVisible(false);
@@ -67,6 +68,7 @@ const MainScreen = ({navigation}) => {
       }}
       negativeButton={{
         title: 'Нет',
+        titleStyle: {color: 'grey'},
         onPress: () => {
           setRemoveConfirmationDialogVisible(false);
         },
