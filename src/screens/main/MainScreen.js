@@ -15,6 +15,7 @@ import {
   loadShoppingList,
   removeShoppingList,
 } from '../../store/actions/shoppingListActions';
+import LinearGradient from 'react-native-linear-gradient';
 
 const MainScreen = ({navigation}) => {
   const {navigate} = navigation;
@@ -73,6 +74,17 @@ const MainScreen = ({navigation}) => {
     />
   );
 
+  const bottomGradientComponent = (
+    <LinearGradient
+      style={styles.bottomGradient}
+      colors={[
+        'rgba(255, 255, 255, 0.0)',
+        'rgba(255, 255, 255, 0.5)',
+        'rgba(255, 255, 255, 1.0)',
+      ]}
+    />
+  );
+
   const loadingComponent = (
     <View style={styles.mainContainer}>
       <Text>Loading...</Text>
@@ -116,6 +128,7 @@ const MainScreen = ({navigation}) => {
           }}
         />
       </View>
+      {bottomGradientComponent}
     </View>
   );
 };
@@ -136,6 +149,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     marginBottom: 10,
+    zIndex: 10,
   },
   emptyMainScreenContent: {
     flex: 1,
@@ -153,6 +167,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 8,
     marginRight: 8,
+  },
+  bottomGradient: {
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 90,
+    position: 'absolute',
   },
 });
 
