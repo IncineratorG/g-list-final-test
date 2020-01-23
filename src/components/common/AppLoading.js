@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 
 export const AppLoading = ({startAsync, onFinish, onError}) => {
   if (startAsync) {
@@ -16,15 +16,12 @@ export const AppLoading = ({startAsync, onFinish, onError}) => {
       });
   }
 
-  return (
-    <View style={styles.mainContainer}>
-      <Text>Loading...</Text>
-    </View>
-  );
+  return <View style={styles.mainContainer} />;
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

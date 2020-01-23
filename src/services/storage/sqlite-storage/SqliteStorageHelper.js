@@ -1,13 +1,13 @@
-import {SqliteStorageImpl_V2} from './SqliteStorageImpl_V2';
+import {SqliteStorageImpl} from './SqliteStorageImpl';
 
 export class SqliteStorageHelper {
   static insertInitialUnits() {
-    const units = ['кг', 'г', 'л', 'мл', 'шт', 'уп'];
+    const units = ['шт', 'кг', 'г', 'л', 'мл', 'уп'];
 
     return new Promise(async (resolve, reject) => {
       let insertedIds = [];
       for (let i = 0; i < units.length; ++i) {
-        const insertedId = await SqliteStorageImpl_V2.addUnit(units[i]);
+        const insertedId = await SqliteStorageImpl.addUnit(units[i]);
         insertedIds.push(insertedId);
       }
 
@@ -15,8 +15,9 @@ export class SqliteStorageHelper {
     });
   }
 
-  static insertInitialClases() {
+  static insertInitialClasses() {
     const classes = [
+      'Другое',
       'Продукты',
       'Игрушки',
       'Товары для дома',
@@ -34,13 +35,12 @@ export class SqliteStorageHelper {
       'Канцтовары',
       'Книги',
       'Досуг и хобби',
-      'Другое',
     ];
 
     return new Promise(async (resolve, reject) => {
       let insertedIds = [];
       for (let i = 0; i < classes.length; ++i) {
-        const Id = await SqliteStorageImpl_V2.addClass(classes[i]);
+        const Id = await SqliteStorageImpl.addClass(classes[i]);
         insertedIds.push(Id);
       }
 

@@ -3,145 +3,139 @@
 загруженных данных (либо компонент пустого экрана, либо список списков покупок).
 * */
 
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, Text} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {AddButton} from '../../components/common/AddButton';
 import {EmptyMainScreen} from '../../components/main-screen/EmptyMainScreen';
-import {ListOfShoppingLists} from '../../components/list-of-shopping-list/ListOfShoppingLists';
-import {Storage} from '../../services/storage/Storage';
-import {SqliteStorageImpl_V2} from '../../services/storage/sqlite-storage/SqliteStorageImpl_V2';
-import {SqliteStorageHelper} from '../../services/storage/sqlite-storage/SqliteStorageHelper';
+import {ListOfShoppingLists} from '../../components/main-screen/ListOfShoppingLists';
+import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
+import {
+  loadAllShoppingLists,
+  loadShoppingList,
+  removeShoppingList,
+} from '../../store/actions/shoppingListActions';
+import LinearGradient from 'react-native-linear-gradient';
 
 const MainScreen = ({navigation}) => {
   const {navigate} = navigation;
-  const testList = [
-    {
-      id: '1',
-      name: 'Список 1: вечерняя поездка в ашан 31го декабря, когда все',
-      completionStatus: 'not-finished',
-    },
-    // {
-    //   id: '2',
-    //   name:
-    //     'Список 2: пятерочка на тихвинской улице за углом у которой аптека ивановских в которой находится тряпка',
-    //   completionStatus: 'finished',
-    // },
-    // {id: '3', name: 'Список 3', completionStatus: 'not-finished'},
-    // {id: '4', name: 'Список 4', completionStatus: 'not-finished'},
-  ];
 
-  const emptyMainScreenContent = (
+  const [
+    removeConfirmationDialogVisible,
+    setRemoveConfirmationDialogVisible,
+  ] = useState(false);
+  const [removeItemName, setRemoveItemName] = useState('');
+  const [removeItemId, setRemoveItemId] = useState(-1);
+
+  const dispatch = useDispatch();
+
+  const shoppingListsLoading = useSelector(
+    state => state.shoppingList.allShoppingLists.loading,
+  );
+  const shoppingLists = useSelector(
+    state => state.shoppingList.allShoppingLists.data,
+  );
+  shoppingLists.sort((s1, s2) => s2.updateTimestamp > s1.updateTimestamp);
+
+  const listItemPressHandler = listItemId => {
+    dispatch(loadShoppingList(listItemId));
+    navigate('ShoppingList');
+  };
+
+  const listItemRemoveHandler = listItem => {
+    setRemoveItemName(listItem.listName);
+    setRemoveItemId(listItem.id);
+    setRemoveConfirmationDialogVisible(true);
+  };
+
+  useEffect(() => {
+    dispatch(loadAllShoppingLists());
+  }, [dispatch]);
+
+  const removeConfirmationDialog = (
+    <ConfirmDialog
+      title="Удаление списка"
+      message={'Удалить список ' + removeItemName + '?'}
+      visible={removeConfirmationDialogVisible}
+      onTouchOutside={() => setRemoveConfirmationDialogVisible(false)}
+      positiveButton={{
+        title: 'Да',
+        onPress: () => {
+          dispatch(removeShoppingList(removeItemId));
+          setRemoveConfirmationDialogVisible(false);
+        },
+      }}
+      negativeButton={{
+        title: 'Нет',
+        onPress: () => {
+          setRemoveConfirmationDialogVisible(false);
+        },
+      }}
+    />
+  );
+
+  const bottomGradientComponent = (
+    <LinearGradient
+      style={styles.bottomGradient}
+      colors={[
+        'rgba(255, 255, 255, 0.0)',
+        'rgba(255, 255, 255, 0.5)',
+        'rgba(255, 255, 255, 1.0)',
+      ]}
+    />
+  );
+
+  const loadingComponent = (
+    <View style={styles.mainContainer}>
+      <Text>Loading...</Text>
+    </View>
+  );
+
+  const emptyMainScreenComponent = (
     <View style={styles.emptyMainScreenContent}>
       <EmptyMainScreen />
     </View>
   );
 
-  const listOfShoppingLists = (
+  const listOfShoppingListsComponent = (
     <View style={styles.listOfShoppingListContainer}>
-      <ListOfShoppingLists list={testList} />
+      <ListOfShoppingLists
+        list={shoppingLists}
+        onItemPress={listItemPressHandler}
+        onRemovePress={listItemRemoveHandler}
+      />
     </View>
   );
 
-  let mainScreenContent =
-    testList.length > 0 ? listOfShoppingLists : emptyMainScreenContent;
+  const mainScreenContent = shoppingListsLoading
+    ? loadingComponent
+    : shoppingLists.length > 0
+    ? listOfShoppingListsComponent
+    : emptyMainScreenComponent;
 
   return (
     <View style={styles.mainContainer}>
       {mainScreenContent}
-      <View style={styles.addShoppingListButtonContainer}>
+      {removeConfirmationDialog}
+      <View
+        style={styles.addShoppingListButtonContainer}
+        enabled={false}
+        behavior={'position'}>
         <AddButton
           style={styles.addShoppingListButton}
           onClick={() => {
-            SqliteStorageImpl_V2.getShoppingLists().then(value => {
-              for (let i = 0; i < value.length; ++i) {
-                console.log(value.item(i).list_name);
-              }
-            });
-
-            // SqliteStorageHelper.insertInitialUnits().then(value => {
-            //   SqliteStorageHelper.insertInitialClases();
-            // });
-
-            // SqliteStorageImpl_V2.removeProduct(1).then(value => {
-            //     console.log(value);
-            // });
-
-            // SqliteStorageImpl_V2.addProduct({name: 'Мясо', classId: 1}).then(
-            //   value => {
-            //     console.log(value);
-            //   },
-            // );
-
-            // SqliteStorageImpl_V2.getClasses().then(value => {
-            //   for (let i = 0; i < value.length; ++i) {
-            //     console.log(value.item(i));
-            //   }
-            // });
-
-            // SqliteStorageImpl_V2.getUnits().then(value => {
-            //   for (let i = 0; i < value.length; ++i) {
-            //     console.log(value.item(i));
-            //   }
-            // });
-
-            // SqliteStorageHelper.insertInitialUnits().then(value => {
-            //   console.log('VALUES_LENGTH: ' + value.length);
-            //   for (let i = 0; i < value.length; ++i) {
-            //     console.log(value[i]);
-            //   }
-            // });
-
-            // SqliteStorageImpl_V2.removeUnit('кг').then(value => {
-            //   console.log('ROW_AFFECTED: ' + value);
-            // });
-
-            // SqliteStorageImpl_V2.addUnit('кг').then(value => {
-            //   console.log('KG_ID: ' + value);
-            // });
-
-            // SqliteStorageImpl_V2.init();
-
-            // SqliteStorageImpl.init();
-            //
-            // let promise = SqliteStorageImpl.getPosts();
-            // promise.then(rows => {
-            //   for (let i = 0; i < rows.length; ++i) {
-            //     console.log(rows.item(i));
-            //   }
-            // });
-
-            // SqliteStorageImpl.getPosts().then(value => {
-            //   for (let i = 0; i < value.length; ++i) {
-            //     console.log(value.item(i));
-            //   }
-            // });
-
-            // SqliteStorageImpl.createPost({
-            //   text: 'MyText',
-            //   booked: 1,
-            //   img: 'IMAGE_PATH',
-            // }).then(value => {
-            //   console.log('INSERT_ID: ' + value);
-            // });
-
-            // Storage.createShoppingList().then(value => {
-            //   console.log('UUID: ' + value);
-            //
-            //   Storage.getShoppingList(value).then(object => {
-            //     console.log('============');
-            //     console.log('NAME: ' + object.name);
-            //     console.log('AGE: ' + object.age);
-            //     console.log('============');
-            //   });
-            // });
-
-            navigate('ShoppingList');
+            navigate('CreateShoppingList');
           }}
         />
       </View>
+      {bottomGradientComponent}
     </View>
   );
 };
+
+MainScreen.navigationOptions = ({navigation}) => ({
+  headerTitle: 'Списки покупок',
+});
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -155,6 +149,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     marginBottom: 10,
+    zIndex: 10,
   },
   emptyMainScreenContent: {
     flex: 1,
@@ -172,6 +167,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 8,
     marginRight: 8,
+  },
+  bottomGradient: {
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 90,
+    position: 'absolute',
   },
 });
 

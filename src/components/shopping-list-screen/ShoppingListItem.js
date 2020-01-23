@@ -5,21 +5,23 @@ import React from 'react';
 import {View} from 'react-native';
 import {ShoppingListItemNotFinished} from './ShoppingListItemNotFinished';
 import {ShoppingListItemFinished} from './ShoppingListItemFinished';
+import {
+  PRODUCT_COMPLETED,
+  PRODUCT_NOT_COMPLETED,
+} from '../../services/storage/data/productStatus';
 
 export const ShoppingListItem = ({listItem}) => {
   const finishedItem = <ShoppingListItemFinished itemToRender={listItem} />;
   const notFinishedItem = (
     <ShoppingListItemNotFinished itemToRender={listItem} />
   );
-  // const expandedItem = <ShoppingListItemExpanded />;
 
   let item = <View />;
-  if (listItem.completionStatus === 'finished') {
+  if (listItem.completionStatus === PRODUCT_COMPLETED) {
     item = finishedItem;
-  } else if (listItem.completionStatus === 'not-finished') {
+  } else if (listItem.completionStatus === PRODUCT_NOT_COMPLETED) {
     item = notFinishedItem;
   }
-  // console.log(this.props.listItem.)
 
   return item;
 };

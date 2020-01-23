@@ -2,15 +2,22 @@
  * */
 
 import React from 'react';
-import {View, StyleSheet, Text, Image} from 'react-native';
+import {View, StyleSheet, Text, Image, TouchableHighlight} from 'react-native';
 import {icons} from '../../assets/icons';
+import {SHOPPING_LIST_COMPLETED} from '../../services/storage/data/shoppingListStatus';
 
-export const ListOfShoppingListsItem = ({listItem}) => {
-  const statusFinishedComponent = (
+export const ListOfShoppingListsItem = ({listItem, onItemPress}) => {
+  const onItemPressHandler = () => {
+    if (onItemPress) {
+      onItemPress(listItem.id);
+    }
+  };
+
+  const statusCompletedComponent = (
     <View style={styles.mainContainer}>
       <View style={styles.nameContainer}>
         <Text style={styles.nameFinished} numberOfLines={2} elipsizeMode="tail">
-          {listItem.name}
+          {listItem.listName}
         </Text>
       </View>
       <View style={styles.statusContainer}>
@@ -21,14 +28,14 @@ export const ListOfShoppingListsItem = ({listItem}) => {
     </View>
   );
 
-  const statusNotFinishedComponent = (
+  const statusNotCompletedComponent = (
     <View style={styles.mainContainer}>
       <View style={styles.nameContainer}>
         <Text
           style={styles.nameNotFinished}
           numberOfLines={2}
           elipsizeMode="tail">
-          {listItem.name}
+          {listItem.listName}
         </Text>
       </View>
       <View style={styles.statusContainer}>
@@ -38,26 +45,52 @@ export const ListOfShoppingListsItem = ({listItem}) => {
   );
 
   let statusComponent =
-    listItem.completionStatus === 'finished'
-      ? statusFinishedComponent
-      : statusNotFinishedComponent;
+    listItem.completionStatus === SHOPPING_LIST_COMPLETED
+      ? statusCompletedComponent
+      : statusNotCompletedComponent;
 
-  return statusComponent;
+  return (
+    <TouchableHighlight
+      style={styles.mainContainerTouchable}
+      onPress={onItemPressHandler}>
+      {statusComponent}
+    </TouchableHighlight>
+  );
 };
 
 const styles = StyleSheet.create({
+  // mainContainer: {
+  //   backgroundColor: 'white',
+  //   flex: 1,
+  //   justifyContent: 'flex-end',
+  //   alignItems: 'center',
+  //   marginTop: 7,
+  //   marginLeft: 10,
+  //   marginRight: 10,
+  //   marginBottom: 10,
+  //   borderRadius: 25,
+  //   flexDirection: 'row',
+  //   elevation: 3,
+  // },
   mainContainer: {
     backgroundColor: 'white',
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
-    marginTop: 7,
-    marginLeft: 10,
-    marginRight: 10,
-    marginBottom: 10,
-    borderRadius: 25,
+    borderRadius: 4,
     flexDirection: 'row',
     elevation: 3,
+  },
+  mainContainerTouchable: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 7,
+    // marginLeft: 7,
+    // marginRight: 7,
+    marginBottom: 7,
+    borderRadius: 4,
+    flexDirection: 'row',
   },
   nameContainer: {
     flex: 1,
