@@ -3,8 +3,9 @@
 загруженных данных (либо компонент пустого экрана, либо список списков покупок).
 * */
 
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import React, {useState, useCallback} from 'react';
+import {useFocusEffect} from 'react-navigation-hooks';
+import {View, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {AddButton} from '../../components/common/AddButton';
 import {EmptyMainScreen} from '../../components/main-screen/EmptyMainScreen';
@@ -26,6 +27,7 @@ const MainScreen = ({navigation}) => {
   ] = useState(false);
   const [removeItemName, setRemoveItemName] = useState('');
   const [removeItemId, setRemoveItemId] = useState(-1);
+  const [listItemRow, setListItemRow] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -42,15 +44,18 @@ const MainScreen = ({navigation}) => {
     navigate('ShoppingList');
   };
 
-  const listItemRemoveHandler = listItem => {
+  const listItemRemoveHandler = (listItem, row) => {
     setRemoveItemName(listItem.listName);
     setRemoveItemId(listItem.id);
+    setListItemRow(row);
     setRemoveConfirmationDialogVisible(true);
   };
 
-  useEffect(() => {
-    dispatch(loadAllShoppingLists());
-  }, [dispatch]);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(loadAllShoppingLists());
+    }, [dispatch]),
+  );
 
   const removeConfirmationDialog = (
     <ConfirmDialog
@@ -64,6 +69,7 @@ const MainScreen = ({navigation}) => {
         onPress: () => {
           dispatch(removeShoppingList(removeItemId));
           setRemoveConfirmationDialogVisible(false);
+          setListItemRow(null);
         },
       }}
       negativeButton={{
@@ -71,6 +77,8 @@ const MainScreen = ({navigation}) => {
         titleStyle: {color: 'grey'},
         onPress: () => {
           setRemoveConfirmationDialogVisible(false);
+          listItemRow.closeRow();
+          setListItemRow(null);
         },
       }}
     />
@@ -88,9 +96,7 @@ const MainScreen = ({navigation}) => {
   );
 
   const loadingComponent = (
-    <View style={styles.mainContainer}>
-      <Text>Loading...</Text>
-    </View>
+    <View style={[styles.mainContainer, {backgroundColor: 'transparent'}]} />
   );
 
   const emptyMainScreenComponent = (

@@ -3,7 +3,7 @@
 
 import React from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
-import {ShoppingListItem} from './ShoppingListItem';
+import {ShoppingListItem} from './shopping-list-item/ShoppingListItem';
 
 export const ShoppingList = ({list}) => {
   return (
@@ -11,6 +11,7 @@ export const ShoppingList = ({list}) => {
       <FlatList
         style={styles.list}
         data={list}
+        showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
           return <ShoppingListItem listItem={item} />;
         }}

@@ -2,29 +2,39 @@
  * */
 
 import React from 'react';
-import {View} from 'react-native';
+import {TouchableHighlight, StyleSheet} from 'react-native';
 import {ShoppingListItemNotFinished} from './ShoppingListItemNotFinished';
 import {ShoppingListItemFinished} from './ShoppingListItemFinished';
-import {
-  PRODUCT_COMPLETED,
-  PRODUCT_NOT_COMPLETED,
-} from '../../services/storage/data/productStatus';
+import {PRODUCT_COMPLETED} from '../../../services/storage/data/productStatus';
 
-export const ShoppingListItem = ({listItem}) => {
-  const finishedItem = <ShoppingListItemFinished itemToRender={listItem} />;
-  const notFinishedItem = (
+export const ShoppingListItem = ({listItem, onItemPress}) => {
+  const finishedItemComponent = (
+    <ShoppingListItemFinished itemToRender={listItem} />
+  );
+  const notFinishedItemComponent = (
     <ShoppingListItemNotFinished itemToRender={listItem} />
   );
 
-  let item = <View />;
-  if (listItem.completionStatus === PRODUCT_COMPLETED) {
-    item = finishedItem;
-  } else if (listItem.completionStatus === PRODUCT_NOT_COMPLETED) {
-    item = notFinishedItem;
-  }
+  const itemComponent =
+    listItem.completionStatus === PRODUCT_COMPLETED
+      ? finishedItemComponent
+      : notFinishedItemComponent;
 
-  return item;
+  return (
+    <TouchableHighlight
+      style={styles.touchable}
+      onPress={() => console.log('PRESS')}>
+      {itemComponent}
+    </TouchableHighlight>
+  );
 };
+
+const styles = StyleSheet.create({
+  touchable: {
+    flex: 1,
+    marginTop: 7,
+  },
+});
 
 // render() {
 //   return (

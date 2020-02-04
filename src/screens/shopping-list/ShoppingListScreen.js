@@ -15,6 +15,7 @@ import {
   loadClasses,
   loadUnits,
 } from '../../store/actions/shoppingListActions';
+import LinearGradient from 'react-native-linear-gradient';
 
 const ShoppingListScreen = ({navigation}) => {
   const {navigate} = navigation;
@@ -94,10 +95,19 @@ const ShoppingListScreen = ({navigation}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shoppingListName]);
 
+  const bottomGradientComponent = (
+    <LinearGradient
+      style={styles.bottomGradient}
+      colors={[
+        'rgba(255, 255, 255, 0.0)',
+        'rgba(255, 255, 255, 0.5)',
+        'rgba(255, 255, 255, 1.0)',
+      ]}
+    />
+  );
+
   const loadingComponent = (
-    <View style={[styles.mainContainer, {backgroundColor: 'transparent'}]}>
-      <Text>Loading...</Text>
-    </View>
+    <View style={[styles.mainContainer, {backgroundColor: 'transparent'}]} />
   );
 
   const emptyShoppingListScreenComponent = (
@@ -132,11 +142,6 @@ const ShoppingListScreen = ({navigation}) => {
     ? shoppingListComponent
     : emptyShoppingListScreenComponent;
 
-  // const shoppingListScreenContent =
-  //     products.length > 0
-  //         ? shoppingListComponent
-  //         : emptyShoppingListScreenComponent;
-
   return (
     <View style={styles.mainContainer}>
       {shoppingListScreenContent}
@@ -148,6 +153,7 @@ const ShoppingListScreen = ({navigation}) => {
       </View>
       {inputAreaComponent}
       {shadedBackgroundComponent}
+      {bottomGradientComponent}
     </View>
   );
 };
@@ -170,6 +176,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     marginBottom: 10,
+    zIndex: 10,
   },
   addShoppingListItemButton: {},
   emptyShoppingListScreenContent: {
@@ -206,6 +213,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  bottomGradient: {
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 90,
+    position: 'absolute',
   },
 });
 

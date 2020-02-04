@@ -1,5 +1,6 @@
 import {
   SHOPPING_LIST_ITEM_TABLE,
+  SHOPPING_LIST_ITEM_TABLE_ID,
   SHOPPING_LIST_ITEM_TABLE_CLASS_ID,
   SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS,
   SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP,
@@ -10,7 +11,10 @@ import {
   SHOPPING_LIST_ITEM_TABLE_UNIT_ID,
   SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP,
 } from '../tables-description/shoppingListItemTableDescription';
-import {PRODUCT_NOT_COMPLETED} from '../../data/productStatus';
+import {
+  PRODUCT_COMPLETED,
+  PRODUCT_NOT_COMPLETED,
+} from '../../data/productStatus';
 
 export class ShoppingListItemsTableOperations {
   static addItem(db, shoppingListId, name, quantity, unitId, note, classId) {
@@ -94,6 +98,72 @@ export class ShoppingListItemsTableOperations {
         tx.executeSql(
           getShoppingListItemsStatement,
           [shoppingListId],
+          (_, result) => resolve(result.rows),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
+  static getCompletedItems(db, shoppingListId) {
+    const getCompletedItemsStatement =
+      'SELECT * FROM ' +
+      SHOPPING_LIST_ITEM_TABLE +
+      ' WHERE ' +
+      SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+      ' = ? AND ' +
+      SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+      ' LIKE ?';
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          getCompletedItemsStatement,
+          [shoppingListId, PRODUCT_COMPLETED],
+          (_, result) => resolve(result.rows),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
+  static setItemStatus(db, itemId, status) {
+    const setItemStatusStatement =
+      'UPDATE ' +
+      SHOPPING_LIST_ITEM_TABLE +
+      ' SET ' +
+      SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+      ' = ? WHERE ' +
+      SHOPPING_LIST_ITEM_TABLE_ID +
+      ' = ?';
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          setItemStatusStatement,
+          [status, itemId],
+          (_, result) => resolve(result.rowsAffected),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
+  static getParentListId(db, itemId) {
+    const getParentListIdStatement =
+      'SELECT ' +
+      SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+      ' FROM ' +
+      SHOPPING_LIST_ITEM_TABLE +
+      ' WHERE ' +
+      SHOPPING_LIST_ITEM_TABLE_ID +
+      ' = ?';
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          getParentListIdStatement,
+          [itemId],
           (_, result) => resolve(result.rows),
           (_, error) => reject(error),
         );

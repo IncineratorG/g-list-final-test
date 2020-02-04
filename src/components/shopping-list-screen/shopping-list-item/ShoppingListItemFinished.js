@@ -1,9 +1,10 @@
-// Компонент для отображения активного элемента списка покупок.
+// Компонент для отображения не активного элемента списка покупок.
 
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Image} from 'react-native';
+import {icons} from '../../../assets/icons';
 
-export const ShoppingListItemNotFinished = ({itemToRender}) => {
+export const ShoppingListItemFinished = ({itemToRender}) => {
   const noteExistComponent = (
     <View style={styles.noteContainer}>
       <Text style={styles.note}>{itemToRender.note}</Text>
@@ -43,7 +44,9 @@ export const ShoppingListItemNotFinished = ({itemToRender}) => {
         {noteComponent}
       </View>
       <View style={styles.statusContainer}>
-        <View style={styles.statusNotFinished} />
+        <View style={styles.statusFinished}>
+          <Image style={styles.checmarkIcon} source={icons.checkmark} />
+        </View>
       </View>
     </View>
   );
@@ -65,13 +68,18 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     // backgroundColor: 'green',
   },
-  statusNotFinished: {
+  statusFinished: {
     width: 30,
     height: 30,
-    backgroundColor: 'white',
+    backgroundColor: '#41D8B1',
     borderRadius: 15,
     elevation: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
     // marginRight: 10,
+  },
+  checmarkIcon: {
+    transform: [{scale: 0.7}],
   },
   // контэйнер, в кот-ом распологается название продукта, кол-во и примечание.
   infoContainer: {
@@ -97,6 +105,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginRight: 8,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается кол-во и ед-ца измерения продукта.
   quantityContainer: {
@@ -118,6 +128,8 @@ const styles = StyleSheet.create({
     marginLeft: 2,
     marginRight: 2,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается ед-ца измерения продукта.
   quantityUnitContainer: {
@@ -132,6 +144,8 @@ const styles = StyleSheet.create({
     // marginLeft: 8,
     marginRight: 2,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается примечание к продукту.
   noteContainer: {
@@ -142,6 +156,7 @@ const styles = StyleSheet.create({
   },
   note: {
     margin: 4,
-    color: 'grey',
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
 });
