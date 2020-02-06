@@ -1,7 +1,7 @@
 // Компонент для отображения активного элемента списка покупок.
 
 import React from 'react';
-import {View, StyleSheet, Text, TouchableHighlight} from 'react-native';
+import {View, StyleSheet, Text, TouchableWithoutFeedback} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {setProductStatus} from '../../../store/actions/shoppingListActions';
 import {PRODUCT_COMPLETED} from '../../../services/storage/data/productStatus';
@@ -58,13 +58,13 @@ export const ShoppingListItemNotFinished = ({itemToRender}) => {
         </View>
         {noteComponent}
       </View>
-      <TouchableHighlight
+      <TouchableWithoutFeedback
         style={styles.statusTouchable}
         onPress={statusPressHandler}>
         <View style={styles.statusContainer}>
           <View style={styles.statusNotFinished} />
         </View>
-      </TouchableHighlight>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // marginTop: 7,
     backgroundColor: 'white',
+    borderRadius: 4,
     // elevation: 3,
   },
   statusContainer: {
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   majorInfoContainer: {
     flexDirection: 'row',
     alignSelf: 'stretch',
-    // height: 50,
+    height: 50,
     // backgroundColor: 'cyan',
   },
   // конт-р, в котором распологается название продукта.

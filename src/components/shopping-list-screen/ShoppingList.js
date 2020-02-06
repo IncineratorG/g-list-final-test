@@ -12,7 +12,10 @@ export const ShoppingList = ({list}) => {
         style={styles.list}
         data={list}
         showsVerticalScrollIndicator={false}
-        renderItem={({item}) => {
+        renderItem={({item, index}) => {
+          if (index === list.length - 1) {
+            console.log('LAST_ITEM: ' + item.name);
+          }
           return <ShoppingListItem listItem={item} />;
         }}
         keyExtractor={item => item.id.toString()}

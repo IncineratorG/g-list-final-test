@@ -1,10 +1,32 @@
 // Компонент для отображения не активного элемента списка покупок.
 
 import React from 'react';
-import {View, StyleSheet, Text, Image} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import {useDispatch} from 'react-redux';
 import {icons} from '../../../assets/icons';
+import {setProductStatus} from '../../../store/actions/shoppingListActions';
+import {PRODUCT_NOT_COMPLETED} from '../../../services/storage/data/productStatus';
 
 export const ShoppingListItemFinished = ({itemToRender}) => {
+  const dispatch = useDispatch();
+
+  const statusPressHandler = () => {
+    console.log(
+      'STATUS_PRESS->ID: ' +
+        itemToRender.id +
+        '; STATUS: ' +
+        itemToRender.completionStatus,
+    );
+
+    dispatch(setProductStatus(itemToRender.id, PRODUCT_NOT_COMPLETED));
+  };
+
   const noteExistComponent = (
     <View style={styles.noteContainer}>
       <Text style={styles.note}>{itemToRender.note}</Text>
@@ -23,7 +45,7 @@ export const ShoppingListItemFinished = ({itemToRender}) => {
           <View style={styles.productNameContainer}>
             <Text
               style={styles.productName}
-              numberOfLines={1}
+              numberOfLines={2}
               elipsizeMode="tail">
               {itemToRender.name}
             </Text>
@@ -43,11 +65,15 @@ export const ShoppingListItemFinished = ({itemToRender}) => {
         </View>
         {noteComponent}
       </View>
-      <View style={styles.statusContainer}>
-        <View style={styles.statusFinished}>
-          <Image style={styles.checmarkIcon} source={icons.checkmark} />
+      <TouchableWithoutFeedback
+        style={styles.statusTouchable}
+        onPress={statusPressHandler}>
+        <View style={styles.statusContainer}>
+          <View style={styles.statusFinished}>
+            <Image style={styles.checmarkIcon} source={icons.checkmark} />
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
@@ -58,8 +84,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 7,
+    // marginTop: 7,
     backgroundColor: 'white',
+    borderRadius: 4,
   },
   statusContainer: {
     width: 60,
@@ -67,6 +94,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'stretch',
     // backgroundColor: 'green',
+  },
+  statusTouchable: {
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
   },
   statusFinished: {
     width: 30,
