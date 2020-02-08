@@ -17,12 +17,12 @@ const initialState = {
   units: [],
   classes: [],
   allShoppingLists: {
-    loading: false,
+    loading: true,
     error: '',
     data: [],
   },
   currentShoppingList: {
-    loading: false,
+    loading: true,
     error: '',
     id: undefined,
     name: '',
