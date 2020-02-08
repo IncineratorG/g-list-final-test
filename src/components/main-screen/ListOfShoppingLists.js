@@ -4,7 +4,7 @@
 import React from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {SwipeListView} from 'react-native-swipe-list-view';
-import {ListOfShoppingListsItem} from './ListOfShoppingListsItem';
+import ListOfShoppingListsItemsFactory from './list-of-shopping-lists-item/ListOfShoppingListsItemsFactory';
 import {icons} from '../../assets/icons';
 
 export const ListOfShoppingLists = ({list, onItemPress, onRemovePress}) => {
@@ -21,12 +21,7 @@ export const ListOfShoppingLists = ({list, onItemPress, onRemovePress}) => {
         data={list}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
-          return (
-            <ListOfShoppingListsItem
-              listItem={item}
-              onItemPress={onItemPress}
-            />
-          );
+          return ListOfShoppingListsItemsFactory.get(item, onItemPress);
         }}
         keyExtractor={item => item.id.toString()}
         disableRightSwipe={true}

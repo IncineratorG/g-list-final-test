@@ -6,6 +6,8 @@ import {loadAllShoppingLists} from '../../../store/actions/shoppingListActions';
 export const useMainScreenModel = () => {
   const navigation = useNavigation();
 
+  const dispatch = useDispatch();
+
   const [
     removeConfirmationDialogVisible,
     setRemoveConfirmationDialogVisible,
@@ -13,8 +15,6 @@ export const useMainScreenModel = () => {
   const [removeItemName, setRemoveItemName] = useState('');
   const [removeItemId, setRemoveItemId] = useState(-1);
   const [listItemRow, setListItemRow] = useState(null);
-
-  const dispatch = useDispatch();
 
   const shoppingListsLoading = useSelector(
     state => state.shoppingList.allShoppingLists.loading,

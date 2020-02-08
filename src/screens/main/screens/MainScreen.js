@@ -8,6 +8,13 @@ import {AddButton} from '../../../components/common/AddButton';
 
 const MainScreen = ({styles, model, controller}) => {
   const {
+    removeConfirmationDialogVisible,
+    removeItemName,
+    shoppingLists,
+    shoppingListsLoading,
+  } = model;
+
+  const {
     listItemPressHandler,
     listItemRemoveHandler,
     addButtonHandler,
@@ -15,13 +22,6 @@ const MainScreen = ({styles, model, controller}) => {
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
   } = controller;
-
-  const {
-    removeConfirmationDialogVisible,
-    removeItemName,
-    shoppingLists,
-    shoppingListsLoading,
-  } = model;
 
   const removeConfirmationDialog = (
     <ConfirmDialog

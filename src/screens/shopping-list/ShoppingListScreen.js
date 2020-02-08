@@ -18,8 +18,6 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 
 const ShoppingListScreen = ({navigation}) => {
-  const {navigate} = navigation;
-
   const [inputAreaVisible, setInputAreaVisible] = useState(false);
 
   const dispatch = useDispatch();
