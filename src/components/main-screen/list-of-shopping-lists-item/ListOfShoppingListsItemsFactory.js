@@ -1,13 +1,13 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import {listOfShoppingListsCompletedItemStyle} from './completed/styles/ListOfShoppingListsCompletedItemStyle';
-import {listOfShoppingListsNotCompletedItemStyle} from './not-completed/styles/ListOfShoppingListsNotCompletedItemStyle';
-import {ListOfShoppingListsNotCompletedItem} from './not-completed/ListOfShoppingListsNotCompletedItem';
+import {listOfShoppingListsItemStylesCompleted} from './completed/styles/ListOfShoppingListsItemStylesCompleted';
+import {listOfShoppingListsItemStylesNotCompleted} from './not-completed/styles/ListOfShoppingListsItemStylesNotCompleted';
+import {ListOfShoppingListsItemNotCompleted} from './not-completed/ListOfShoppingListsItemNotCompleted';
 
 export default class ListOfShoppingListsItemsFactory {
   static get(listItem, onItemPress) {
-    const completedItemStyle = listOfShoppingListsCompletedItemStyle;
-    const notCompletedItemStyle = listOfShoppingListsNotCompletedItemStyle;
+    const completedItemStyles = listOfShoppingListsItemStylesCompleted;
+    const notCompletedItemStyles = listOfShoppingListsItemStylesNotCompleted;
 
     const completedItem = (
       <View>
@@ -16,8 +16,8 @@ export default class ListOfShoppingListsItemsFactory {
     );
 
     const notCompletedItem = (
-      <ListOfShoppingListsNotCompletedItem
-        styles={notCompletedItemStyle}
+      <ListOfShoppingListsItemNotCompleted
+        styles={notCompletedItemStyles}
         listItem={listItem}
         onItemPress={onItemPress}
       />

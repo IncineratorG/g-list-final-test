@@ -1,4 +1,7 @@
-import {addProduct} from '../../../store/actions/shoppingListActions';
+import {
+  addProduct,
+  setProductStatus,
+} from '../../../store/actions/shoppingListActions';
 
 export const useShoppingListScreenController = model => {
   const addProductButtonHandler = () => {
@@ -22,9 +25,14 @@ export const useShoppingListScreenController = model => {
     );
   };
 
+  const statusPressHandler = (productId, status) => {
+    model.dispatch(setProductStatus(productId, status));
+  };
+
   return {
     addProductButtonHandler,
     inputAreaHideHandler,
     inputAreaSubmitValuesHandler,
+    statusPressHandler,
   };
 };

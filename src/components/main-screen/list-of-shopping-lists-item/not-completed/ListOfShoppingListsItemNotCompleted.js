@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, TouchableHighlight} from 'react-native';
 
-export const ListOfShoppingListsNotCompletedItem = ({
+export const ListOfShoppingListsItemNotCompleted = ({
   styles,
   listItem,
   onItemPress,

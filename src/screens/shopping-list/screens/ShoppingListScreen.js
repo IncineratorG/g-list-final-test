@@ -13,6 +13,7 @@ const ShoppingListScreen = ({styles, model, controller}) => {
     addProductButtonHandler,
     inputAreaHideHandler,
     inputAreaSubmitValuesHandler,
+    statusPressHandler,
   } = controller;
 
   const bottomGradientComponent = (
@@ -38,7 +39,7 @@ const ShoppingListScreen = ({styles, model, controller}) => {
 
   const shoppingListComponent = (
     <View style={styles.shoppingListContainer}>
-      <ShoppingList list={products} />
+      <ShoppingList list={products} onStatusPress={statusPressHandler} />
     </View>
   );
 

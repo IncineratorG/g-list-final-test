@@ -3,9 +3,9 @@
 
 import React from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
-import {ShoppingListItem} from './shopping-list-item/ShoppingListItem';
+import ShoppingListItemsFactory from './shopping-list-item/ShoppingListItemsFactory';
 
-export const ShoppingList = ({list}) => {
+export const ShoppingList = ({list, onStatusPress}) => {
   return (
     <View style={styles.mainContainer}>
       <FlatList
@@ -13,10 +13,7 @@ export const ShoppingList = ({list}) => {
         data={list}
         showsVerticalScrollIndicator={false}
         renderItem={({item, index}) => {
-          if (index === list.length - 1) {
-            console.log('LAST_ITEM: ' + item.name);
-          }
-          return <ShoppingListItem listItem={item} />;
+          return ShoppingListItemsFactory.get(item, index, onStatusPress);
         }}
         keyExtractor={item => item.id.toString()}
       />

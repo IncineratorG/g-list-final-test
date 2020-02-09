@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const listOfShoppingListsNotCompletedItemStyle = StyleSheet.create({
+export const listOfShoppingListsItemStylesNotCompleted = StyleSheet.create({
   infoContainer: {
     flex: 1,
   },
