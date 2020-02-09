@@ -3,7 +3,7 @@
 
 import React from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
-import ProductsFactory from './shopping-list-item/ProductsFactory';
+import ProductsFactory from './product-list-item/ProductsFactory';
 
 export const ProductsList = ({list, onStatusPress}) => {
   return (
