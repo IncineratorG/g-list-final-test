@@ -9,11 +9,7 @@ import {
 import {icons} from '../../../../assets/icons';
 import {PRODUCT_NOT_COMPLETED} from '../../../../services/storage/data/productStatus';
 
-export const ShoppingListItemCompleted = ({
-  styles,
-  itemToRender,
-  onStatusPress,
-}) => {
+export const ProductCompleted = ({styles, itemToRender, onStatusPress}) => {
   const statusPressHandler = () => {
     onStatusPress(itemToRender.id, PRODUCT_NOT_COMPLETED);
   };

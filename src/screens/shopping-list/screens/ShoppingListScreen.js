@@ -2,7 +2,7 @@ import React from 'react';
 import {View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {EmptyShoppingListScreen} from '../../../components/shopping-list-screen/EmptyShoppingListScreen';
-import {ShoppingList} from '../../../components/shopping-list-screen/ShoppingList';
+import {ProductsList} from '../../../components/shopping-list-screen/ProductsList';
 import InputArea from '../../../components/shopping-list-screen/input-area/InputArea';
 import {AddButton} from '../../../components/common/AddButton';
 
@@ -39,7 +39,7 @@ const ShoppingListScreen = ({styles, model, controller}) => {
 
   const shoppingListComponent = (
     <View style={styles.shoppingListContainer}>
-      <ShoppingList list={products} onStatusPress={statusPressHandler} />
+      <ProductsList list={products} onStatusPress={statusPressHandler} />
     </View>
   );
 

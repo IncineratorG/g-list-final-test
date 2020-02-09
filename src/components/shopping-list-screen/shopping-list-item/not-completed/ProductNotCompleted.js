@@ -7,11 +7,7 @@ import {
 } from 'react-native';
 import {PRODUCT_COMPLETED} from '../../../../services/storage/data/productStatus';
 
-export const ShoppingListItemNotCompleted = ({
-  styles,
-  itemToRender,
-  onStatusPress,
-}) => {
+export const ProductNotCompleted = ({styles, itemToRender, onStatusPress}) => {
   const statusPressHandler = () => {
     onStatusPress(itemToRender.id, PRODUCT_COMPLETED);
   };

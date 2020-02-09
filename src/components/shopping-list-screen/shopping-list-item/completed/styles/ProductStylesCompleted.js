@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const shoppingListItemStylesNotCompleted = StyleSheet.create({
+export const productStylesCompleted = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -9,7 +9,6 @@ export const shoppingListItemStylesNotCompleted = StyleSheet.create({
     // marginTop: 7,
     backgroundColor: 'white',
     borderRadius: 4,
-    // elevation: 3,
   },
   touchable: {
     flex: 1,
@@ -28,13 +27,18 @@ export const shoppingListItemStylesNotCompleted = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'stretch',
   },
-  statusNotFinished: {
+  statusFinished: {
     width: 30,
     height: 30,
-    backgroundColor: 'white',
+    backgroundColor: '#41D8B1',
     borderRadius: 15,
     elevation: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
     // marginRight: 10,
+  },
+  checmarkIcon: {
+    transform: [{scale: 0.7}],
   },
   // контэйнер, в кот-ом распологается название продукта, кол-во и примечание.
   infoContainer: {
@@ -57,11 +61,11 @@ export const shoppingListItemStylesNotCompleted = StyleSheet.create({
   },
   // стиль для названия продукта
   productName: {
-    marginTop: 8,
-    marginBottom: 8,
     marginLeft: 8,
     marginRight: 8,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается кол-во и ед-ца измерения продукта.
   quantityContainer: {
@@ -83,6 +87,8 @@ export const shoppingListItemStylesNotCompleted = StyleSheet.create({
     marginLeft: 2,
     marginRight: 2,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается ед-ца измерения продукта.
   quantityUnitContainer: {
@@ -97,6 +103,8 @@ export const shoppingListItemStylesNotCompleted = StyleSheet.create({
     // marginLeft: 8,
     marginRight: 2,
     fontSize: 18,
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается примечание к продукту.
   noteContainer: {
@@ -107,6 +115,7 @@ export const shoppingListItemStylesNotCompleted = StyleSheet.create({
   },
   note: {
     margin: 4,
-    color: 'grey',
+    color: '#D3D3D3',
+    textDecorationLine: 'line-through',
   },
 });
