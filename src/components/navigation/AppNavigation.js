@@ -1,18 +1,17 @@
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-// import MainScreen from '../../screens/main/MainScreen';
-// import ShoppingListScreen from '../../screens/shopping-list/ShoppingListScreen';
 import EditScreenV3 from '../../screens/edit/EditScreenV3';
-// import CreateShoppingListScreen from '../../screens/create-shopping-list/CreateShoppingLisScreen';
 import CreateShoppingList from '../../screens/create-shopping-list/CreateShoppingList';
 import Main from '../../screens/main/Main';
 import ShoppingList from '../../screens/shopping-list/ShoppingList';
+import Registration from '../../screens/registration/Registration';
 
 const MainStack = createStackNavigator(
   {
     Main: Main,
     ShoppingList: ShoppingList,
     Edit: EditScreenV3,
+    Registration: Registration,
   },
   {
     initialRouteName: 'Main',

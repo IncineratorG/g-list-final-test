@@ -9,6 +9,7 @@ const icons = {
   empty: require('./empty.png'),
   arrow_up: require('./arrow_up.png'),
   trash: require('./trash.png'),
+  sync: require('./sync.png'),
 };
 
 export {icons};

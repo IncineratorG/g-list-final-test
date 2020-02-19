@@ -4,6 +4,10 @@ import {
 } from '../../../store/actions/shoppingListActions';
 
 export const useShoppingListScreenController = model => {
+  const navigationButtonHandler = () => {
+    model.navigation.navigate('Registration');
+  };
+
   const addProductButtonHandler = () => {
     model.setters.setInputAreaVisible(true);
   };
@@ -34,5 +38,6 @@ export const useShoppingListScreenController = model => {
     inputAreaHideHandler,
     inputAreaSubmitValuesHandler,
     statusPressHandler,
+    navigationButtonHandler,
   };
 };
