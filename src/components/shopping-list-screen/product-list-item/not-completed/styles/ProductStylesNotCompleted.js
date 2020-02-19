@@ -1,65 +1,19 @@
-// Компонент для отображения не активного элемента списка покупок.
+import {StyleSheet} from 'react-native';
 
-import React from 'react';
-import {View, StyleSheet, Text, Image} from 'react-native';
-import {icons} from '../../assets/icons';
-
-export const ShoppingListItemFinished = ({itemToRender}) => {
-  const noteExistComponent = (
-    <View style={styles.noteContainer}>
-      <Text style={styles.note}>{itemToRender.note}</Text>
-    </View>
-  );
-
-  const noteNotExistComponent = <View />;
-
-  const noteComponent =
-    itemToRender.note.length > 0 ? noteExistComponent : noteNotExistComponent;
-
-  return (
-    <View style={styles.mainContainer}>
-      <View style={styles.infoContainer}>
-        <View style={styles.majorInfoContainer}>
-          <View style={styles.productNameContainer}>
-            <Text
-              style={styles.productName}
-              numberOfLines={1}
-              elipsizeMode="tail">
-              {itemToRender.name}
-            </Text>
-          </View>
-          <View style={styles.quantityContainer}>
-            <View style={styles.quantityCountContainer}>
-              <Text style={styles.quantityCount} numberOfLines={1}>
-                {itemToRender.quantity}
-              </Text>
-            </View>
-            <View style={styles.quantityUnitContainer}>
-              <Text style={styles.quantityUnit} numberOfLines={1}>
-                {itemToRender.unit}
-              </Text>
-            </View>
-          </View>
-        </View>
-        {noteComponent}
-      </View>
-      <View style={styles.statusContainer}>
-        <View style={styles.statusFinished}>
-          <Image style={styles.checmarkIcon} source={icons.checkmark} />
-        </View>
-      </View>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
+export const productStylesNotCompleted = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 7,
+    // marginTop: 7,
     backgroundColor: 'white',
+    borderRadius: 4,
+    // elevation: 3,
+  },
+  touchable: {
+    flex: 1,
+    marginTop: 7,
   },
   statusContainer: {
     width: 60,
@@ -68,18 +22,19 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     // backgroundColor: 'green',
   },
-  statusFinished: {
-    width: 30,
-    height: 30,
-    backgroundColor: '#41D8B1',
-    borderRadius: 15,
-    elevation: 6,
+  statusTouchable: {
+    width: 60,
     alignItems: 'center',
     justifyContent: 'center',
-    // marginRight: 10,
+    alignSelf: 'stretch',
   },
-  checmarkIcon: {
-    transform: [{scale: 0.7}],
+  statusNotFinished: {
+    width: 30,
+    height: 30,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    elevation: 6,
+    // marginRight: 10,
   },
   // контэйнер, в кот-ом распологается название продукта, кол-во и примечание.
   infoContainer: {
@@ -102,11 +57,11 @@ const styles = StyleSheet.create({
   },
   // стиль для названия продукта
   productName: {
+    marginTop: 8,
+    marginBottom: 8,
     marginLeft: 8,
     marginRight: 8,
     fontSize: 18,
-    color: '#D3D3D3',
-    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается кол-во и ед-ца измерения продукта.
   quantityContainer: {
@@ -128,8 +83,6 @@ const styles = StyleSheet.create({
     marginLeft: 2,
     marginRight: 2,
     fontSize: 18,
-    color: '#D3D3D3',
-    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается ед-ца измерения продукта.
   quantityUnitContainer: {
@@ -144,8 +97,6 @@ const styles = StyleSheet.create({
     // marginLeft: 8,
     marginRight: 2,
     fontSize: 18,
-    color: '#D3D3D3',
-    textDecorationLine: 'line-through',
   },
   // конт-р, в котором распологается примечание к продукту.
   noteContainer: {
@@ -156,7 +107,6 @@ const styles = StyleSheet.create({
   },
   note: {
     margin: 4,
-    color: '#D3D3D3',
-    textDecorationLine: 'line-through',
+    color: 'grey',
   },
 });

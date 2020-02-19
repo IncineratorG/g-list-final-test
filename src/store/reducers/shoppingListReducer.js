@@ -10,18 +10,19 @@ import {
   LOAD_SHOPPING_LIST_FINISHED,
   LOAD_UNITS,
   REMOVE_SHOPPING_LIST,
+  SET_PRODUCT_STATUS,
 } from '../types/shoppingListTypes';
 
 const initialState = {
   units: [],
   classes: [],
   allShoppingLists: {
-    loading: false,
+    loading: true,
     error: '',
     data: [],
   },
   currentShoppingList: {
-    loading: false,
+    loading: true,
     error: '',
     id: undefined,
     name: '',
@@ -137,6 +138,16 @@ export const shoppingListReducer = (state = initialState, action) => {
       return {
         ...state,
         allShoppingLists: {...state.allShoppingLists, data: action.payload},
+      };
+    }
+
+    case SET_PRODUCT_STATUS: {
+      return {
+        ...state,
+        currentShoppingList: {
+          ...state.currentShoppingList,
+          products: action.payload,
+        },
       };
     }
 

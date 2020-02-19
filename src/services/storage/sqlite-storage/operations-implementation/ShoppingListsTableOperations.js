@@ -1,9 +1,10 @@
 import {
   SHOPPING_LISTS_TABLE,
-  SHOPPING_LISTS_TABLE_COMPLETION_STATUS,
   SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP,
   SHOPPING_LISTS_TABLE_ID,
   SHOPPING_LISTS_TABLE_LIST_NAME,
+  SHOPPING_LISTS_TABLE_TOTAL_ITEMS,
+  SHOPPING_LISTS_TABLE_COMPLETED_ITEMS,
   SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP,
 } from '../tables-description/shoppingListsTableDescription';
 
@@ -26,19 +27,21 @@ export class ShoppingListsTableOperations {
     });
   }
 
-  static addShoppingList(db, name, status) {
+  static addShoppingList(db, name) {
     const addShoppingListStatement =
       'INSERT INTO ' +
       SHOPPING_LISTS_TABLE +
       ' (' +
       SHOPPING_LISTS_TABLE_LIST_NAME +
       ', ' +
-      SHOPPING_LISTS_TABLE_COMPLETION_STATUS +
+      SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
+      ', ' +
+      SHOPPING_LISTS_TABLE_COMPLETED_ITEMS +
       ', ' +
       SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP +
       ', ' +
       SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
-      ') VALUES (?, ?, ?, ?)';
+      ') VALUES (?, ?, ?, ?, ?)';
 
     const timestamp = Date.now();
 
@@ -46,7 +49,7 @@ export class ShoppingListsTableOperations {
       db.transaction(tx => {
         tx.executeSql(
           addShoppingListStatement,
-          [name, status, timestamp, timestamp],
+          [name, 0, 0, timestamp, timestamp],
           (_, result) => resolve(result.insertId),
           (_, error) => reject(error),
         );
@@ -71,6 +74,34 @@ export class ShoppingListsTableOperations {
         tx.executeSql(
           updateStatement,
           [timestamp, id],
+          (_, result) => resolve(result.rowsAffected),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
+  static updateShoppingList(db, id, totalItems, completedItems) {
+    const updateStatement =
+      'UPDATE ' +
+      SHOPPING_LISTS_TABLE +
+      ' SET ' +
+      SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
+      ' = ?, ' +
+      SHOPPING_LISTS_TABLE_COMPLETED_ITEMS +
+      ' = ?, ' +
+      SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
+      ' = ? WHERE ' +
+      SHOPPING_LISTS_TABLE_ID +
+      ' = ?';
+
+    const timestamp = Date.now();
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          updateStatement,
+          [totalItems, completedItems, timestamp, id],
           (_, result) => resolve(result.rowsAffected),
           (_, error) => reject(error),
         );

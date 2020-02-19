@@ -4,13 +4,13 @@
 import React from 'react';
 import {View, StyleSheet, Image, TouchableHighlight} from 'react-native';
 import {SwipeListView} from 'react-native-swipe-list-view';
-import {ListOfShoppingListsItem} from './ListOfShoppingListsItem';
+import ListOfShoppingListsItemsFactory from './list-of-shopping-lists-item/ListOfShoppingListsItemsFactory';
 import {icons} from '../../assets/icons';
 
 export const ListOfShoppingLists = ({list, onItemPress, onRemovePress}) => {
-  const removeOptionHandler = listItem => {
+  const removeOptionHandler = (listItem, row) => {
     if (onRemovePress) {
-      onRemovePress(listItem);
+      onRemovePress(listItem, row);
     }
   };
 
@@ -19,26 +19,23 @@ export const ListOfShoppingLists = ({list, onItemPress, onRemovePress}) => {
       <SwipeListView
         style={styles.list}
         data={list}
+        showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
-          return (
-            <ListOfShoppingListsItem
-              listItem={item}
-              onItemPress={onItemPress}
-            />
-          );
+          return ListOfShoppingListsItemsFactory.get(item, onItemPress);
         }}
         keyExtractor={item => item.id.toString()}
         disableRightSwipe={true}
         closeOnRowPress={true}
         closeOnRowOpen={true}
         closeOnRowBeginSwipe={true}
-        friction={100}
+        friction={80}
         renderHiddenItem={(data, rowMap) => (
           <View style={styles.options}>
             <TouchableHighlight
               style={styles.removeButtonTouchable}
               onPress={() => {
-                removeOptionHandler(data.item);
+                // rowMap[data.item.id.toString()].closeRow();
+                removeOptionHandler(data.item, rowMap[data.item.id.toString()]);
               }}>
               <View style={styles.removeButtonContainer}>
                 <Image style={styles.removeIcon} source={icons.trash} />
@@ -68,9 +65,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     left: 0,
-    marginTop: 7,
+    // marginTop: 7,
     marginBottom: 7,
-    borderRadius: 4,
+    borderRadius: 5,
     backgroundColor: 'red',
     flexDirection: 'row',
     alignItems: 'center',

@@ -12,7 +12,8 @@ import {
   SHOPPING_LISTS_TABLE,
   SHOPPING_LISTS_TABLE_ID,
   SHOPPING_LISTS_TABLE_LIST_NAME,
-  SHOPPING_LISTS_TABLE_COMPLETION_STATUS,
+  SHOPPING_LISTS_TABLE_TOTAL_ITEMS,
+  SHOPPING_LISTS_TABLE_COMPLETED_ITEMS,
   SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP,
   SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP,
 } from './tables-description/shoppingListsTableDescription';
@@ -33,6 +34,7 @@ import {UnitsTableOperations} from './operations-implementation/UnitsTableOperat
 import {ClassesTableOperations} from './operations-implementation/ClassesTableOperations';
 import {ShoppingListsTableOperations} from './operations-implementation/ShoppingListsTableOperations';
 import {ShoppingListItemsTableOperations} from './operations-implementation/ShoppingListItemsTableOperations';
+import {PRODUCT_COMPLETED, PRODUCT_NOT_COMPLETED} from '../data/productStatus';
 
 const DB_NAME = 'glist.db';
 
@@ -69,8 +71,10 @@ export class SqliteStorageImpl {
       ' INTEGER PRIMARY KEY NOT NULL, ' +
       SHOPPING_LISTS_TABLE_LIST_NAME +
       ' TEXT NOT NULL, ' +
-      SHOPPING_LISTS_TABLE_COMPLETION_STATUS +
-      ' TEXT NOT NULL, ' +
+      SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
+      ' INTEGER NOT NULL, ' +
+      SHOPPING_LISTS_TABLE_COMPLETED_ITEMS +
+      ' INTEGER NOT NULL, ' +
       SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP +
       ' INTEGER NOT NULL, ' +
       SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
@@ -142,8 +146,8 @@ export class SqliteStorageImpl {
     return ClassesTableOperations.getClasses(db);
   }
 
-  static addShoppingList({name, status}) {
-    return ShoppingListsTableOperations.addShoppingList(db, name, status);
+  static addShoppingList(name) {
+    return ShoppingListsTableOperations.addShoppingList(db, name);
   }
 
   static getShoppingLists() {
@@ -168,12 +172,69 @@ export class SqliteStorageImpl {
       classId,
     );
 
-    await ShoppingListsTableOperations.updateShoppingListUpdateTimestamp(
+    const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
       db,
       shoppingListId,
     );
 
+    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+      db,
+      shoppingListId,
+    );
+
+    await ShoppingListsTableOperations.updateShoppingList(
+      db,
+      shoppingListId,
+      totalShoppingListItems.length,
+      completedShoppingListItems.length,
+    );
+
     return insertedId;
+  }
+
+  static async changeProductStatus(productId) {}
+
+  static async setShoppingListItemStatus({productId, status}) {
+    if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
+      console.log(
+        'SqliteStorageImpl->setShoppingListItemStatus(): BAD_STATUS: ' + status,
+      );
+      return -1;
+    }
+
+    await ShoppingListItemsTableOperations.setItemStatus(db, productId, status);
+    const parentShoppingListIdData = await ShoppingListItemsTableOperations.getParentListId(
+      db,
+      productId,
+    );
+
+    const parentShoppingListId =
+      parentShoppingListIdData.length > 0
+        ? parentShoppingListIdData.item(0).parentId
+        : -1;
+
+    if (parentShoppingListId === -1) {
+      return -1;
+    }
+
+    const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+      db,
+      parentShoppingListId,
+    );
+
+    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+      db,
+      parentShoppingListId,
+    );
+
+    await ShoppingListsTableOperations.updateShoppingList(
+      db,
+      parentShoppingListId,
+      totalShoppingListItems.length,
+      completedShoppingListItems.length,
+    );
+
+    return parentShoppingListId;
   }
 
   static getShoppingListItems(shoppingListId) {
@@ -189,13 +250,11 @@ export class SqliteStorageImpl {
       db,
       shoppingListId,
     );
-    console.log('REMOVED_SHOPPING_LIST_COUNT: ' + removedShoppingListsCount);
 
     const removedProductsCount = await ShoppingListItemsTableOperations.removeItemsWithShoppingListId(
       db,
       shoppingListId,
     );
-    console.log('REMOVED_PRODUCTS_COUNT: ' + removedProductsCount);
 
     return {removedShoppingListsCount, removedProductsCount};
   }

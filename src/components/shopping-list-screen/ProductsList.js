@@ -3,16 +3,17 @@
 
 import React from 'react';
 import {View, StyleSheet, FlatList} from 'react-native';
-import {ShoppingListItem} from './ShoppingListItem';
+import ProductsFactory from './product-list-item/ProductsFactory';
 
-export const ShoppingList = ({list}) => {
+export const ProductsList = ({list, onStatusPress}) => {
   return (
     <View style={styles.mainContainer}>
       <FlatList
         style={styles.list}
         data={list}
-        renderItem={({item}) => {
-          return <ShoppingListItem listItem={item} />;
+        showsVerticalScrollIndicator={false}
+        renderItem={({item, index}) => {
+          return ProductsFactory.get(item, index, onStatusPress);
         }}
         keyExtractor={item => item.id.toString()}
       />

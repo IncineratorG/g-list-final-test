@@ -10,6 +10,7 @@ import {
   LOAD_SHOPPING_LIST_ERROR,
   LOAD_SHOPPING_LIST_FINISHED,
   REMOVE_SHOPPING_LIST,
+  SET_PRODUCT_STATUS,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 
@@ -89,8 +90,6 @@ export const addProduct = ({
   classId,
 }) => {
   return async dispatch => {
-    let productsList = [];
-
     try {
       await Storage.addProduct({
         shoppingListId,
@@ -101,12 +100,11 @@ export const addProduct = ({
         classId,
       });
 
-      productsList = await Storage.getProductsList(shoppingListId);
+      const productsList = await Storage.getProductsList(shoppingListId);
+      dispatch({type: ADD_PRODUCT, payload: productsList});
     } catch (e) {
       console.log('shoppingListActions->addProduct() ERROR: ' + e);
     }
-
-    dispatch({type: ADD_PRODUCT, payload: productsList});
   };
 };
 
@@ -136,15 +134,36 @@ export const loadShoppingList = id => {
 
 export const removeShoppingList = id => {
   return async dispatch => {
-    let shoppingLists = [];
-
     try {
       await Storage.removeShoppingList(id);
-      shoppingLists = await Storage.getAllShoppingLists();
+      const shoppingLists = await Storage.getAllShoppingLists();
+      dispatch({type: REMOVE_SHOPPING_LIST, payload: shoppingLists});
     } catch (e) {
       console.log('shoppingListActions->removeShoppingList() ERROR: ' + e);
     }
+  };
+};
 
-    dispatch({type: REMOVE_SHOPPING_LIST, payload: shoppingLists});
+export const setProductStatus = (productId, status) => {
+  return async dispatch => {
+    try {
+      const shoppingListId = await Storage.setProductStatus({
+        productId,
+        status,
+      });
+      const productsList = await Storage.getProductsList(shoppingListId);
+      dispatch({type: SET_PRODUCT_STATUS, payload: productsList});
+    } catch (e) {
+      console.log('shoppingListActions->setProductStatus() ERROR: ' + e);
+    }
+  };
+};
+
+export const changeProductStatus = productId => {
+  return async dispatch => {
+    try {
+    } catch (e) {
+      console.log('shoppingListActions->changeProductStatus() ERROR: ' + e);
+    }
   };
 };

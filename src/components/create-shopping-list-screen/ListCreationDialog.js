@@ -12,6 +12,7 @@ const ListCreationDialog = ({
 }) => {
   return (
     <ConfirmDialog
+      title="Название списка покупок"
       keyboardShouldPersistTaps={'always'}
       visible={visible}
       onTouchOutside={onTouchOutside}
@@ -28,6 +29,8 @@ const ListCreationDialog = ({
       <TextInput
         placeholder="Новый список"
         style={styles.listNameInput}
+        selectionColor={'#4a9dec'}
+        underlineColorAndroid={'#4a9dec'}
         autoFocus={true}
         onChangeText={text => setListName(text)}
         value={listName}
@@ -44,7 +47,7 @@ const styles = StyleSheet.create({
     color: '#4a9dec',
   },
   negativeButton: {
-    color: '#4a9dec',
+    color: 'grey',
   },
 });
 
