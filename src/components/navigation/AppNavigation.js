@@ -4,14 +4,14 @@ import EditScreenV3 from '../../screens/edit/EditScreenV3';
 import CreateShoppingList from '../../screens/create-shopping-list/CreateShoppingList';
 import Main from '../../screens/main/Main';
 import ShoppingList from '../../screens/shopping-list/ShoppingList';
-import Registration from '../../screens/registration/Registration';
+import Authentication from '../../screens/authentication/Authentication';
 
 const MainStack = createStackNavigator(
   {
     Main: Main,
     ShoppingList: ShoppingList,
     Edit: EditScreenV3,
-    Registration: Registration,
+    Authentication: Authentication,
   },
   {
     initialRouteName: 'Main',

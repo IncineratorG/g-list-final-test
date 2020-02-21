@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const createShoppingListScreenStyles = StyleSheet.create({
+export const createShoppingListViewStyles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     justifyContent: 'center',

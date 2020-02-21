@@ -1,20 +1,20 @@
 import {StyleSheet} from 'react-native';
 
-export const mainScreenStyles = StyleSheet.create({
+export const shoppingLIstViewStyles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#edeef1',
   },
-  addShoppingListButton: {},
-  addShoppingListButtonContainer: {
+  addShoppingListItemButtonContainer: {
     position: 'absolute',
     bottom: 0,
     marginBottom: 10,
     zIndex: 10,
   },
-  emptyMainScreenContent: {
+  addShoppingListItemButton: {},
+  emptyShoppingListScreenContent: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -23,13 +23,31 @@ export const mainScreenStyles = StyleSheet.create({
     marginRight: 20,
     marginBottom: 83,
   },
-  listOfShoppingListContainer: {
+  shoppingListContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'center',
     marginLeft: 8,
     marginRight: 8,
+  },
+  inputAreaContainer: {
+    alignSelf: 'stretch',
+    height: 100,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
+  shadedBackground: {
+    backgroundColor: 'black',
+    opacity: 0.5,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   bottomGradient: {
     bottom: 0,

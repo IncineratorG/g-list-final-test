@@ -5,7 +5,7 @@ import {
 
 export const useShoppingListScreenController = model => {
   const navigationButtonHandler = () => {
-    model.navigation.navigate('Registration');
+    model.navigation.navigate('Authentication');
   };
 
   const addProductButtonHandler = () => {

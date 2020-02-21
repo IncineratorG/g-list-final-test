@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react';
-import {shoppingListScreenStyles} from './styles/ShoppingLIstScreenStyles';
-import ShoppingListScreen from './screens/ShoppingListScreen';
-import {useShoppingListScreenModel} from './models/ShoppingListScreenModel';
-import {useShoppingListScreenController} from './controllers/ShoppingListScreenController';
+import {shoppingLIstViewStyles} from './styles/shoppingLIstViewStyles';
+import ShoppingListView from './views/ShoppingListView';
+import {useShoppingListScreenModel} from './models/shoppingListViewModel';
+import {useShoppingListScreenController} from './controllers/shoppingListViewController';
 import CollaborationButton from '../../components/shopping-list-screen/CollaborationButton';
 
 const ShoppingList = () => {
-  const styles = shoppingListScreenStyles;
+  const styles = shoppingLIstViewStyles;
   const model = useShoppingListScreenModel();
   const controller = useShoppingListScreenController(model);
 
@@ -20,7 +20,7 @@ const ShoppingList = () => {
   }, []);
 
   return (
-    <ShoppingListScreen
+    <ShoppingListView
       styles={styles}
       model={model.data}
       controller={controller}

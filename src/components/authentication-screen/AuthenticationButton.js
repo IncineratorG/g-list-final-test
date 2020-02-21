@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableHighlight} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-export const RegistrationButton = ({title, onPress}) => {
+export const AuthenticationButton = ({title, onPress}) => {
   if (!title) {
     title = 'Button';
   }
@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8,
   },
   gradient: {
     width: 250,
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
   /*<View style={{flex: 1, height: '100%', backgroundColor: '#00a9f4'}} />*/
 }
 
-// export const RegistrationButton = ({title, onPress}) => {
+// export const AuthenticationButton = ({title, onPress}) => {
 //   if (!title) {
 //     title = 'Button';
 //   }

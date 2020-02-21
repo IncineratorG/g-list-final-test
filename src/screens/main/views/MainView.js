@@ -6,7 +6,7 @@ import {EmptyMainScreen} from '../../../components/main-screen/EmptyMainScreen';
 import {ListOfShoppingLists} from '../../../components/main-screen/ListOfShoppingLists';
 import {AddButton} from '../../../components/common/AddButton';
 
-const MainScreen = ({styles, model, controller}) => {
+const MainView = ({styles, model, controller}) => {
   const {
     removeConfirmationDialogVisible,
     removeItemName,
@@ -98,4 +98,4 @@ const MainScreen = ({styles, model, controller}) => {
   );
 };
 
-export default MainScreen;
+export default MainView;

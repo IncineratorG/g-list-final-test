@@ -6,7 +6,7 @@ import {ProductsList} from '../../../components/shopping-list-screen/ProductsLis
 import InputArea from '../../../components/shopping-list-screen/input-area/InputArea';
 import {AddButton} from '../../../components/common/AddButton';
 
-const ShoppingListScreen = ({styles, model, controller}) => {
+const ShoppingListView = ({styles, model, controller}) => {
   const {inputAreaVisible, listLoading, products, units} = model;
 
   const {
@@ -79,4 +79,4 @@ const ShoppingListScreen = ({styles, model, controller}) => {
   );
 };
 
-export default ShoppingListScreen;
+export default ShoppingListView;
