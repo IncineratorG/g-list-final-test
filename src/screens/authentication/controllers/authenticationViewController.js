@@ -1,10 +1,27 @@
 export const useRegistrationScreenController = model => {
   const signInButtonHandler = () => {
-    console.log('SIGN_IN_PRESSED');
+    console.log('SIGN_IN_BUTTON_PRESSED');
+    console.log('email: ' + model.data.email);
+    console.log('password: ' + model.data.password);
   };
 
   const signUpButtonHandler = () => {
-    console.log('SIGN_UP_PRESSED');
+    console.log('SIGN_UP_BUTTON_PRESSED');
+    console.log('email: ' + model.data.email);
+    console.log('password: ' + model.data.password);
+    console.log('verify_password: ' + model.data.verifyPassword);
+  };
+
+  const emailInputHandler = text => {
+    model.setters.setEmail(text);
+  };
+
+  const passwordInputHandler = text => {
+    model.setters.setPassword(text);
+  };
+
+  const verifyPasswordInputHandler = text => {
+    model.setters.setVerifyPassword(text);
   };
 
   const signInLabelPressHandler = () => {
@@ -20,6 +37,9 @@ export const useRegistrationScreenController = model => {
   return {
     signInButtonHandler,
     signUpButtonHandler,
+    emailInputHandler,
+    passwordInputHandler,
+    verifyPasswordInputHandler,
     signInLabelPressHandler,
     signUpLabelPressHandler,
   };

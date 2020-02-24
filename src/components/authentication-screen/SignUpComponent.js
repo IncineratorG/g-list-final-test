@@ -1,9 +1,16 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, TextInput, StyleSheet, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {icons} from '../../assets/icons';
 
-export const SignUpComponent = () => {
+export const SignUpComponent = ({
+  email,
+  password,
+  verifyPassword,
+  emailHandler,
+  passwordHandler,
+  verifyPasswordHandler,
+}) => {
   return (
     <LinearGradient
       style={styles.mainContainer}
@@ -15,7 +22,16 @@ export const SignUpComponent = () => {
           <View style={styles.emailIconContainer}>
             <Image style={styles.emailIcon} source={icons.email} />
           </View>
-          <View style={styles.emailInputContainer} />
+          <View style={styles.emailInputContainer}>
+            <TextInput
+              style={styles.emailTextInput}
+              placeholder={'email'}
+              spellCheck={false}
+              autoCapitalize={'none'}
+              value={email}
+              onChangeText={emailHandler}
+            />
+          </View>
         </View>
       </View>
       <View style={styles.passwordOuterContainer}>
@@ -23,7 +39,17 @@ export const SignUpComponent = () => {
           <View style={styles.passwordIconContainer}>
             <Image style={styles.passwordIcon} source={icons.password} />
           </View>
-          <View style={styles.passwordInputContainer} />
+          <View style={styles.passwordInputContainer}>
+            <TextInput
+              style={styles.passwordTextInput}
+              placeholder={'password'}
+              spellCheck={false}
+              autoCapitalize={'none'}
+              secureTextEntry={true}
+              value={password}
+              onChangeText={passwordHandler}
+            />
+          </View>
         </View>
       </View>
       <View style={styles.passwordConfirmationOuterContainer}>
@@ -34,7 +60,17 @@ export const SignUpComponent = () => {
               source={icons.verify_password}
             />
           </View>
-          <View style={styles.passwordConfirmationInputContainer} />
+          <View style={styles.passwordConfirmationInputContainer}>
+            <TextInput
+              style={styles.passwordConfirmationTextInput}
+              placeholder={'verify password'}
+              spellCheck={false}
+              autoCapitalize={'none'}
+              secureTextEntry={true}
+              value={verifyPassword}
+              onChangeText={verifyPasswordHandler}
+            />
+          </View>
         </View>
       </View>
     </LinearGradient>
@@ -43,7 +79,7 @@ export const SignUpComponent = () => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    height: 150,
+    height: 120,
     backgroundColor: '#0086ea',
     borderRadius: 4,
   },
@@ -71,6 +107,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 4,
   },
+  emailTextInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 0,
+  },
   passwordOuterContainer: {
     flex: 1,
     paddingTop: 4,
@@ -95,6 +136,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 4,
   },
+  passwordTextInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 0,
+  },
   passwordConfirmationOuterContainer: {
     flex: 1,
     padding: 4,
@@ -110,11 +156,16 @@ const styles = StyleSheet.create({
     paddingRight: 5,
   },
   passwordConfirmationIcon: {
-    transform: [{scale: 0.6}],
+    transform: [{scale: 0.5}],
   },
   passwordConfirmationInputContainer: {
     flex: 1,
     backgroundColor: 'white',
     borderRadius: 4,
+  },
+  passwordConfirmationTextInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 0,
   },
 });

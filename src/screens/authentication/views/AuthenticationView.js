@@ -1,271 +1,97 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableWithoutFeedback,
-  Button,
-  KeyboardAvoidingView,
-  TextInput,
-  ScrollView,
-  Image,
-} from 'react-native';
+import {View, KeyboardAvoidingView} from 'react-native';
 import {AuthenticationButton} from '../../../components/authentication-screen/AuthenticationButton';
-import {icons} from '../../../assets/icons';
 import {SignUpComponent} from '../../../components/authentication-screen/SignUpComponent';
 import {SignInComponent} from '../../../components/authentication-screen/SignInComponent';
+import {GradientText} from '../../../components/authentication-screen/GradientText';
+import {ScrollView} from 'react-navigation';
 
 const AuthenticationView = ({styles, model, controller}) => {
-  const {mode, activeLabelColor, nonActiveLabelColor} = model;
+  const {mode, email, password, verifyPassword, keyboardVisible} = model;
 
   const {
     signInButtonHandler,
     signUpButtonHandler,
+    emailInputHandler,
+    passwordInputHandler,
+    verifyPasswordInputHandler,
     signInLabelPressHandler,
     signUpLabelPressHandler,
   } = controller;
 
-  const passwordConfirmationComponent =
+  console.log('KEYBOARD_VISIBLE: ' + keyboardVisible);
+
+  const signInLabelComponent = (
+    <View style={styles.modeSignInTextContainer}>
+      <GradientText
+        text={'Вход'}
+        colors={
+          mode === 'signIn'
+            ? ['#0072e5', '#0086ea', '#0098ef', '#00a9f4']
+            : ['lightgrey']
+        }
+        onPress={signInLabelPressHandler}
+      />
+    </View>
+  );
+
+  const signUpLabelComponent = (
+    <View style={styles.modeSignUpTextContainer}>
+      <GradientText
+        text={'Регистрация'}
+        colors={
+          mode === 'signUp'
+            ? ['#0072e5', '#0086ea', '#0098ef', '#00a9f4']
+            : ['lightgrey']
+        }
+        onPress={signUpLabelPressHandler}
+      />
+    </View>
+  );
+
+  const inputsComponent =
     mode === 'signUp' ? (
-      <View style={styles.passwordConfirmationContainer}>
-        <TextInput
-          style={styles.passwordConfirmationTextInput}
-          placeholder={'Verify Password'}
-        />
-      </View>
+      <SignUpComponent
+        email={email}
+        password={password}
+        verifyPassword={verifyPassword}
+        emailHandler={emailInputHandler}
+        passwordHandler={passwordInputHandler}
+        verifyPasswordHandler={verifyPasswordInputHandler}
+      />
     ) : (
-      <View style={{height: 69}} />
+      <SignInComponent
+        email={email}
+        password={password}
+        emailHandler={emailInputHandler}
+        passwordHandler={passwordInputHandler}
+      />
+    );
+
+  const buttonComponent =
+    mode === 'signUp' ? (
+      <AuthenticationButton
+        title={'Регистрация'}
+        onPress={signUpButtonHandler}
+      />
+    ) : (
+      <AuthenticationButton title={'Вход'} onPress={signInButtonHandler} />
     );
 
   return (
-    <KeyboardAvoidingView style={styles.mainContainer} behavior={'height'}>
+    <ScrollView
+      style={styles.mainContainer}
+      contentContainerStyle={{flexGrow: 1}}>
       <View style={styles.modeContainer}>
-        <TouchableWithoutFeedback
-          style={styles.signInLabelTouchable}
-          onPress={signInLabelPressHandler}>
-          <View style={styles.signInLabelContainer}>
-            <Text
-              style={[
-                styles.signInLabel,
-                {
-                  color:
-                    mode === 'signIn' ? activeLabelColor : nonActiveLabelColor,
-                },
-              ]}>
-              Вход
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          style={styles.signUpLabelTouchable}
-          onPress={signUpLabelPressHandler}>
-          <View style={styles.signUpLabelContainer}>
-            <Text
-              style={[
-                styles.signUpLabel,
-                {
-                  color:
-                    mode === 'signUp' ? activeLabelColor : nonActiveLabelColor,
-                },
-              ]}>
-              Регистрация
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
+        {signInLabelComponent}
+        {signUpLabelComponent}
       </View>
       <View style={styles.inputAreaContainer}>
-        <View style={styles.inputsContainer}>
-          <SignUpComponent />
-        </View>
-        <View style={styles.buttonContainer} />
+        <View style={styles.inputsContainer}>{inputsComponent}</View>
+        <View style={styles.buttonContainer}>{buttonComponent}</View>
       </View>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
 export default AuthenticationView;
-
-// return (
-//     <KeyboardAvoidingView style={styles.mainContainer} behavior={'height'}>
-//       <View style={styles.modeContainer}>
-//         <TouchableWithoutFeedback
-//             style={styles.signInLabelTouchable}
-//             onPress={signInLabelPressHandler}>
-//           <View style={styles.signInLabelContainer}>
-//             <Text
-//                 style={[
-//                   styles.signInLabel,
-//                   {
-//                     color:
-//                         mode === 'signIn' ? activeLabelColor : nonActiveLabelColor,
-//                   },
-//                 ]}>
-//               Вход
-//             </Text>
-//           </View>
-//         </TouchableWithoutFeedback>
-//         <TouchableWithoutFeedback
-//             style={styles.signUpLabelTouchable}
-//             onPress={signUpLabelPressHandler}>
-//           <View style={styles.signUpLabelContainer}>
-//             <Text
-//                 style={[
-//                   styles.signUpLabel,
-//                   {
-//                     color:
-//                         mode === 'signUp' ? activeLabelColor : nonActiveLabelColor,
-//                   },
-//                 ]}>
-//               Регистрация
-//             </Text>
-//           </View>
-//         </TouchableWithoutFeedback>
-//       </View>
-//       <View style={styles.inputAreaContainer}>
-//         <View style={styles.inputsContainer}>
-//           <View style={styles.emailOuterContainer}>
-//             <View style={styles.emailInnerContainer}>
-//               <View style={styles.emailIconContainer}>
-//                 <Image style={styles.emailIcon} source={icons.email} />
-//               </View>
-//             </View>
-//           </View>
-//           <View style={styles.passwordOuterContainer}>
-//             <View style={styles.passwordInnerContainer}>
-//               <View style={styles.passwordIconContainer}>
-//                 <Image style={styles.passwordIcon} source={icons.password} />
-//               </View>
-//             </View>
-//           </View>
-//           <View style={styles.verifyPasswordOuterContainer}>
-//             <View style={styles.verifyPasswordInnerContainer}>
-//               <View style={styles.verifyPasswordIconContainer}>
-//                 <Image style={styles.verifyPasswordIcon} source={icons.cross} />
-//               </View>
-//             </View>
-//           </View>
-//         </View>
-//         <View style={styles.buttonContainer}>
-//           <AuthenticationButton />
-//         </View>
-//       </View>
-//     </KeyboardAvoidingView>
-// );
-
-// return (
-//     <KeyboardAvoidingView style={styles.mainContainer} behavior={'height'}>
-//         <View style={styles.modeContainer}>
-//             <TouchableWithoutFeedback
-//                 style={styles.signInLabelTouchable}
-//                 onPress={signInLabelPressHandler}>
-//                 <View style={styles.signInLabelContainer}>
-//                     <Text
-//                         style={[
-//                             styles.signInLabel,
-//                             {
-//                                 color:
-//                                     mode === 'signIn' ? activeLabelColor : nonActiveLabelColor,
-//                             },
-//                         ]}>
-//                         Вход
-//                     </Text>
-//                 </View>
-//             </TouchableWithoutFeedback>
-//             <TouchableWithoutFeedback
-//                 style={styles.signUpLabelTouchable}
-//                 onPress={signUpLabelPressHandler}>
-//                 <View style={styles.signUpLabelContainer}>
-//                     <Text
-//                         style={[
-//                             styles.signUpLabel,
-//                             {
-//                                 color:
-//                                     mode === 'signUp' ? activeLabelColor : nonActiveLabelColor,
-//                             },
-//                         ]}>
-//                         Регистрация
-//                     </Text>
-//                 </View>
-//             </TouchableWithoutFeedback>
-//         </View>
-//         <View style={styles.inputAreaContainer}>
-//             <View style={styles.emailContainer}>
-//                 <TextInput style={styles.emailTextInput} placeholder={'Email'} />
-//             </View>
-//             <View style={styles.passwordContainer}>
-//                 <TextInput
-//                     style={styles.passwordTextInput}
-//                     placeholder={'Password'}
-//                 />
-//             </View>
-//             {passwordConfirmationComponent}
-//             <View style={styles.signInUpButtonContainer}>
-//                 <AuthenticationButton
-//                     title={mode === 'signIn' ? 'Вход' : 'Регистрация'}
-//                     onPress={
-//                         mode === 'signIn' ? signInButtonHandler : signUpButtonHandler
-//                     }
-//                 />
-//             </View>
-//         </View>
-//     </KeyboardAvoidingView>
-// );
-
-// return (
-//   <KeyboardAvoidingView style={styles.mainContainer} behavior={'height'}>
-//     <View style={styles.modeContainer}>
-//       <TouchableWithoutFeedback
-//         style={styles.signInLabelTouchable}
-//         onPress={signInLabelPressHandler}>
-//         <View style={styles.signInLabelContainer}>
-//           <Text
-//             style={[
-//               styles.signInLabel,
-//               {
-//                 color:
-//                   mode === 'signIn' ? activeLabelColor : nonActiveLabelColor,
-//               },
-//             ]}>
-//             Sign In
-//           </Text>
-//         </View>
-//       </TouchableWithoutFeedback>
-//       <TouchableWithoutFeedback
-//         style={styles.signUpLabelTouchable}
-//         onPress={signUpLabelPressHandler}>
-//         <View style={styles.signUpLabelContainer}>
-//           <Text
-//             style={[
-//               styles.signUpLabel,
-//               {
-//                 color:
-//                   mode === 'signUp' ? activeLabelColor : nonActiveLabelColor,
-//               },
-//             ]}>
-//             Sign Up
-//           </Text>
-//         </View>
-//       </TouchableWithoutFeedback>
-//     </View>
-//     <View style={styles.inputAreaContainer}>
-//       <View style={styles.emailContainer}>
-//         <TextInput style={styles.emailTextInput} placeholder={'Email'} />
-//       </View>
-//       <View style={styles.passwordContainer}>
-//         <TextInput
-//           style={styles.passwordTextInput}
-//           placeholder={'Password'}
-//         />
-//       </View>
-//       <View style={styles.passwordConfirmationContainer}>
-//         <TextInput
-//           style={styles.passwordConfirmationTextInput}
-//           placeholder={'Verify Password'}
-//         />
-//       </View>
-//       <View style={styles.signInUpButtonContainer}>
-//         <Button title={'Button'} />
-//       </View>
-//     </View>
-//     <View style={styles.footerContainer} />
-//   </KeyboardAvoidingView>
-// );
