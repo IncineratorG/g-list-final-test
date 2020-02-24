@@ -41,7 +41,7 @@ const DB_NAME = 'glist.db';
 const SQlite = require('react-native-sqlite-storage');
 const db = SQlite.openDatabase(DB_NAME);
 
-export class SqliteStorageImpl {
+export class SqliteStorage {
   static init() {
     const createClassesTableStatement =
       'CREATE TABLE IF NOT EXISTS ' +
@@ -197,7 +197,7 @@ export class SqliteStorageImpl {
   static async setShoppingListItemStatus({productId, status}) {
     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
       console.log(
-        'SqliteStorageImpl->setShoppingListItemStatus(): BAD_STATUS: ' + status,
+        'SqliteStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
       );
       return -1;
     }

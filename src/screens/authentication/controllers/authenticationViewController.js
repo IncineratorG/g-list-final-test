@@ -1,3 +1,5 @@
+import {signUp} from '../../../store/actions/collaborationActions';
+
 export const useRegistrationScreenController = model => {
   const signInButtonHandler = () => {
     console.log('SIGN_IN_BUTTON_PRESSED');
@@ -6,10 +8,14 @@ export const useRegistrationScreenController = model => {
   };
 
   const signUpButtonHandler = () => {
-    console.log('SIGN_UP_BUTTON_PRESSED');
-    console.log('email: ' + model.data.email);
-    console.log('password: ' + model.data.password);
-    console.log('verify_password: ' + model.data.verifyPassword);
+    if (model.data.password !== model.data.verifyPassword) {
+      console.log('BAD_VERIFICATION_PASSWORD');
+      return;
+    }
+
+    model.dispatch(
+      signUp({email: model.data.email, password: model.data.password}),
+    );
   };
 
   const emailInputHandler = text => {

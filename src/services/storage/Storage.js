@@ -1,20 +1,20 @@
-import {SqliteStorageImpl} from './sqlite-storage/SqliteStorageImpl';
+import {SqliteStorage} from './sqlite-storage/SqliteStorage';
 import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
 
 export class Storage {
   static async isInitialized() {
-    const result = await SqliteStorageImpl.isInitialized();
+    const result = await SqliteStorage.isInitialized();
     return result.length > 0;
   }
 
   static async init() {
-    await SqliteStorageImpl.init();
+    await SqliteStorage.init();
     await SqliteStorageHelper.insertInitialUnits();
     await SqliteStorageHelper.insertInitialClasses();
   }
 
   static async getAllShoppingLists() {
-    const shoppingListsTableData = await SqliteStorageImpl.getShoppingLists();
+    const shoppingListsTableData = await SqliteStorage.getShoppingLists();
 
     const shoppingLists = [];
     for (let i = 0; i < shoppingListsTableData.length; ++i) {
@@ -26,7 +26,7 @@ export class Storage {
 
   static async createShoppingList({listName}) {
     try {
-      return await SqliteStorageImpl.addShoppingList(listName);
+      return await SqliteStorage.addShoppingList(listName);
     } catch (e) {
       throw Error('Storage->createShoppingList(): ' + e);
     }
@@ -34,7 +34,7 @@ export class Storage {
 
   static async getShoppingListName(shoppingListId) {
     try {
-      const nameData = await SqliteStorageImpl.getShoppingListName(
+      const nameData = await SqliteStorage.getShoppingListName(
         shoppingListId,
       );
 
@@ -50,7 +50,7 @@ export class Storage {
 
   static async getUnits() {
     try {
-      const unitsData = await SqliteStorageImpl.getUnits();
+      const unitsData = await SqliteStorage.getUnits();
 
       const units = [];
       for (let i = 0; i < unitsData.length; ++i) {
@@ -65,7 +65,7 @@ export class Storage {
 
   static async getClasses() {
     try {
-      const classesData = await SqliteStorageImpl.getClasses();
+      const classesData = await SqliteStorage.getClasses();
 
       const classes = [];
       for (let i = 0; i < classesData.length; ++i) {
@@ -87,7 +87,7 @@ export class Storage {
     classId,
   }) {
     try {
-      return await SqliteStorageImpl.addShoppingListItem({
+      return await SqliteStorage.addShoppingListItem({
         shoppingListId,
         name,
         quantity,
@@ -102,7 +102,7 @@ export class Storage {
 
   static async setProductStatus({productId, status}) {
     try {
-      return await SqliteStorageImpl.setShoppingListItemStatus({
+      return await SqliteStorage.setShoppingListItemStatus({
         productId,
         status,
       });
@@ -115,7 +115,7 @@ export class Storage {
 
   static async getProductsList(shoppingListId) {
     try {
-      const productsListData = await SqliteStorageImpl.getShoppingListItems(
+      const productsListData = await SqliteStorage.getShoppingListItems(
         shoppingListId,
       );
 
@@ -132,7 +132,7 @@ export class Storage {
 
   static async removeShoppingList(shoppingListId) {
     try {
-      await SqliteStorageImpl.removeShoppingList(shoppingListId);
+      await SqliteStorage.removeShoppingList(shoppingListId);
     } catch (e) {
       throw Error('Storage->removeShoppingList(): ' + e);
     }

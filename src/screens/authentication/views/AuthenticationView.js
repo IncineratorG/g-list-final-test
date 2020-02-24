@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, KeyboardAvoidingView} from 'react-native';
+import {View} from 'react-native';
 import {AuthenticationButton} from '../../../components/authentication-screen/AuthenticationButton';
 import {SignUpComponent} from '../../../components/authentication-screen/SignUpComponent';
 import {SignInComponent} from '../../../components/authentication-screen/SignInComponent';
@@ -18,8 +18,6 @@ const AuthenticationView = ({styles, model, controller}) => {
     signInLabelPressHandler,
     signUpLabelPressHandler,
   } = controller;
-
-  console.log('KEYBOARD_VISIBLE: ' + keyboardVisible);
 
   const signInLabelComponent = (
     <View style={styles.modeSignInTextContainer}>
