@@ -35,6 +35,13 @@ import {ClassesTableOperations} from './operations-implementation/ClassesTableOp
 import {ShoppingListsTableOperations} from './operations-implementation/ShoppingListsTableOperations';
 import {ShoppingListItemsTableOperations} from './operations-implementation/ShoppingListItemsTableOperations';
 import {PRODUCT_COMPLETED, PRODUCT_NOT_COMPLETED} from '../data/productStatus';
+import {
+  AUTHENTICATION_TABLE,
+  AUTHENTICATION_TABLE_EMAIL,
+  AUTHENTICATION_TABLE_ID,
+  AUTHENTICATION_TABLE_PASSWORD,
+  AUTHENTICATION_TABLE_PHONE,
+} from './tables-description/authenticationTableDescription';
 
 const DB_NAME = 'glist.db';
 
@@ -105,6 +112,19 @@ export class SqliteStorage {
       SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP +
       ' INTEGER NOT_NULL)';
 
+    const createAuthenticationTableStatement =
+      'CREATE TABLE IF NOT EXISTS ' +
+      AUTHENTICATION_TABLE +
+      ' (' +
+      AUTHENTICATION_TABLE_ID +
+      ' INTEGER PRIMARY KEY NOT NULL, ' +
+      AUTHENTICATION_TABLE_PHONE +
+      ' TEXT, ' +
+      AUTHENTICATION_TABLE_EMAIL +
+      ' TEXT, ' +
+      AUTHENTICATION_TABLE_PASSWORD +
+      ' TEXT)';
+
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(createClassesTableStatement, [], (tx, result) => {
@@ -113,7 +133,13 @@ export class SqliteStorage {
               createShoppingListTableStatement,
               [],
               (tx, result) => {
-                tx.executeSql(createShoppingListItemTable, [], resolve);
+                tx.executeSql(createShoppingListItemTable, [], (tx, result) => {
+                  tx.executeSql(
+                    createAuthenticationTableStatement,
+                    [],
+                    resolve,
+                  );
+                });
               },
             );
           });
@@ -258,19 +284,4 @@ export class SqliteStorage {
 
     return {removedShoppingListsCount, removedProductsCount};
   }
-
-  // static test() {
-  //   const testStatement = 'PRAGMA table_info(' + SHOPPING_LISTS_TABLE + ')';
-  //
-  //   return new Promise((resolve, reject) => {
-  //     db.transaction(tx => {
-  //       tx.executeSql(
-  //         testStatement,
-  //         [],
-  //         (_, result) => resolve(result.rows),
-  //         (_, error) => reject(error),
-  //       );
-  //     });
-  //   });
-  // }
 }

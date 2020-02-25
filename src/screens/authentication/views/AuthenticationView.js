@@ -110,6 +110,7 @@ const AuthenticationView = ({styles, model, controller}) => {
       style={styles.mainContainer}
       contentContainerStyle={{flexGrow: 1}}>
       <View style={styles.modeContainer}>
+        {signingUpDialog}
         {signInLabelComponent}
         {signUpLabelComponent}
       </View>

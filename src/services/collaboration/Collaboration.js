@@ -14,5 +14,12 @@ export class Collaboration {
     }
   }
 
-  static async signIn({email, password}) {}
+  static async signIn({phone, password}) {
+    try {
+      const result = await FirebaseCollaboration.signIn({phone, password});
+      return result;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }

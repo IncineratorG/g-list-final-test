@@ -14,7 +14,7 @@ export class FirebaseCollaboration {
 
     try {
       const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/registerUser',
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/signUp',
         {
           method: 'POST',
           headers: {
@@ -28,7 +28,7 @@ export class FirebaseCollaboration {
       const responseData = await response.json();
       if (responseData.status === 'BAD_REQUEST_DATA') {
         responseData.description = 'Невенрные введённые данные';
-      } else if (responseData.status === 'ALREADY_EXIST') {
+      } else if (responseData.status === 'USER_ALREADY_EXIST') {
         responseData.description = 'Такой пользователь уже существует';
       }
 
@@ -38,5 +38,41 @@ export class FirebaseCollaboration {
     }
   }
 
-  static async signIn({email, password}) {}
+  static async signIn({phone, password}) {
+    const fcmToken = await firebase.messaging().getToken();
+
+    const signInData = {
+      phone: phone,
+      password: password,
+      token: fcmToken,
+    };
+    const stringifiedSignInData = JSON.stringify(signInData);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/signIn',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: stringifiedSignInData,
+        },
+      );
+
+      const responseData = await response.json();
+      if (responseData.status === 'BAD_REQUEST_DATA') {
+        responseData.description = 'Невенрные введённые данные';
+      } else if (responseData.status === 'USER_NOT_EXIST') {
+        responseData.description = 'Пользователь не существует';
+      } else if (responseData.status === 'BAD_PASSWORD') {
+        responseData.description = 'Неверный пароль';
+      }
+
+      return responseData;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }

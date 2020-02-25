@@ -5,6 +5,7 @@ import CreateShoppingList from '../../screens/create-shopping-list/CreateShoppin
 import Main from '../../screens/main/Main';
 import ShoppingList from '../../screens/shopping-list/ShoppingList';
 import Authentication from '../../screens/authentication/Authentication';
+import Collaborators from '../../screens/collaborators/Collaborators';
 
 const MainStack = createStackNavigator(
   {
@@ -12,6 +13,7 @@ const MainStack = createStackNavigator(
     ShoppingList: ShoppingList,
     Edit: EditScreenV3,
     Authentication: Authentication,
+    Collaborators: Collaborators,
   },
   {
     initialRouteName: 'Main',

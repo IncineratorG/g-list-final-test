@@ -1,4 +1,7 @@
 import {
+  SIGN_IN_BEGIN,
+  SIGN_IN_ERROR,
+  SIGN_IN_FINISHED,
   SIGN_UP_BEGIN,
   SIGN_UP_ERROR,
   SIGN_UP_FINISHED,
@@ -19,6 +22,29 @@ export const signUp = ({phone, email, password}) => {
     } catch (e) {
       dispatch({
         type: SIGN_UP_ERROR,
+        payload: {description: e, status: 'EXCEPTION'},
+      });
+    }
+  };
+};
+
+export const signIn = ({phone, password}) => {
+  return async dispatch => {
+    dispatch({type: SIGN_IN_BEGIN});
+
+    try {
+      const result = await Collaboration.signIn({phone, password});
+      if (result.status === 'SUCCESS') {
+        dispatch({
+          type: SIGN_IN_FINISHED,
+          payload: {phone, password, email: ''},
+        });
+      } else {
+        dispatch({type: SIGN_IN_ERROR, payload: result});
+      }
+    } catch (e) {
+      dispatch({
+        type: SIGN_IN_ERROR,
         payload: {description: e, status: 'EXCEPTION'},
       });
     }

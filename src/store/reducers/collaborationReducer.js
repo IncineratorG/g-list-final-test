@@ -1,4 +1,7 @@
 import {
+  SIGN_IN_BEGIN,
+  SIGN_IN_ERROR,
+  SIGN_IN_FINISHED,
   SIGN_UP_BEGIN,
   SIGN_UP_ERROR,
   SIGN_UP_FINISHED,
@@ -60,6 +63,54 @@ export const collaborationReducer = (state = initialState, action) => {
           password: '',
           error: {
             ...state.currentUser.error,
+            description: action.payload.description,
+            status: action.payload.status,
+          },
+        },
+      };
+    }
+
+    case SIGN_IN_BEGIN: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: true,
+          phone: '',
+          email: '',
+          password: '',
+          error: {
+            ...state.currentUser.error,
+            description: '',
+            status: '',
+          },
+        },
+      };
+    }
+
+    case SIGN_IN_FINISHED: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: false,
+          phone: action.payload.phone,
+          email: action.payload.email,
+          password: action.payload.password,
+        },
+      };
+    }
+
+    case SIGN_IN_ERROR: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: false,
+          phone: '',
+          email: '',
+          password: '',
+          error: {
             description: action.payload.description,
             status: action.payload.status,
           },

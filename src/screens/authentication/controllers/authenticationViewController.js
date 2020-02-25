@@ -1,10 +1,14 @@
-import {signUp} from '../../../store/actions/collaborationActions';
+import {signIn, signUp} from '../../../store/actions/collaborationActions';
 
 export const useRegistrationScreenController = model => {
   const signInButtonHandler = () => {
-    console.log('SIGN_IN_BUTTON_PRESSED');
-    console.log('email: ' + model.data.email);
-    console.log('password: ' + model.data.password);
+    if (model.data.phone.length <= 0 || model.data.password.length <= 0) {
+      return;
+    }
+
+    model.dispatch(
+      signIn({phone: model.data.phone, password: model.data.password}),
+    );
   };
 
   const signUpButtonHandler = () => {
