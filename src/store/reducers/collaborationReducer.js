@@ -7,9 +7,13 @@ import {
 const initialState = {
   currentUser: {
     loading: false,
+    phone: '',
     email: '',
     password: '',
-    error: '',
+    error: {
+      description: '',
+      status: '',
+    },
   },
 };
 
@@ -21,9 +25,26 @@ export const collaborationReducer = (state = initialState, action) => {
         currentUser: {
           ...state.currentUser,
           loading: true,
-          error: '',
+          error: {
+            ...state.currentUser.error,
+            description: '',
+            status: '',
+          },
           email: '',
           password: '',
+        },
+      };
+    }
+
+    case SIGN_UP_FINISHED: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: false,
+          phone: action.payload.phone,
+          email: action.payload.email,
+          password: action.payload.password,
         },
       };
     }
@@ -34,9 +55,14 @@ export const collaborationReducer = (state = initialState, action) => {
         currentUser: {
           ...state.currentUser,
           loading: false,
-          error: action.payload,
+          phone: '',
           email: '',
           password: '',
+          error: {
+            ...state.currentUser.error,
+            description: action.payload.description,
+            status: action.payload.status,
+          },
         },
       };
     }

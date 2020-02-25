@@ -22,10 +22,17 @@ export const authenticationViewStyles = StyleSheet.create({
   },
   inputsContainer: {
     height: 150,
+    padding: 4,
   },
   buttonContainer: {
     height: 80,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  errorText: {
+    alignSelf: 'center',
+    paddingHorizontal: 8,
+    fontSize: 14,
+    color: 'red',
   },
 });

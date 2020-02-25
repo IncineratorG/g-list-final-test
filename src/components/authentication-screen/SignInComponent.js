@@ -4,8 +4,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import {icons} from '../../assets/icons';
 
 export const SignInComponent = ({
+  phone,
   email,
   password,
+  phoneHandler,
   emailHandler,
   passwordHandler,
 }) => {
@@ -15,19 +17,20 @@ export const SignInComponent = ({
       colors={['#0072e5', '#00a9f4']}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 0}}>
-      <View style={styles.emailOuterContainer}>
-        <View style={styles.emailInnerContainer}>
-          <View style={styles.emailIconContainer}>
-            <Image style={styles.emailIcon} source={icons.email} />
+      <View style={styles.phoneOuterContainer}>
+        <View style={styles.phoneInnerContainer}>
+          <View style={styles.phoneIconContainer}>
+            <Image style={styles.phoneIcon} source={icons.phone} />
           </View>
-          <View style={styles.emailInputContainer}>
+          <View style={styles.phoneInputContainer}>
             <TextInput
-              style={styles.emailTextInput}
-              placeholder={'email'}
+              style={styles.phoneTextInput}
+              placeholder={'телефон'}
               spellCheck={false}
               autoCapitalize={'none'}
-              value={email}
-              onChangeText={emailHandler}
+              value={phone}
+              onChangeText={phoneHandler}
+              keyboardType={'numeric'}
             />
           </View>
         </View>
@@ -40,7 +43,7 @@ export const SignInComponent = ({
           <View style={styles.passwordInputContainer}>
             <TextInput
               style={styles.passwordTextInput}
-              placeholder={'password'}
+              placeholder={'пароль'}
               spellCheck={false}
               autoCapitalize={'none'}
               secureTextEntry={true}
@@ -58,33 +61,34 @@ const styles = StyleSheet.create({
   mainContainer: {
     height: 82,
     backgroundColor: '#0086ea',
-    borderRadius: 4,
+    borderRadius: 8,
+    elevation: 8,
   },
-  emailOuterContainer: {
+  phoneOuterContainer: {
     flex: 1,
     paddingTop: 4,
     paddingLeft: 4,
     paddingRight: 4,
   },
-  emailInnerContainer: {
+  phoneInnerContainer: {
     flex: 1,
     flexDirection: 'row',
   },
-  emailIconContainer: {
+  phoneIconContainer: {
     width: 40,
     justifyContent: 'center',
     alignItems: 'center',
     paddingRight: 5,
   },
-  emailIcon: {
+  phoneIcon: {
     transform: [{scale: 0.5}],
   },
-  emailInputContainer: {
+  phoneInputContainer: {
     flex: 1,
     backgroundColor: 'white',
     borderRadius: 4,
   },
-  emailTextInput: {
+  phoneTextInput: {
     flex: 1,
     fontSize: 16,
     paddingVertical: 0,

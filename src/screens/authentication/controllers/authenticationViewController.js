@@ -14,8 +14,16 @@ export const useRegistrationScreenController = model => {
     }
 
     model.dispatch(
-      signUp({email: model.data.email, password: model.data.password}),
+      signUp({
+        phone: model.data.phone,
+        email: model.data.email,
+        password: model.data.password,
+      }),
     );
+  };
+
+  const phoneInputHandler = text => {
+    model.setters.setPhone(text);
   };
 
   const emailInputHandler = text => {
@@ -31,18 +39,27 @@ export const useRegistrationScreenController = model => {
   };
 
   const signInLabelPressHandler = () => {
-    console.log('SIGN_IN_LABEL_PRESSED');
     model.setters.setMode('signIn');
+    model.setters.setShowError(false);
+    model.setters.setPhone('');
+    model.setters.setEmail('');
+    model.setters.setPassword('');
+    model.setters.setVerifyPassword('');
   };
 
   const signUpLabelPressHandler = () => {
-    console.log('SIGN_UP_LABEL_PRESS');
     model.setters.setMode('signUp');
+    model.setters.setShowError(false);
+    model.setters.setPhone('');
+    model.setters.setEmail('');
+    model.setters.setPassword('');
+    model.setters.setVerifyPassword('');
   };
 
   return {
     signInButtonHandler,
     signUpButtonHandler,
+    phoneInputHandler,
     emailInputHandler,
     passwordInputHandler,
     verifyPasswordInputHandler,

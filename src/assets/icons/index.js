@@ -13,6 +13,7 @@ const icons = {
   email: require('./email2.png'),
   password: require('./password2.png'),
   verify_password: require('./verify_password.png'),
+  phone: require('./phone2.png'),
 };
 
 export {icons};

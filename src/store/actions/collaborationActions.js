@@ -1,14 +1,26 @@
-import {SIGN_UP_BEGIN, SIGN_UP_ERROR} from '../types/collaborationTypes';
+import {
+  SIGN_UP_BEGIN,
+  SIGN_UP_ERROR,
+  SIGN_UP_FINISHED,
+} from '../types/collaborationTypes';
 import {Collaboration} from '../../services/collaboration/Collaboration';
 
-export const signUp = ({email, password}) => {
+export const signUp = ({phone, email, password}) => {
   return async dispatch => {
     dispatch({type: SIGN_UP_BEGIN});
 
     try {
-      await Collaboration.signUp({email, password});
+      const result = await Collaboration.signUp({phone, email, password});
+      if (result.status === 'SUCCESS') {
+        dispatch({type: SIGN_UP_FINISHED, payload: {phone, email, password}});
+      } else {
+        dispatch({type: SIGN_UP_ERROR, payload: result});
+      }
     } catch (e) {
-      dispatch({type: SIGN_UP_ERROR, payload: e});
+      dispatch({
+        type: SIGN_UP_ERROR,
+        payload: {description: e, status: 'EXCEPTION'},
+      });
     }
   };
 };

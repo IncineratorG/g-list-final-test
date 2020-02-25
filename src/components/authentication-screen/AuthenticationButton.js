@@ -25,6 +25,7 @@ export const AuthenticationButton = ({title, onPress}) => {
 const styles = StyleSheet.create({
   touchable: {
     borderRadius: 30,
+    elevation: 8,
   },
   mainContainer: {
     width: 250,

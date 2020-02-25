@@ -1,17 +1,28 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, Text} from 'react-native';
 import {AuthenticationButton} from '../../../components/authentication-screen/AuthenticationButton';
 import {SignUpComponent} from '../../../components/authentication-screen/SignUpComponent';
 import {SignInComponent} from '../../../components/authentication-screen/SignInComponent';
 import {GradientText} from '../../../components/authentication-screen/GradientText';
 import {ScrollView} from 'react-navigation';
+import {ProgressDialog} from 'react-native-simple-dialogs';
 
 const AuthenticationView = ({styles, model, controller}) => {
-  const {mode, email, password, verifyPassword, keyboardVisible} = model;
+  const {
+    mode,
+    phone,
+    email,
+    password,
+    verifyPassword,
+    signingUp,
+    errorText,
+    showError,
+  } = model;
 
   const {
     signInButtonHandler,
     signUpButtonHandler,
+    phoneInputHandler,
     emailInputHandler,
     passwordInputHandler,
     verifyPasswordInputHandler,
@@ -50,17 +61,21 @@ const AuthenticationView = ({styles, model, controller}) => {
   const inputsComponent =
     mode === 'signUp' ? (
       <SignUpComponent
+        phone={phone}
         email={email}
         password={password}
         verifyPassword={verifyPassword}
+        phoneHandler={phoneInputHandler}
         emailHandler={emailInputHandler}
         passwordHandler={passwordInputHandler}
         verifyPasswordHandler={verifyPasswordInputHandler}
       />
     ) : (
       <SignInComponent
+        phone={phone}
         email={email}
         password={password}
+        phoneHandler={phoneInputHandler}
         emailHandler={emailInputHandler}
         passwordHandler={passwordInputHandler}
       />
@@ -76,6 +91,20 @@ const AuthenticationView = ({styles, model, controller}) => {
       <AuthenticationButton title={'Вход'} onPress={signInButtonHandler} />
     );
 
+  const signingUpDialog = (
+    <ProgressDialog
+      visible={signingUp}
+      title={'Регистрация'}
+      message={'Подождите'}
+    />
+  );
+
+  const errorComponent = showError ? (
+    <View>
+      <Text style={styles.errorText}>{errorText}</Text>
+    </View>
+  ) : null;
+
   return (
     <ScrollView
       style={styles.mainContainer}
@@ -85,6 +114,7 @@ const AuthenticationView = ({styles, model, controller}) => {
         {signUpLabelComponent}
       </View>
       <View style={styles.inputAreaContainer}>
+        {errorComponent}
         <View style={styles.inputsContainer}>{inputsComponent}</View>
         <View style={styles.buttonContainer}>{buttonComponent}</View>
       </View>
