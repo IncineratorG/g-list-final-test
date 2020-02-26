@@ -62,6 +62,7 @@ export class FirebaseCollaboration {
       );
 
       const responseData = await response.json();
+
       if (responseData.status === 'BAD_REQUEST_DATA') {
         responseData.description = 'Невенрные введённые данные';
       } else if (responseData.status === 'USER_NOT_EXIST') {

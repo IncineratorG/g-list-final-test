@@ -48,6 +48,11 @@ export const collaborationReducer = (state = initialState, action) => {
           phone: action.payload.phone,
           email: action.payload.email,
           password: action.payload.password,
+          error: {
+            ...state.currentUser.error,
+            description: '',
+            status: '',
+          },
         },
       };
     }
@@ -63,8 +68,10 @@ export const collaborationReducer = (state = initialState, action) => {
           password: '',
           error: {
             ...state.currentUser.error,
-            description: action.payload.description,
-            status: action.payload.status,
+            description: action.payload.description
+              ? action.payload.description
+              : '',
+            status: action.payload.status ? action.payload.status : '',
           },
         },
       };
@@ -111,8 +118,10 @@ export const collaborationReducer = (state = initialState, action) => {
           email: '',
           password: '',
           error: {
-            description: action.payload.description,
-            status: action.payload.status,
+            description: action.payload.description
+              ? action.payload.description
+              : '',
+            status: action.payload.status ? action.payload.status : '',
           },
         },
       };

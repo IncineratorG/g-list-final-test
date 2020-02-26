@@ -3,12 +3,11 @@ import {FirebaseCollaboration} from './firebase/FirebaseCollaboration';
 export class Collaboration {
   static async signUp({phone, email, password}) {
     try {
-      const result = await FirebaseCollaboration.signUp({
+      return await FirebaseCollaboration.signUp({
         phone,
         email,
         password,
       });
-      return result;
     } catch (e) {
       throw new Error(e);
     }
@@ -16,8 +15,7 @@ export class Collaboration {
 
   static async signIn({phone, password}) {
     try {
-      const result = await FirebaseCollaboration.signIn({phone, password});
-      return result;
+      return await FirebaseCollaboration.signIn({phone, password});
     } catch (e) {
       throw new Error(e);
     }
