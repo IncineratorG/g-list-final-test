@@ -2,6 +2,9 @@ import {
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
   SIGN_IN_FINISHED,
+  SIGN_OUT_BEGIN,
+  SIGN_OUT_ERROR,
+  SIGN_OUT_FINISHED,
   SIGN_UP_BEGIN,
   SIGN_UP_ERROR,
   SIGN_UP_FINISHED,
@@ -9,11 +12,13 @@ import {
 
 const initialState = {
   currentUser: {
+    signedIn: false,
     loading: false,
     phone: '',
     email: '',
     password: '',
     error: {
+      hasError: false,
       description: '',
       status: '',
     },
@@ -27,14 +32,17 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...state.currentUser,
+          signedIn: false,
           loading: true,
+          phone: '',
+          email: '',
+          password: '',
           error: {
             ...state.currentUser.error,
+            hasError: false,
             description: '',
             status: '',
           },
-          email: '',
-          password: '',
         },
       };
     }
@@ -44,12 +52,14 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...state.currentUser,
+          signedIn: true,
           loading: false,
           phone: action.payload.phone,
           email: action.payload.email,
           password: action.payload.password,
           error: {
             ...state.currentUser.error,
+            hasError: false,
             description: '',
             status: '',
           },
@@ -62,12 +72,14 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...state.currentUser,
+          signedIn: false,
           loading: false,
           phone: '',
           email: '',
           password: '',
           error: {
             ...state.currentUser.error,
+            hasError: true,
             description: action.payload.description
               ? action.payload.description
               : '',
@@ -82,12 +94,14 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...state.currentUser,
+          signedIn: false,
           loading: true,
           phone: '',
           email: '',
           password: '',
           error: {
             ...state.currentUser.error,
+            hasError: false,
             description: '',
             status: '',
           },
@@ -100,6 +114,7 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...state.currentUser,
+          signedIn: true,
           loading: false,
           phone: action.payload.phone,
           email: action.payload.email,
@@ -114,10 +129,54 @@ export const collaborationReducer = (state = initialState, action) => {
         currentUser: {
           ...state.currentUser,
           loading: false,
+          signedIn: false,
           phone: '',
           email: '',
           password: '',
           error: {
+            hasError: true,
+            description: action.payload.description
+              ? action.payload.description
+              : '',
+            status: action.payload.status ? action.payload.status : '',
+          },
+        },
+      };
+    }
+
+    case SIGN_OUT_BEGIN: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: true,
+        },
+      };
+    }
+
+    case SIGN_OUT_FINISHED: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: false,
+          signedIn: false,
+          phone: '',
+          email: '',
+          password: '',
+        },
+      };
+    }
+
+    case SIGN_OUT_ERROR: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: false,
+          signedIn: true,
+          error: {
+            hasError: true,
             description: action.payload.description
               ? action.payload.description
               : '',

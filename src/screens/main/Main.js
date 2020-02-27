@@ -3,33 +3,14 @@ import MainView from './views/MainView';
 import {mainViewStyles} from './styles/mainViewStyles';
 import {useMainScreenModel} from './models/mainViewModel';
 import {useMainScreenController} from './controllers/mainViewController';
-import {Image, TouchableHighlight, View} from 'react-native';
-import {icons} from '../../assets/icons';
+import MenuButton from '../../components/main-screen/MenuButton';
 
 const Main = () => {
   const styles = mainViewStyles;
   const model = useMainScreenModel();
   const controller = useMainScreenController(model);
 
-  const menuButton = (
-    <TouchableHighlight
-      underlayColor={'grey'}
-      onPress={() => {
-        console.log('PRESS');
-
-        model.navigation.toggleDrawer();
-      }}>
-      <View
-        style={{
-          width: 40,
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <Image style={{transform: [{scale: 1.2}]}} source={icons.sync} />
-      </View>
-    </TouchableHighlight>
-  );
+  const menuButton = <MenuButton onPress={controller.menuButtonHandler} />;
 
   useEffect(() => {
     model.navigation.setParams({menuButton});
@@ -51,9 +32,5 @@ Main.navigationOptions = ({navigation}) => {
     },
   };
 };
-
-// Main.navigationOptions = ({navigation}) => ({
-//   headerTitle: 'Списки покупок',
-// });
 
 export default Main;

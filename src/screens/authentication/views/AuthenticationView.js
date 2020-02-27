@@ -14,7 +14,7 @@ const AuthenticationView = ({styles, model, controller}) => {
     email,
     password,
     verifyPassword,
-    signingUp,
+    signing,
     errorText,
     showError,
   } = model;
@@ -91,26 +91,37 @@ const AuthenticationView = ({styles, model, controller}) => {
       <AuthenticationButton title={'Вход'} onPress={signInButtonHandler} />
     );
 
-  const signingUpDialog = (
-    <ProgressDialog
-      visible={signingUp}
-      title={'Регистрация'}
-      message={'Подождите'}
-    />
-  );
+  const signingDialog =
+    mode === 'signIn' ? (
+      <ProgressDialog
+        visible={signing}
+        title={'Вход в аккаунт'}
+        message={'Подождите'}
+      />
+    ) : (
+      <ProgressDialog
+        visible={signing}
+        title={'Регистрация'}
+        message={'Подождите'}
+      />
+    );
 
   const errorComponent = showError ? (
     <View>
       <Text style={styles.errorText}>{errorText}</Text>
     </View>
-  ) : null;
+  ) : (
+    <View>
+      <Text />
+    </View>
+  );
 
   return (
     <ScrollView
       style={styles.mainContainer}
       contentContainerStyle={{flexGrow: 1}}>
       <View style={styles.modeContainer}>
-        {signingUpDialog}
+        {signingDialog}
         {signInLabelComponent}
         {signUpLabelComponent}
       </View>

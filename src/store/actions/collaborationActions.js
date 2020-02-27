@@ -2,6 +2,8 @@ import {
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
   SIGN_IN_FINISHED,
+  SIGN_OUT_BEGIN,
+  SIGN_OUT_FINISHED,
   SIGN_UP_BEGIN,
   SIGN_UP_ERROR,
   SIGN_UP_FINISHED,
@@ -48,5 +50,13 @@ export const signIn = ({phone, password}) => {
         payload: {description: e, status: 'EXCEPTION'},
       });
     }
+  };
+};
+
+export const signOut = () => {
+  return async dispatch => {
+    dispatch({type: SIGN_OUT_BEGIN});
+
+    dispatch({type: SIGN_OUT_FINISHED});
   };
 };

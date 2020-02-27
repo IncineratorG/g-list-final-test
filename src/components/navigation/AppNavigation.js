@@ -7,7 +7,7 @@ import Main from '../../screens/main/Main';
 import ShoppingList from '../../screens/shopping-list/ShoppingList';
 import Authentication from '../../screens/authentication/Authentication';
 import Collaborators from '../../screens/collaborators/Collaborators';
-import DrawerMenu from '../common/DrawerMenu';
+import DrawerMenu from '../common/drawer-menu/DrawerMenu';
 
 const MainStack = createStackNavigator(
   {
@@ -44,6 +44,7 @@ const DrawerNavigator = createDrawerNavigator(
     },
     Authentication: {
       screen: Authentication,
+      navigationOptions: {title: 'Войти'},
     },
   },
   {

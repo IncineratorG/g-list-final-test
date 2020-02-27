@@ -1,6 +1,6 @@
 import {Keyboard} from 'react-native';
 import {useState, useEffect} from 'react';
-import {useFocusEffect, useNavigation} from 'react-navigation-hooks';
+import {useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
 
 export const useRegistrationScreenModel = () => {
@@ -17,9 +17,7 @@ export const useRegistrationScreenModel = () => {
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
 
-  const signingUp = useSelector(
-    state => state.collaboration.currentUser.loading,
-  );
+  const signing = useSelector(state => state.collaboration.currentUser.loading);
   const errorDescription = useSelector(
     state => state.collaboration.currentUser.error.description,
   );
@@ -60,7 +58,7 @@ export const useRegistrationScreenModel = () => {
       password,
       verifyPassword,
       keyboardVisible,
-      signingUp,
+      signing,
       showError,
       errorText,
     },

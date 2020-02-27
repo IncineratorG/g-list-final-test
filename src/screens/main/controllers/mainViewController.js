@@ -36,6 +36,10 @@ export const useMainScreenController = model => {
     model.setters.setListItemRow(null);
   };
 
+  const menuButtonHandler = () => {
+    model.navigation.toggleDrawer();
+  };
+
   return {
     listItemPressHandler,
     listItemRemoveHandler,
@@ -43,5 +47,6 @@ export const useMainScreenController = model => {
     removeConfirmationDialogTouchOutsideHandler,
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
+    menuButtonHandler,
   };
 };
