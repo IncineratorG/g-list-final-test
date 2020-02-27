@@ -28,15 +28,13 @@ export class Storage {
     try {
       return await SqliteStorage.addShoppingList(listName);
     } catch (e) {
-      throw Error('Storage->createShoppingList(): ' + e);
+      throw new Error('Storage->createShoppingList(): ' + e);
     }
   }
 
   static async getShoppingListName(shoppingListId) {
     try {
-      const nameData = await SqliteStorage.getShoppingListName(
-        shoppingListId,
-      );
+      const nameData = await SqliteStorage.getShoppingListName(shoppingListId);
 
       if (nameData.length) {
         return nameData.item(0).listName;
@@ -44,7 +42,7 @@ export class Storage {
         return '';
       }
     } catch (e) {
-      throw Error('Storage->getShoppingListName(): ' + e);
+      throw new Error('Storage->getShoppingListName(): ' + e);
     }
   }
 
@@ -59,7 +57,7 @@ export class Storage {
 
       return units;
     } catch (e) {
-      throw Error('Storage->getUnits(): ' + e);
+      throw new Error('Storage->getUnits(): ' + e);
     }
   }
 
@@ -74,7 +72,7 @@ export class Storage {
 
       return classes;
     } catch (e) {
-      throw Error('Storage->getClasses(): ' + e);
+      throw new Error('Storage->getClasses(): ' + e);
     }
   }
 
@@ -96,7 +94,7 @@ export class Storage {
         classId,
       });
     } catch (e) {
-      throw Error('Storage->addProduct(): ' + e);
+      throw new Error('Storage->addProduct(): ' + e);
     }
   }
 
@@ -107,7 +105,7 @@ export class Storage {
         status,
       });
     } catch (e) {
-      throw Error('Storage->setProductStatus(): ' + e);
+      throw new Error('Storage->setProductStatus(): ' + e);
     }
   }
 
@@ -126,7 +124,7 @@ export class Storage {
 
       return productsList;
     } catch (e) {
-      throw Error('Storage->getProductsList(): ' + e);
+      throw new Error('Storage->getProductsList(): ' + e);
     }
   }
 
@@ -134,7 +132,17 @@ export class Storage {
     try {
       await SqliteStorage.removeShoppingList(shoppingListId);
     } catch (e) {
-      throw Error('Storage->removeShoppingList(): ' + e);
+      throw new Error('Storage->removeShoppingList(): ' + e);
+    }
+  }
+
+  static async getSignInInfo() {}
+
+  static async updateSignInInfo({phone, email, password}) {
+    try {
+      await SqliteStorage.updateSignInInfo({phone, email, password});
+    } catch (e) {
+      throw new Error('Storage->updateSignInInfo(): ' + e);
     }
   }
 }

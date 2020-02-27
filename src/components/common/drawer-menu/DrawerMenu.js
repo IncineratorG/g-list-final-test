@@ -18,7 +18,9 @@ const DrawerMenu = props => {
   const phone = useSelector(state => state.collaboration.currentUser.phone);
 
   const signInPressHandler = () => {
-    navigation.navigate('Authentication');
+    navigation.navigate('Authentication', {
+      destinationScreen: 'Main',
+    });
   };
 
   const signOutPressHandler = () => {

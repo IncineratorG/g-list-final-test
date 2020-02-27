@@ -284,4 +284,10 @@ export class SqliteStorage {
 
     return {removedShoppingListsCount, removedProductsCount};
   }
+
+  static async getSignInInfo() {}
+
+  static async updateSignInInfo({phone, email, password}) {
+    console.log('PHONE: ' + phone + ' PASSWORD: ' + password);
+  }
 }

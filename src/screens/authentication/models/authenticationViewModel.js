@@ -1,10 +1,11 @@
-import {Keyboard} from 'react-native';
-import {useState, useEffect} from 'react';
-import {useNavigation} from 'react-navigation-hooks';
+import {useState, useEffect, useCallback} from 'react';
+import {useFocusEffect, useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
+import {resetSignErrors} from '../../../store/actions/collaborationActions';
 
 export const useRegistrationScreenModel = () => {
   const navigation = useNavigation();
+  const destinationScreen = navigation.getParam('destinationScreen');
 
   const dispatch = useDispatch();
 
@@ -13,32 +14,16 @@ export const useRegistrationScreenModel = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
 
+  const signedIn = useSelector(
+    state => state.collaboration.currentUser.signedIn,
+  );
   const signing = useSelector(state => state.collaboration.currentUser.loading);
   const errorDescription = useSelector(
     state => state.collaboration.currentUser.error.description,
   );
-
-  useEffect(() => {
-    const keyboardShowHandler = () => {
-      setKeyboardVisible(true);
-    };
-
-    const keyboardHideHandler = () => {
-      setKeyboardVisible(false);
-    };
-
-    Keyboard.addListener('keyboardDidShow', keyboardShowHandler);
-    Keyboard.addListener('keyboardDidHide', keyboardHideHandler);
-
-    return () => {
-      Keyboard.removeListener('keyboardDidShow', keyboardShowHandler);
-      Keyboard.removeListener('keyboardDidHide', keyboardHideHandler);
-    };
-  });
 
   useEffect(() => {
     if (errorDescription.length > 0) {
@@ -50,6 +35,18 @@ export const useRegistrationScreenModel = () => {
     }
   }, [errorDescription]);
 
+  useEffect(() => {
+    if (signedIn) {
+      navigation.navigate(destinationScreen);
+    }
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(resetSignErrors());
+    }, [dispatch]),
+  );
+
   return {
     data: {
       mode,
@@ -57,7 +54,6 @@ export const useRegistrationScreenModel = () => {
       email,
       password,
       verifyPassword,
-      keyboardVisible,
       signing,
       showError,
       errorText,

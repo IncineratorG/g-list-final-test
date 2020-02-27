@@ -5,7 +5,9 @@ import {
 
 export const useShoppingListScreenController = model => {
   const navigationButtonHandler = () => {
-    model.navigation.navigate('Authentication');
+    model.navigation.navigate('Authentication', {
+      destinationScreen: 'Collaborators',
+    });
   };
 
   const addProductButtonHandler = () => {

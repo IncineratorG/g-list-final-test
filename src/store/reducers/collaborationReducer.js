@@ -1,4 +1,5 @@
 import {
+  RESET_SIGN_ERRORS,
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
   SIGN_IN_FINISHED,
@@ -27,6 +28,21 @@ const initialState = {
 
 export const collaborationReducer = (state = initialState, action) => {
   switch (action.type) {
+    case RESET_SIGN_ERRORS: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          error: {
+            ...state.currentUser.error,
+            hasError: false,
+            description: '',
+            status: '',
+          },
+        },
+      };
+    }
+
     case SIGN_UP_BEGIN: {
       return {
         ...state,

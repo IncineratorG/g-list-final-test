@@ -30,7 +30,7 @@ export const authenticationViewStyles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    alignSelf: 'center',
+    alignSelf: 'flex-start',
     paddingHorizontal: 8,
     fontSize: 14,
     color: 'red',
