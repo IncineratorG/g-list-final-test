@@ -42,6 +42,7 @@ import {
   AUTHENTICATION_TABLE_PASSWORD,
   AUTHENTICATION_TABLE_PHONE,
 } from './tables-description/authenticationTableDescription';
+import {AuthenticationTableOperations} from './operations-implementation/AuthenticationTableOperations';
 
 const DB_NAME = 'glist.db';
 
@@ -285,9 +286,28 @@ export class SqliteStorage {
     return {removedShoppingListsCount, removedProductsCount};
   }
 
-  static async getSignInInfo() {}
+  static async getSignInInfo() {
+    return await AuthenticationTableOperations.getSignInInfo(db);
+  }
 
   static async updateSignInInfo({phone, email, password}) {
-    console.log('PHONE: ' + phone + ' PASSWORD: ' + password);
+    const currentSignInInfoData = await AuthenticationTableOperations.getSignInInfo(
+      db,
+    );
+
+    if (currentSignInInfoData.length > 0) {
+      await AuthenticationTableOperations.removeSignInInfo(db);
+    }
+
+    await AuthenticationTableOperations.createSignInInfo(
+      db,
+      phone,
+      email,
+      password,
+    );
+  }
+
+  static async removeSignInInfo() {
+    await AuthenticationTableOperations.removeSignInInfo(db);
   }
 }

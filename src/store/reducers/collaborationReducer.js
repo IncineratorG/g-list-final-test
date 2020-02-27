@@ -1,4 +1,7 @@
 import {
+  LOAD_LOCAL_SIGN_IN_INFO_BEGIN,
+  LOAD_LOCAL_SIGN_IN_INFO_ERROR,
+  LOAD_LOCAL_SIGN_IN_INFO_FINISHED,
   RESET_SIGN_ERRORS,
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
@@ -38,6 +41,55 @@ export const collaborationReducer = (state = initialState, action) => {
             hasError: false,
             description: '',
             status: '',
+          },
+        },
+      };
+    }
+
+    case LOAD_LOCAL_SIGN_IN_INFO_BEGIN: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: true,
+          error: {
+            ...state.currentUser.error,
+            hasError: false,
+            description: '',
+            status: '',
+          },
+        },
+      };
+    }
+
+    case LOAD_LOCAL_SIGN_IN_INFO_FINISHED: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: false,
+          signedIn: action.payload.phone ? true : false,
+          phone: action.payload.phone ? action.payload.phone : '',
+          email: action.payload.email ? action.payload.email : '',
+          password: action.payload.password ? action.payload.password : '',
+        },
+      };
+    }
+
+    case LOAD_LOCAL_SIGN_IN_INFO_ERROR: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          loading: false,
+          signedIn: false,
+          error: {
+            ...state.currentUser.error,
+            hasError: true,
+            description: action.payload.description
+              ? action.payload.description
+              : '',
+            status: action.payload.status ? action.payload.status : '',
           },
         },
       };

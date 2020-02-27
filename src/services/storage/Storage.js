@@ -136,13 +136,30 @@ export class Storage {
     }
   }
 
-  static async getSignInInfo() {}
+  static async getSignInInfo() {
+    const signInInfoData = await SqliteStorage.getSignInInfo();
+    if (signInInfoData.length > 0) {
+      return {
+        phone: signInInfoData.item(0).phone,
+        email: signInInfoData.item(0).email,
+        password: signInInfoData.item(0).password,
+      };
+    }
+  }
 
   static async updateSignInInfo({phone, email, password}) {
     try {
       await SqliteStorage.updateSignInInfo({phone, email, password});
     } catch (e) {
       throw new Error('Storage->updateSignInInfo(): ' + e);
+    }
+  }
+
+  static async removeSignInInfo() {
+    try {
+      await SqliteStorage.removeSignInInfo();
+    } catch (e) {
+      throw new Error('Storage->removeSignInInfo(): ' + e);
     }
   }
 }
