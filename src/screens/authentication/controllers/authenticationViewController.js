@@ -1,4 +1,4 @@
-import {signIn, signUp} from '../../../store/actions/collaborationActions';
+import {signIn, signUp} from '../../../store/actions/authenticationActions';
 
 export const useRegistrationScreenController = model => {
   const signInButtonHandler = () => {

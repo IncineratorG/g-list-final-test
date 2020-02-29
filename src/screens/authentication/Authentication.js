@@ -1,12 +1,12 @@
 import React from 'react';
 import AuthenticationView from './views/AuthenticationView';
 import {authenticationViewStyles} from './styles/authenticationViewStyles';
-import {useRegistrationScreenModel} from './models/authenticationViewModel';
+import {useAuthenticationScreenModel} from './models/authenticationViewModel';
 import {useRegistrationScreenController} from './controllers/authenticationViewController';
 
 const Authentication = () => {
   const styles = authenticationViewStyles;
-  const model = useRegistrationScreenModel();
+  const model = useAuthenticationScreenModel();
   const controller = useRegistrationScreenController(model);
 
   return (

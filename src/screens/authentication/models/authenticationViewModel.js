@@ -1,9 +1,9 @@
 import {useState, useEffect, useCallback} from 'react';
 import {useFocusEffect, useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
-import {resetSignErrors} from '../../../store/actions/collaborationActions';
+import {resetSignErrors} from '../../../store/actions/authenticationActions';
 
-export const useRegistrationScreenModel = () => {
+export const useAuthenticationScreenModel = () => {
   const navigation = useNavigation();
   const destinationScreen = navigation.getParam('destinationScreen');
 
@@ -18,11 +18,13 @@ export const useRegistrationScreenModel = () => {
   const [errorText, setErrorText] = useState('');
 
   const signedIn = useSelector(
-    state => state.collaboration.currentUser.signedIn,
+    state => state.authentication.currentUser.signedIn,
   );
-  const signing = useSelector(state => state.collaboration.currentUser.loading);
+  const signing = useSelector(
+    state => state.authentication.currentUser.loading,
+  );
   const errorDescription = useSelector(
-    state => state.collaboration.currentUser.error.description,
+    state => state.authentication.currentUser.error.description,
   );
 
   useEffect(() => {

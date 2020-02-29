@@ -1,6 +1,6 @@
 import {firebase} from '@react-native-firebase/messaging';
 
-export class FirebaseCollaboration {
+export class FirebaseAuthentication {
   static async signUp({phone, email, password}) {
     const fcmToken = await firebase.messaging().getToken();
 

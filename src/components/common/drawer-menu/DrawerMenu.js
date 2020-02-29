@@ -6,7 +6,7 @@ import {useNavigation} from 'react-navigation-hooks';
 import {
   loadLocalSignInInfo,
   signOut,
-} from '../../../store/actions/collaborationActions';
+} from '../../../store/actions/authenticationActions';
 import SignButton from './components/SignButton';
 import SignInfoComponent from './components/SignInfoComponent';
 
@@ -16,9 +16,9 @@ const DrawerMenu = props => {
   const dispatch = useDispatch();
 
   const signedIn = useSelector(
-    state => state.collaboration.currentUser.signedIn,
+    state => state.authentication.currentUser.signedIn,
   );
-  const phone = useSelector(state => state.collaboration.currentUser.phone);
+  const phone = useSelector(state => state.authentication.currentUser.phone);
 
   const signInPressHandler = () => {
     navigation.navigate('Authentication', {

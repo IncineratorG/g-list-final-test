@@ -27,6 +27,9 @@ export const useShoppingListScreenModel = () => {
   const listLoading = useSelector(
     state => state.shoppingList.currentShoppingList.loading,
   );
+  const signedIn = useSelector(
+    state => state.authentication.currentUser.signedIn,
+  );
 
   const getUnitName = unitId => {
     const filteredUnits = units.filter(unit => unit.id === unitId);
@@ -71,6 +74,7 @@ export const useShoppingListScreenModel = () => {
       listLoading,
       products,
       units,
+      signedIn,
     },
     setters: {setInputAreaVisible},
     navigation,

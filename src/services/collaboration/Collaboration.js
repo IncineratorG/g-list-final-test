@@ -1,21 +1,10 @@
-import {FirebaseCollaboration} from './firebase/FirebaseCollaboration';
+import {FirebaseCollaboration} from './firabase/FirebaseCollaboration';
 
 export class Collaboration {
-  static async signUp({phone, email, password}) {
+  static async userExist({phone}) {
     try {
-      return await FirebaseCollaboration.signUp({
-        phone,
-        email,
-        password,
-      });
-    } catch (e) {
-      throw new Error(e);
-    }
-  }
-
-  static async signIn({phone, password}) {
-    try {
-      return await FirebaseCollaboration.signIn({phone, password});
+      const result = await FirebaseCollaboration.checkUserExistence({phone});
+      return result === 'EXIST';
     } catch (e) {
       throw new Error(e);
     }
