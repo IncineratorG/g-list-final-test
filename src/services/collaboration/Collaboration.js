@@ -9,4 +9,16 @@ export class Collaboration {
       throw new Error(e);
     }
   }
+
+  static async sendMessage({receiverPhone, senderPhone, messageText}) {
+    try {
+      const result = await FirebaseCollaboration.sendTextMessage({
+        receiverPhone,
+        senderPhone,
+        messageText,
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }

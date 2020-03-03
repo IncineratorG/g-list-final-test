@@ -28,6 +28,9 @@ export const useCollaboratorsScreenModel = () => {
   const collaboratorCheckErrorDescription = useSelector(
     state => state.collaboration.potentialCollaborator.error.description,
   );
+  const currentPhone = useSelector(
+    state => state.authentication.currentUser.phone,
+  );
 
   if (collaboratorPhone.length > 0) {
     if (collaboratorExist) {
@@ -51,6 +54,7 @@ export const useCollaboratorsScreenModel = () => {
       collaboratorExist,
       collaboratorCheckError,
       collaboratorCheckErrorDescription,
+      currentPhone,
     },
     setters: {
       setEnteredPhone,

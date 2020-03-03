@@ -1,6 +1,6 @@
 import {
-  checkUserExistence,
   clearPotentialCollaboratorData,
+  sendTextMessage,
 } from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenController = model => {
@@ -12,9 +12,13 @@ export const useCollaboratorsScreenController = model => {
   const enterPhoneButtonHandler = () => {
     console.log('PRESSS: ' + model.data.currentShoppingListId);
 
-    if (model.data.enteredPhone.length > 0) {
-      model.dispatch(checkUserExistence({phone: model.data.enteredPhone}));
-    }
+    model.dispatch(
+      sendTextMessage({
+        receiverPhone: model.data.enteredPhone,
+        senderPhone: model.data.currentPhone,
+        messageText: 'TEST_TEXT',
+      }),
+    );
   };
 
   return {

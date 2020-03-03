@@ -3,6 +3,9 @@ import {
   CHECK_USER_EXISTENCE_ERROR,
   CHECK_USER_EXISTENCE_FINISH,
   CLEAR_POTENTIAL_COLLABORATOR_DATA,
+  SEND_TEXT_MESSAGE_BEGIN,
+  SEND_TEXT_MESSAGE_ERROR,
+  SEND_TEXT_MESSAGE_FINISH,
 } from '../types/collaborationTypes';
 
 const initialState = {
@@ -83,6 +86,18 @@ export const collaborationReducer = (state = initialState, action) => {
           },
         },
       };
+    }
+
+    case SEND_TEXT_MESSAGE_BEGIN: {
+      return {...state};
+    }
+
+    case SEND_TEXT_MESSAGE_FINISH: {
+      return {...state};
+    }
+
+    case SEND_TEXT_MESSAGE_ERROR: {
+      return {...state};
     }
 
     default: {

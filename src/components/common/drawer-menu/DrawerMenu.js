@@ -1,12 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {View, ScrollView, StyleSheet} from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from 'react-navigation-hooks';
-import {
-  loadLocalSignInInfo,
-  signOut,
-} from '../../../store/actions/authenticationActions';
+import {signOut} from '../../../store/actions/authenticationActions';
 import SignButton from './components/SignButton';
 import SignInfoComponent from './components/SignInfoComponent';
 
@@ -29,12 +26,6 @@ const DrawerMenu = props => {
   const signOutPressHandler = () => {
     dispatch(signOut());
   };
-
-  useEffect(() => {
-    if (!signedIn) {
-      dispatch(loadLocalSignInInfo());
-    }
-  }, [dispatch, signedIn]);
 
   const signButton = signedIn ? (
     <SignButton title={'Выйти'} onPress={signOutPressHandler} />
