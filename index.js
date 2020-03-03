@@ -15,9 +15,3 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     JSON.stringify(remoteMessage.data),
   );
 });
-
-AppRegistry.registerHeadlessTask('RNFirebaseBackgroundMessage', () => {
-  console.log('HERE');
-
-  return Promise.resolve();
-});
