@@ -1,6 +1,6 @@
 import {
   clearPotentialCollaboratorData,
-  sendTextMessage,
+  shareShoppingList,
 } from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenController = model => {
@@ -10,13 +10,13 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const enterPhoneButtonHandler = () => {
-    console.log('PRESSS: ' + model.data.currentShoppingListId);
+    console.log('SHOPPING_LIST_ID: ' + model.data.currentShoppingListId);
 
     model.dispatch(
-      sendTextMessage({
+      shareShoppingList({
         receiverPhone: model.data.enteredPhone,
         senderPhone: model.data.currentPhone,
-        messageText: 'TEST_TEXT',
+        shoppingListId: model.data.currentShoppingListId,
       }),
     );
   };
