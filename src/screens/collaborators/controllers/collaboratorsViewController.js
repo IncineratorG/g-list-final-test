@@ -10,6 +10,14 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const enterPhoneButtonHandler = () => {
+    if (
+      !model.data.enteredPhone.length ||
+      model.data.enteredPhone.length <= 0
+    ) {
+      console.log('BAD_RECEIVER_PHONE');
+      return;
+    }
+
     console.log('SHOPPING_LIST_ID: ' + model.data.currentShoppingListId);
 
     model.dispatch(

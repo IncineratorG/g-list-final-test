@@ -56,30 +56,51 @@ export const shareShoppingList = ({
     console.log('HERE');
 
     const units = await Storage.getUnits();
-    const categories = await Storage.getClasses();
+    const classes = await Storage.getClasses();
 
     const shoppingListName = await Storage.getShoppingListName(shoppingListId);
-    const productsList = await Storage.getProductsList(shoppingListId);
+    const products = await Storage.getProductsList(shoppingListId);
 
-    const productsListUnitsIds = [];
-    productsList.map(product => {
-      if (productsListUnitsIds.indexOf(product.unitId) < 0) {
-        productsListUnitsIds.push(product.unitId);
-      }
+    const shoppingList = {
+      id: shoppingListId,
+      name: shoppingListName,
+      products,
+    };
+
+    await Collaboration.shareShoppingList({
+      receiver: receiverPhone,
+      sender: senderPhone,
+      shoppingList,
+      units,
+      classes,
     });
-    productsListUnitsIds.forEach(unitId => console.log('UNIT_ID: ' + unitId));
 
-    const productsListClassesIds = [];
-    productsList.map(product => {
-      if (productsListClassesIds.indexOf(product.classId) < 0) {
-        productsListClassesIds.push(product.classId);
-      }
-    });
-    productsListClassesIds.forEach(classId =>
-      console.log('CLASS_ID: ' + classId),
-    );
-
-    // const productsListUnits = productsList.map(value => value.unitId);
-    // productsListUnits.forEach(unit => console.log(JSON.stringify(unit)));
+    // const productsListUnitsIds = [];
+    // const productsListClassesIds = [];
+    // productsList.map(product => {
+    //   if (productsListUnitsIds.indexOf(product.unitId) < 0) {
+    //     productsListUnitsIds.push(product.unitId);
+    //   }
+    //   if (productsListClassesIds.indexOf(product.classId) < 0) {
+    //     productsListClassesIds.push(product.classId);
+    //   }
+    // });
+    //
+    // const productListUnits = units.filter(
+    //   unit => productsListUnitsIds.indexOf(unit.id) >= 0,
+    // );
+    // const productListClasses = classes.filter(
+    //   cl => productsListClassesIds.indexOf(cl.id) >= 0,
+    // );
+    //
+    // productListUnits.forEach(unit => console.log(unit.id + ' - ' + unit.name));
+    // productListClasses.forEach(cl => console.log(cl.id + ' - ' + cl.name));
+    //
+    // const shoppingListShareData = {
+    //   name: shoppingListName,
+    //   products: productsList,
+    //   classes: productListClasses,
+    //   units: productListUnits,
+    // };
   };
 };

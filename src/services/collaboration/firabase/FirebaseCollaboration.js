@@ -3,7 +3,7 @@ export class FirebaseCollaboration {
     const checkData = {
       phone,
     };
-    const stringifiedCheckData = JSON.stringify(checkData);
+    const serializedCheckData = JSON.stringify(checkData);
 
     try {
       const response = await fetch(
@@ -14,7 +14,7 @@ export class FirebaseCollaboration {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-          body: stringifiedCheckData,
+          body: serializedCheckData,
         },
       );
 
@@ -36,7 +36,7 @@ export class FirebaseCollaboration {
       sender: senderPhone,
       textMessage: messageText,
     };
-    const stringifiedData = JSON.stringify(data);
+    const serializedData = JSON.stringify(data);
 
     try {
       const response = await fetch(
@@ -47,13 +47,57 @@ export class FirebaseCollaboration {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-          body: stringifiedData,
+          body: serializedData,
         },
       );
 
       const responseData = await response.json();
 
       console.log('RESPONSE: ' + JSON.stringify(responseData));
+
+      return 'SUCCESS';
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async shareShoppingList({
+    receiver,
+    sender,
+    shoppingList,
+    usedUnits,
+    usedClasses,
+  }) {
+    console.log('HERE_HERE_HERE');
+
+    const data = {
+      receiver,
+      sender,
+      shoppingList,
+      usedUnits,
+      usedClasses,
+    };
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/shareShoppingList',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status, sharedListKey} = responseData;
+
+      console.log('RESPONSE_STATUS: ' + status);
+      console.log('RESPONSE_KEY: ' + sharedListKey);
 
       return 'SUCCESS';
     } catch (e) {
