@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import {listOfShoppingListsItemStylesCompleted} from './completed/styles/ListOfShoppingListsItemStylesCompleted';
-import {listOfShoppingListsItemStylesNotCompleted} from './not-completed/styles/ListOfShoppingListsItemStylesNotCompleted';
+import {listOfShoppingListsItemStylesCompleted} from './completed/styles/listOfShoppingListsItemStylesCompleted';
+import {listOfShoppingListsItemStylesNotCompleted} from './not-completed/styles/listOfShoppingListsItemStylesNotCompleted';
 import {ListOfShoppingListsItemNotCompleted} from './not-completed/ListOfShoppingListsItemNotCompleted';
 
 export default class ListOfShoppingListsItemsFactory {

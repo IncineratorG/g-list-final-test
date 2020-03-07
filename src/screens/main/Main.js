@@ -1,21 +1,36 @@
-import React from 'react';
-import MainScreen from './screens/MainScreen';
-import {mainScreenStyles} from './styles/MainScreenStyles';
-import {useMainScreenModel} from './models/MainScreenModel';
-import {useMainScreenController} from './controllers/MainScreenController';
+import React, {useEffect} from 'react';
+import MainView from './views/MainView';
+import {mainViewStyles} from './styles/mainViewStyles';
+import {useMainScreenModel} from './models/mainViewModel';
+import {useMainScreenController} from './controllers/mainViewController';
+import MenuButton from '../../components/main-screen/MenuButton';
 
 const Main = () => {
-  const styles = mainScreenStyles;
+  const styles = mainViewStyles;
   const model = useMainScreenModel();
   const controller = useMainScreenController(model);
 
+  const menuButton = <MenuButton onPress={controller.menuButtonHandler} />;
+
+  useEffect(() => {
+    model.navigation.setParams({menuButton});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <MainScreen styles={styles} model={model.data} controller={controller} />
+    <MainView styles={styles} model={model.data} controller={controller} />
   );
 };
 
-Main.navigationOptions = ({navigation}) => ({
-  headerTitle: 'Списки покупок',
-});
+Main.navigationOptions = ({navigation}) => {
+  const menuButton = navigation.getParam('menuButton');
+
+  return {
+    headerTitle: 'Списки покупок',
+    headerRight: () => {
+      return menuButton;
+    },
+  };
+};
 
 export default Main;

@@ -1,16 +1,16 @@
 import React from 'react';
-import {createShoppingListScreenStyles} from './styles/CreateShoppingListScreenStyles';
-import {useCreateShoppingListScreenModel} from './models/CreateShoppingListScreenModel';
-import {useCreateShoppingListScreenController} from './controllers/CreateShoppingListScreenController';
-import CreateShoppingListScreen from './screens/CreateShoppingListScreen';
+import {createShoppingListViewStyles} from './styles/createShoppingListViewStyles';
+import {useCreateShoppingListScreenModel} from './models/createShoppingListViewModel';
+import {useCreateShoppingListScreenController} from './controllers/createShoppingListViewController';
+import CreateShoppingListView from './views/CreateShoppingListView';
 
 const CreateShoppingList = () => {
-  const styles = createShoppingListScreenStyles;
+  const styles = createShoppingListViewStyles;
   const model = useCreateShoppingListScreenModel();
   const controller = useCreateShoppingListScreenController(model);
 
   return (
-    <CreateShoppingListScreen
+    <CreateShoppingListView
       styles={styles}
       model={model.data}
       controller={controller}

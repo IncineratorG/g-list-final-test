@@ -1,4 +1,4 @@
-import {SqliteStorageImpl} from './SqliteStorageImpl';
+import {SqliteStorage} from './SqliteStorage';
 
 export class SqliteStorageHelper {
   static insertInitialUnits() {
@@ -7,7 +7,7 @@ export class SqliteStorageHelper {
     return new Promise(async (resolve, reject) => {
       let insertedIds = [];
       for (let i = 0; i < units.length; ++i) {
-        const insertedId = await SqliteStorageImpl.addUnit(units[i]);
+        const insertedId = await SqliteStorage.addUnit(units[i]);
         insertedIds.push(insertedId);
       }
 
@@ -40,7 +40,7 @@ export class SqliteStorageHelper {
     return new Promise(async (resolve, reject) => {
       let insertedIds = [];
       for (let i = 0; i < classes.length; ++i) {
-        const Id = await SqliteStorageImpl.addClass(classes[i]);
+        const Id = await SqliteStorage.addClass(classes[i]);
         insertedIds.push(Id);
       }
 
