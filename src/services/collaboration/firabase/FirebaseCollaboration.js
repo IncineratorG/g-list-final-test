@@ -96,7 +96,7 @@ export class FirebaseCollaboration {
 
       const {status, sharedListKey} = responseData;
 
-      console.log('RESPONSE_STATUS: ' + status);
+      // console.log('RESPONSE_STATUS: ' + status);
       console.log('RESPONSE_KEY: ' + sharedListKey);
 
       return 'SUCCESS';
