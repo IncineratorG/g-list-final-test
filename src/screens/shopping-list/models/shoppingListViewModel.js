@@ -57,9 +57,9 @@ export const useShoppingListScreenModel = () => {
     .sort((p1, p2) => p1.id < p2.id);
 
   useEffect(() => {
-    dispatch(loadUnits());
-    dispatch(loadClasses());
-  }, [dispatch]);
+    dispatch(loadUnits({shoppingListId}));
+    dispatch(loadClasses({shoppingListId}));
+  }, [dispatch, shoppingListId]);
 
   useEffect(() => {
     navigation.setParams({shoppingListName});

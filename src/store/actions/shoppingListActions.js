@@ -52,11 +52,11 @@ export const createShoppingList = listName => async dispatch => {
   });
 };
 
-export const loadUnits = () => {
+export const loadUnits = ({shoppingListId}) => {
   return async dispatch => {
     let units = [];
     try {
-      units = await Storage.getUnits();
+      units = await Storage.getUnits({shoppingListId});
     } catch (e) {
       console.log('shoppingListActions->loadUnits() ERROR: ' + e);
     }
@@ -68,11 +68,11 @@ export const loadUnits = () => {
   };
 };
 
-export const loadClasses = () => {
+export const loadClasses = ({shoppingListId}) => {
   return async dispatch => {
     let classes = [];
     try {
-      classes = await Storage.getClasses();
+      classes = await Storage.getClasses({shoppingListId});
     } catch (e) {
       console.log('shoppingListActions->loadClasses() ERROR: ' + e);
     }
@@ -100,7 +100,7 @@ export const addProduct = ({
         classId,
       });
 
-      const productsList = await Storage.getProductsList(shoppingListId);
+      const productsList = await Storage.getProductsList({shoppingListId});
       dispatch({type: ADD_PRODUCT, payload: productsList});
     } catch (e) {
       console.log('shoppingListActions->addProduct() ERROR: ' + e);
@@ -113,8 +113,10 @@ export const loadShoppingList = id => {
     dispatch({type: LOAD_SHOPPING_LIST_BEGIN});
 
     try {
-      const productsList = await Storage.getProductsList(id);
-      const shoppingListName = await Storage.getShoppingListName(id);
+      const productsList = await Storage.getProductsList({shoppingListId: id});
+      const shoppingListName = await Storage.getShoppingListName({
+        shoppingListId: id,
+      });
 
       dispatch({
         type: LOAD_SHOPPING_LIST_FINISHED,
@@ -135,7 +137,7 @@ export const loadShoppingList = id => {
 export const removeShoppingList = id => {
   return async dispatch => {
     try {
-      await Storage.removeShoppingList(id);
+      await Storage.removeShoppingList({shoppingListId: id});
       const shoppingLists = await Storage.getAllShoppingLists();
       dispatch({type: REMOVE_SHOPPING_LIST, payload: shoppingLists});
     } catch (e) {
@@ -151,7 +153,7 @@ export const setProductStatus = (productId, status) => {
         productId,
         status,
       });
-      const productsList = await Storage.getProductsList(shoppingListId);
+      const productsList = await Storage.getProductsList({shoppingListId});
       dispatch({type: SET_PRODUCT_STATUS, payload: productsList});
     } catch (e) {
       console.log('shoppingListActions->setProductStatus() ERROR: ' + e);

@@ -55,11 +55,13 @@ export const shareShoppingList = ({
   return async dispatch => {
     console.log('HERE');
 
-    const units = await Storage.getUnits();
-    const classes = await Storage.getClasses();
+    const units = await Storage.getUnits({shoppingListId});
+    const classes = await Storage.getClasses({shoppingListId});
 
-    const shoppingListName = await Storage.getShoppingListName(shoppingListId);
-    const products = await Storage.getProductsList(shoppingListId);
+    const shoppingListName = await Storage.getShoppingListName({
+      shoppingListId,
+    });
+    const products = await Storage.getProductsList({shoppingListId});
 
     const shoppingList = {
       id: shoppingListId,
