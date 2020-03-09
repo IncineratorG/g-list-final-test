@@ -7,12 +7,12 @@ import {
   SET_PRODUCT_STATUS,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_BEGIN,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_ERROR,
-  UPDATE_LIST_OF_SHOPPING_LISTS,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_FINISHED,
+  UPDATE_LIST_OF_SHOPPING_LISTS,
   SUBSCRIBE_TO_SHOPPING_LIST_BEGIN,
   SUBSCRIBE_TO_SHOPPING_LIST_ERROR,
-  UPDATE_SHOPPING_LIST,
   SUBSCRIBE_TO_SHOPPING_LIST_FINISHED,
+  UPDATE_SHOPPING_LIST,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 import {
@@ -101,7 +101,7 @@ export const removeShoppingList = id => {
   return async dispatch => {
     try {
       await Storage.removeShoppingList({shoppingListId: id});
-      dispatch({type: REMOVE_SHOPPING_LIST});
+      dispatch({type: REMOVE_SHOPPING_LIST, payload: id});
     } catch (e) {
       console.log('shoppingListActions->removeShoppingList() ERROR: ' + e);
     }

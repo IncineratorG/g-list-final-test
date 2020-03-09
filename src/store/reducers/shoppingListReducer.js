@@ -49,9 +49,7 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case REMOVE_SHOPPING_LIST: {
-      return {
-        ...state,
-      };
+      return {...state};
     }
 
     case LOAD_UNITS: {
@@ -67,9 +65,7 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case SET_PRODUCT_STATUS: {
-      return {
-        ...state,
-      };
+      return {...state};
     }
 
     case SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_BEGIN: {

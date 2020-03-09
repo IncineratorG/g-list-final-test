@@ -55,54 +55,86 @@ export const shareShoppingList = ({
   return async dispatch => {
     console.log('HERE');
 
-    const units = await Storage.getUnits({shoppingListId});
-    const classes = await Storage.getClasses({shoppingListId});
-
-    const shoppingListName = await Storage.getShoppingListName({
-      shoppingListId,
-    });
-    const products = await Storage.getProductsList({shoppingListId});
-
-    const shoppingList = {
-      id: shoppingListId,
-      name: shoppingListName,
-      products,
-    };
-
-    await Collaboration.shareShoppingList({
-      receiver: receiverPhone,
-      sender: senderPhone,
-      shoppingList,
-      units,
-      classes,
-    });
-
-    // const productsListUnitsIds = [];
-    // const productsListClassesIds = [];
-    // productsList.map(product => {
-    //   if (productsListUnitsIds.indexOf(product.unitId) < 0) {
-    //     productsListUnitsIds.push(product.unitId);
-    //   }
-    //   if (productsListClassesIds.indexOf(product.classId) < 0) {
-    //     productsListClassesIds.push(product.classId);
-    //   }
+    // const units = await Storage.getUnits({shoppingListId});
+    // const classes = await Storage.getClasses({shoppingListId});
+    //
+    // const shoppingListName = await Storage.getShoppingListName({
+    //   shoppingListId,
     // });
+    // const products = await Storage.getProductsList({shoppingListId});
     //
-    // const productListUnits = units.filter(
-    //   unit => productsListUnitsIds.indexOf(unit.id) >= 0,
-    // );
-    // const productListClasses = classes.filter(
-    //   cl => productsListClassesIds.indexOf(cl.id) >= 0,
-    // );
-    //
-    // productListUnits.forEach(unit => console.log(unit.id + ' - ' + unit.name));
-    // productListClasses.forEach(cl => console.log(cl.id + ' - ' + cl.name));
-    //
-    // const shoppingListShareData = {
+    // const shoppingList = {
+    //   id: shoppingListId,
     //   name: shoppingListName,
-    //   products: productsList,
-    //   classes: productListClasses,
-    //   units: productListUnits,
+    //   products,
     // };
+    //
+    // await Collaboration.shareShoppingList({
+    //   receiver: receiverPhone,
+    //   sender: senderPhone,
+    //   shoppingList,
+    //   units,
+    //   classes,
+    // });
   };
 };
+
+// export const shareShoppingList = ({
+//   receiverPhone,
+//   senderPhone,
+//   shoppingListId,
+// }) => {
+//   return async dispatch => {
+//     console.log('HERE');
+//
+//     const units = await Storage.getUnits({shoppingListId});
+//     const classes = await Storage.getClasses({shoppingListId});
+//
+//     const shoppingListName = await Storage.getShoppingListName({
+//       shoppingListId,
+//     });
+//     const products = await Storage.getProductsList({shoppingListId});
+//
+//     const shoppingList = {
+//       id: shoppingListId,
+//       name: shoppingListName,
+//       products,
+//     };
+//
+//     await Collaboration.shareShoppingList({
+//       receiver: receiverPhone,
+//       sender: senderPhone,
+//       shoppingList,
+//       units,
+//       classes,
+//     });
+//
+//     // const productsListUnitsIds = [];
+//     // const productsListClassesIds = [];
+//     // productsList.map(product => {
+//     //   if (productsListUnitsIds.indexOf(product.unitId) < 0) {
+//     //     productsListUnitsIds.push(product.unitId);
+//     //   }
+//     //   if (productsListClassesIds.indexOf(product.classId) < 0) {
+//     //     productsListClassesIds.push(product.classId);
+//     //   }
+//     // });
+//     //
+//     // const productListUnits = units.filter(
+//     //   unit => productsListUnitsIds.indexOf(unit.id) >= 0,
+//     // );
+//     // const productListClasses = classes.filter(
+//     //   cl => productsListClassesIds.indexOf(cl.id) >= 0,
+//     // );
+//     //
+//     // productListUnits.forEach(unit => console.log(unit.id + ' - ' + unit.name));
+//     // productListClasses.forEach(cl => console.log(cl.id + ' - ' + cl.name));
+//     //
+//     // const shoppingListShareData = {
+//     //   name: shoppingListName,
+//     //   products: productsList,
+//     //   classes: productListClasses,
+//     //   units: productListUnits,
+//     // };
+//   };
+// };

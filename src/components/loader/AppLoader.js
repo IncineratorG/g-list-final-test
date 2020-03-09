@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import AppNavigation from '../navigation/AppNavigation';
-import {loadLocalSignInInfo} from '../../store/actions/authenticationActions';
+import {subscribeToLocalSignInInfo} from '../../store/actions/authenticationActions';
 import messaging from '@react-native-firebase/messaging';
 
 export default function AppLoader() {
@@ -16,7 +16,7 @@ export default function AppLoader() {
 
   useEffect(() => {
     if (!signedIn) {
-      dispatch(loadLocalSignInInfo());
+      dispatch(subscribeToLocalSignInInfo());
     }
   }, [dispatch, signedIn]);
 

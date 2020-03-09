@@ -3,22 +3,33 @@ import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
 import {
   LIST_OF_SHOPPING_LISTS_CHANGED,
   SHOPPING_LIST_CHANGED,
+  SIGN_IN_INFO_CHANGED,
 } from './storageEventTypes';
 import {StorageEvents} from './StorageEvents';
 
 export class Storage {
-  static async subscribe({shoppingListId, productId, event, handler}) {
-    const unsubscribe = StorageEvents.subscribe({
-      entityIds: {shoppingListId, productId},
-      event,
-      handler,
-    });
+  static async subscribe({
+    shoppingListId,
+    productId,
+    event,
+    handler,
+    once = false,
+  }) {
+    const unsubscribe = once
+      ? () => {}
+      : StorageEvents.subscribe({
+          entityIds: {shoppingListId, productId},
+          event,
+          handler,
+        });
 
     let data;
     if (event === LIST_OF_SHOPPING_LISTS_CHANGED) {
       data = await SqliteStorage.getShoppingLists();
     } else if (event === SHOPPING_LIST_CHANGED) {
       data = await SqliteStorage.getShoppingList(shoppingListId);
+    } else if (event === SIGN_IN_INFO_CHANGED) {
+      data = await SqliteStorage.getLocalSignInInfo();
     }
 
     return {unsubscribe, data};
@@ -62,18 +73,6 @@ export class Storage {
     return {removedShoppingListsCount, removedProductsCount};
   }
 
-  static async getShoppingListName({shoppingListId}) {
-    return await SqliteStorage.getShoppingListName(shoppingListId);
-  }
-
-  static async getUnits({shoppingListId}) {
-    return await SqliteStorage.getUnits();
-  }
-
-  static async getClasses({shoppingListId}) {
-    return await SqliteStorage.getClasses();
-  }
-
   static async addProduct({
     shoppingListId,
     name,
@@ -109,6 +108,7 @@ export class Storage {
 
   static async setProductStatus({shoppingListId, productId, status}) {
     await SqliteStorage.setShoppingListItemStatus({
+      shoppingListId,
       productId,
       status,
     });
@@ -127,27 +127,34 @@ export class Storage {
     });
   }
 
-  static async getProductsList({shoppingListId}) {
-    return await SqliteStorage.getShoppingListItems(shoppingListId);
-  }
-
-  static async getSignInInfo() {
-    const signInInfoData = await SqliteStorage.getSignInInfo();
-    if (signInInfoData.length > 0) {
-      return {
-        phone: signInInfoData.item(0).phone,
-        email: signInInfoData.item(0).email,
-        password: signInInfoData.item(0).password,
-      };
-    }
-  }
-
   static async updateSignInInfo({phone, email, password}) {
-    await SqliteStorage.updateSignInInfo({phone, email, password});
+    await SqliteStorage.updateLocalSignInInfo({phone, email, password});
+
+    const localSignInInfo = await SqliteStorage.getLocalSignInInfo();
+
+    StorageEvents.notify({
+      event: SIGN_IN_INFO_CHANGED,
+      data: localSignInInfo,
+    });
   }
 
   static async removeSignInInfo() {
-    await SqliteStorage.removeSignInInfo();
+    await SqliteStorage.removeLocalSignInInfo();
+
+    const localSignInInfo = await SqliteStorage.getLocalSignInInfo();
+
+    StorageEvents.notify({
+      event: SIGN_IN_INFO_CHANGED,
+      data: localSignInInfo,
+    });
+  }
+
+  static async getUnits({shoppingListId}) {
+    return await SqliteStorage.getUnits();
+  }
+
+  static async getClasses({shoppingListId}) {
+    return await SqliteStorage.getClasses();
   }
 }
 

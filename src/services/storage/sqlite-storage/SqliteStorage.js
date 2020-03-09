@@ -43,6 +43,7 @@ import {
   AUTHENTICATION_TABLE_PHONE,
 } from './tables-description/authenticationTableDescription';
 import {AuthenticationTableOperations} from './operations-implementation/AuthenticationTableOperations';
+import awaitAsyncGenerator from '@babel/runtime/helpers/esm/awaitAsyncGenerator';
 
 const DB_NAME = 'glist.db';
 
@@ -157,10 +158,6 @@ export class SqliteStorage {
     return UnitsTableOperations.addUnit(db, unitName);
   }
 
-  static removeUnit(unitName) {
-    UnitsTableOperations.removeUnit(db, unitName);
-  }
-
   static async getUnits() {
     const unitsData = await UnitsTableOperations.getUnits(db);
 
@@ -242,9 +239,7 @@ export class SqliteStorage {
     return insertedId;
   }
 
-  static async changeProductStatus(productId) {}
-
-  static async setShoppingListItemStatus({productId, status}) {
+  static async setShoppingListItemStatus({shoppingListId, productId, status}) {
     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
       console.log(
         'SqliteStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
@@ -253,52 +248,25 @@ export class SqliteStorage {
     }
 
     await ShoppingListItemsTableOperations.setItemStatus(db, productId, status);
-    const parentShoppingListIdData = await ShoppingListItemsTableOperations.getParentListId(
-      db,
-      productId,
-    );
-
-    const parentShoppingListId =
-      parentShoppingListIdData.length > 0
-        ? parentShoppingListIdData.item(0).parentId
-        : -1;
-
-    if (parentShoppingListId === -1) {
-      return -1;
-    }
 
     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
-      db,
-      parentShoppingListId,
-    );
-
-    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
-      db,
-      parentShoppingListId,
-    );
-
-    await ShoppingListsTableOperations.updateShoppingList(
-      db,
-      parentShoppingListId,
-      totalShoppingListItems.length,
-      completedShoppingListItems.length,
-    );
-
-    return parentShoppingListId;
-  }
-
-  static async getShoppingListItems(shoppingListId) {
-    const productsListData = await ShoppingListItemsTableOperations.getItems(
       db,
       shoppingListId,
     );
 
-    const productsList = [];
-    for (let i = 0; i < productsListData.length; ++i) {
-      productsList.push(productsListData.item(i));
-    }
+    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+      db,
+      shoppingListId,
+    );
 
-    return productsList;
+    await ShoppingListsTableOperations.updateShoppingList(
+      db,
+      shoppingListId,
+      totalShoppingListItems.length,
+      completedShoppingListItems.length,
+    );
+
+    return shoppingListId;
   }
 
   static async getShoppingList(shoppingListId) {
@@ -324,19 +292,6 @@ export class SqliteStorage {
     };
   }
 
-  static async getShoppingListName(shoppingListId) {
-    const nameData = await ShoppingListsTableOperations.getShoppingListName(
-      db,
-      shoppingListId,
-    );
-
-    if (nameData.length) {
-      return nameData.item(0).listName;
-    } else {
-      return '';
-    }
-  }
-
   static async removeShoppingList(shoppingListId) {
     const removedShoppingListsCount = await ShoppingListsTableOperations.removeShoppingList(
       db,
@@ -351,11 +306,24 @@ export class SqliteStorage {
     return {removedShoppingListsCount, removedProductsCount};
   }
 
-  static async getSignInInfo() {
-    return await AuthenticationTableOperations.getSignInInfo(db);
+  static async getLocalSignInInfo() {
+    const localSignInInfo = await AuthenticationTableOperations.getSignInInfo(
+      db,
+    );
+
+    return {
+      phone:
+        localSignInInfo.length > 0 ? localSignInInfo.item(0).phone : undefined,
+      email:
+        localSignInInfo.length > 0 ? localSignInInfo.item(0).email : undefined,
+      password:
+        localSignInInfo.length > 0
+          ? localSignInInfo.item(0).password
+          : undefined,
+    };
   }
 
-  static async updateSignInInfo({phone, email, password}) {
+  static async updateLocalSignInInfo({phone, email, password}) {
     const currentSignInInfoData = await AuthenticationTableOperations.getSignInInfo(
       db,
     );
@@ -372,7 +340,7 @@ export class SqliteStorage {
     );
   }
 
-  static async removeSignInInfo() {
+  static async removeLocalSignInInfo() {
     await AuthenticationTableOperations.removeSignInInfo(db);
   }
 }
