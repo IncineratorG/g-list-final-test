@@ -36,7 +36,9 @@ export const useShoppingListScreenController = model => {
   };
 
   const statusPressHandler = (productId, status) => {
-    model.dispatch(setProductStatus(productId, status));
+    model.dispatch(
+      setProductStatus(model.data.shoppingListId, productId, status),
+    );
   };
 
   return {

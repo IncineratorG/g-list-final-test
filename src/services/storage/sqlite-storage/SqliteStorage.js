@@ -288,7 +288,10 @@ export class SqliteStorage {
   }
 
   static async getShoppingListItems(shoppingListId) {
-    const productsListData = await ShoppingListItemsTableOperations.getItems(db, shoppingListId);
+    const productsListData = await ShoppingListItemsTableOperations.getItems(
+      db,
+      shoppingListId,
+    );
 
     const productsList = [];
     for (let i = 0; i < productsListData.length; ++i) {
@@ -296,6 +299,29 @@ export class SqliteStorage {
     }
 
     return productsList;
+  }
+
+  static async getShoppingList(shoppingListId) {
+    const productsListData = await ShoppingListItemsTableOperations.getItems(
+      db,
+      shoppingListId,
+    );
+
+    const productsList = [];
+    for (let i = 0; i < productsListData.length; ++i) {
+      productsList.push(productsListData.item(i));
+    }
+
+    const nameData = await ShoppingListsTableOperations.getShoppingListName(
+      db,
+      shoppingListId,
+    );
+
+    return {
+      id: shoppingListId,
+      name: nameData.length ? nameData.item(0).listName : '',
+      productsList,
+    };
   }
 
   static async getShoppingListName(shoppingListId) {

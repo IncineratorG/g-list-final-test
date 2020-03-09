@@ -1,11 +1,11 @@
 import {
-  loadShoppingList,
   removeShoppingList,
+  subscribeToShoppingList,
 } from '../../../store/actions/shoppingListActions';
 
 export const useMainScreenController = model => {
   const listItemPressHandler = listItemId => {
-    model.dispatch(loadShoppingList(listItemId));
+    model.dispatch(subscribeToShoppingList(listItemId));
     model.navigation.navigate('ShoppingList');
   };
 
