@@ -1,6 +1,7 @@
 import {
   clearPotentialCollaboratorData,
   sendTextMessage,
+  shareShoppingList,
 } from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenController = model => {

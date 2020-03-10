@@ -9,6 +9,7 @@ import {
 } from '../types/collaborationTypes';
 import {Collaboration} from '../../services/collaboration/Collaboration';
 import {Storage} from '../../services/storage/Storage';
+import {SHOPPING_LIST_CHANGED} from '../../services/storage/storageEventTypes';
 
 export const clearPotentialCollaboratorData = () => {
   return async dispatch => {
@@ -55,9 +56,16 @@ export const shareShoppingList = ({
   return async dispatch => {
     console.log('HERE');
 
-    // const units = await Storage.getUnits({shoppingListId});
-    // const classes = await Storage.getClasses({shoppingListId});
-    //
+    const shoppingListData = await Storage.subscribe({
+      shoppingListId,
+      event: SHOPPING_LIST_CHANGED,
+      once: true,
+    });
+
+    const shoppingList = shoppingListData.data;
+    const units = await Storage.getUnits({shoppingListId});
+    const classes = await Storage.getClasses({shoppingListId});
+
     // const shoppingListName = await Storage.getShoppingListName({
     //   shoppingListId,
     // });
@@ -68,14 +76,14 @@ export const shareShoppingList = ({
     //   name: shoppingListName,
     //   products,
     // };
-    //
-    // await Collaboration.shareShoppingList({
-    //   receiver: receiverPhone,
-    //   sender: senderPhone,
-    //   shoppingList,
-    //   units,
-    //   classes,
-    // });
+
+    await Collaboration.shareShoppingList({
+      receiver: receiverPhone,
+      sender: senderPhone,
+      shoppingList,
+      units,
+      classes,
+    });
   };
 };
 

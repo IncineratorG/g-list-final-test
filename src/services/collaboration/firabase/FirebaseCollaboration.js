@@ -65,8 +65,8 @@ export class FirebaseCollaboration {
     receiver,
     sender,
     shoppingList,
-    usedUnits,
-    usedClasses,
+    units,
+    classes,
   }) {
     console.log('HERE_HERE_HERE');
 
@@ -74,8 +74,8 @@ export class FirebaseCollaboration {
       receiver,
       sender,
       shoppingList,
-      usedUnits,
-      usedClasses,
+      units,
+      classes,
     };
     const serializedData = JSON.stringify(data);
 
@@ -96,7 +96,7 @@ export class FirebaseCollaboration {
 
       const {status, sharedListKey} = responseData;
 
-      // console.log('RESPONSE_STATUS: ' + status);
+      console.log('RESPONSE_STATUS: ' + status);
       console.log('RESPONSE_KEY: ' + sharedListKey);
 
       return 'SUCCESS';

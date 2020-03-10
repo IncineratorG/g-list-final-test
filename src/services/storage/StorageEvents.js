@@ -17,7 +17,7 @@ export class StorageEvents {
     };
   }
 
-  static notify({entityIds, event, data}) {
+  static fireEvent({entityIds, event, data}) {
     const entityPath = this.idsToPath(entityIds);
 
     StorageEvents.subscriptions.forEach(subscription => {

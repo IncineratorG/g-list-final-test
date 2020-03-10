@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import {AppState} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import AppNavigation from '../navigation/AppNavigation';
 import {subscribeToLocalSignInInfo} from '../../store/actions/authenticationActions';
