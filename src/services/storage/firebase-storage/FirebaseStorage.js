@@ -21,11 +21,18 @@ export class FirebaseStorage {
 
     StorageEvents.subscribe({
       event: SIGN_IN_INFO_CHANGED,
-      handler: async signInInfo => {
+      handler: signInInfo => {
         FirebaseStorage.localSignInInfo = signInInfo;
         this.updateListeners();
       },
     });
+
+    // StorageEvents.subscribe({
+    //   event: SHARED_LIST_ADDED,
+    //   handler: sharedShoppingListData => {
+    //
+    //   },
+    // });
   }
 
   static updateListeners() {
@@ -74,8 +81,8 @@ export class FirebaseStorage {
   static removeListeners() {
     console.log('REMOVE_LISTENERS');
 
-    FirebaseStorage.pathHandlerMap.forEach((value, key) => {
-      value.off('value', key);
+    FirebaseStorage.pathHandlerMap.forEach((handler, path) => {
+      path.off('value', handler);
     });
 
     FirebaseStorage.paths.clear();
@@ -86,12 +93,48 @@ export class FirebaseStorage {
     console.log('FIREBASE_STORAGE_OFF');
     this.removeListeners();
   }
+
+  static async getShoppingLists() {
+    console.log('GET_SHOPPING_LISTS');
+  }
+
+  static async getShoppingList(shoppingListId) {
+    console.log('GET_SHOPPING_LIST: ' + shoppingListId);
+  }
+
+  static async removeShoppingList({shoppingListId}) {
+    console.log('REMOVE_SHOPPING_LIST: ' + shoppingListId);
+  }
+
+  static async addShoppingListItem({
+    shoppingListId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+  }) {
+    console.log('ADD_SHOPPING_LIST_ITEM: ' + shoppingListId);
+  }
+
+  static async setProductStatus({shoppingListId, productId, status}) {
+    console.log('SET_PRODUCT_STATUS: ' + shoppingListId);
+  }
+
+  static async getUnits({shoppingListId}) {
+    console.log('GET_UNITS');
+  }
+
+  static async getClasses({shoppingListId}) {
+    console.log('GET_CLASSES');
+  }
 }
 
 FirebaseStorage.localSignInInfo = undefined;
 FirebaseStorage.handlers = new Map();
 FirebaseStorage.paths = new Map();
 FirebaseStorage.pathHandlerMap = new Map();
+FirebaseStorage.sharedShoppingLists = new Map();
 
 // export class FirebaseStorage {
 //   static async init(localSignInInfo) {
