@@ -1,17 +1,7 @@
 import {SqliteStorage} from './sqlite-storage/SqliteStorage';
 import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
-import {
-  LIST_OF_SHOPPING_LISTS_CHANGED,
-  LOCAL_PRODUCT_ADDED,
-  LOCAL_PRODUCT_UPDATED,
-  LOCAL_SHOPPING_LIST_ADDED,
-  LOCAL_SHOPPING_LIST_REMOVED, LOCAL_SIGN_IN_INFO_REMOVED,
-  LOCAL_SIGN_IN_INFO_UPDATED,
-  SHOPPING_LIST_CHANGED,
-  SIGN_IN_INFO_CHANGED,
-} from './storageEventTypes';
-import {StorageEvents} from './StorageEvents';
 import {FirebaseStorage} from './firebase-storage/FirebaseStorage';
+import {StorageNotifier} from './storage-notifier/StorageNotifier';
 
 export class Storage {
   static async subscribe({
@@ -23,18 +13,18 @@ export class Storage {
   }) {
     const unsubscribe = once
       ? () => {}
-      : StorageEvents.subscribe({
+      : Storage.notifier.subscribe({
           entityIds: {shoppingListId, productId},
           event,
           handler,
         });
 
     let data;
-    if (event === LIST_OF_SHOPPING_LISTS_CHANGED) {
+    if (event === Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED) {
       data = await SqliteStorage.getShoppingLists();
-    } else if (event === SHOPPING_LIST_CHANGED) {
+    } else if (event === Storage.events.SHOPPING_LIST_CHANGED) {
       data = await SqliteStorage.getShoppingList(shoppingListId);
-    } else if (event === SIGN_IN_INFO_CHANGED) {
+    } else if (event === Storage.events.SIGN_IN_INFO_CHANGED) {
       data = await SqliteStorage.getLocalSignInInfo();
     }
 
@@ -107,94 +97,123 @@ export class Storage {
 
   static off() {
     FirebaseStorage.off();
+    this.removeStorageSubscriptions();
   }
 
   static setStorageSubscriptions() {
-    StorageEvents.subscribe({
-      event: LOCAL_SHOPPING_LIST_ADDED,
-      handler: async () => {
-        const shoppingLists = await SqliteStorage.getShoppingLists();
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_SHOPPING_LIST_ADDED,
+        handler: async () => {
+          const shoppingLists = await SqliteStorage.getShoppingLists();
 
-        StorageEvents.fireEvent({
-          event: LIST_OF_SHOPPING_LISTS_CHANGED,
-          data: shoppingLists,
-        });
-      },
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: shoppingLists,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_SHOPPING_LIST_REMOVED,
+        handler: async () => {
+          const shoppingLists = await SqliteStorage.getShoppingLists();
+
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: shoppingLists,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
+        handler: async ({shoppingListId}) => {
+          const shoppingLists = await SqliteStorage.getShoppingLists();
+          const shoppingList = await SqliteStorage.getShoppingList(
+            shoppingListId,
+          );
+
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: shoppingLists,
+          });
+          Storage.notifier.notify({
+            entityIds: {shoppingListId},
+            event: Storage.events.SHOPPING_LIST_CHANGED,
+            data: shoppingList,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
+        handler: async ({shoppingListId}) => {
+          const shoppingLists = await SqliteStorage.getShoppingLists();
+          const shoppingList = await SqliteStorage.getShoppingList(
+            shoppingListId,
+          );
+
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: shoppingLists,
+          });
+          Storage.notifier.notify({
+            entityIds: {shoppingListId},
+            event: Storage.events.SHOPPING_LIST_CHANGED,
+            data: shoppingList,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_UPDATED,
+        handler: ({localSignInInfo}) => {
+          Storage.notifier.notify({
+            event: Storage.events.SIGN_IN_INFO_CHANGED,
+            data: localSignInInfo,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_REMOVED,
+        handler: ({localSignInInfo}) => {
+          Storage.notifier.notify({
+            event: Storage.events.SIGN_IN_INFO_CHANGED,
+            data: localSignInInfo,
+          });
+        },
+      }),
+    );
+  }
+
+  static removeStorageSubscriptions() {
+    Storage.localSubscriptions.forEach(unsubscribeFunc => {
+      unsubscribeFunc();
     });
 
-    StorageEvents.subscribe({
-      event: LOCAL_SHOPPING_LIST_REMOVED,
-      handler: async () => {
-        const shoppingLists = await SqliteStorage.getShoppingLists();
-
-        StorageEvents.fireEvent({
-          event: LIST_OF_SHOPPING_LISTS_CHANGED,
-          data: shoppingLists,
-        });
-      },
-    });
-
-    StorageEvents.subscribe({
-      event: LOCAL_PRODUCT_ADDED,
-      handler: async ({shoppingListId}) => {
-        const shoppingLists = await SqliteStorage.getShoppingLists();
-        const shoppingList = await SqliteStorage.getShoppingList(
-          shoppingListId,
-        );
-
-        StorageEvents.fireEvent({
-          event: LIST_OF_SHOPPING_LISTS_CHANGED,
-          data: shoppingLists,
-        });
-        StorageEvents.fireEvent({
-          entityIds: {shoppingListId},
-          event: SHOPPING_LIST_CHANGED,
-          data: shoppingList,
-        });
-      },
-    });
-
-    StorageEvents.subscribe({
-      event: LOCAL_PRODUCT_UPDATED,
-      handler: async ({shoppingListId}) => {
-        const shoppingLists = await SqliteStorage.getShoppingLists();
-        const shoppingList = await SqliteStorage.getShoppingList(
-          shoppingListId,
-        );
-
-        StorageEvents.fireEvent({
-          event: LIST_OF_SHOPPING_LISTS_CHANGED,
-          data: shoppingLists,
-        });
-        StorageEvents.fireEvent({
-          entityIds: {shoppingListId},
-          event: SHOPPING_LIST_CHANGED,
-          data: shoppingList,
-        });
-      },
-    });
-
-    StorageEvents.subscribe({
-      event: LOCAL_SIGN_IN_INFO_UPDATED,
-      handler: ({localSignInInfo}) => {
-        StorageEvents.fireEvent({
-          event: SIGN_IN_INFO_CHANGED,
-          data: localSignInInfo,
-        });
-      },
-    });
-
-    StorageEvents.subscribe({
-      event: LOCAL_SIGN_IN_INFO_REMOVED,
-      handler: ({localSignInInfo}) => {
-        StorageEvents.fireEvent({
-          event: SIGN_IN_INFO_CHANGED,
-          data: localSignInInfo,
-        });
-      },
-    });
+    Storage.localSubscriptions.length = 0;
   }
 }
+
+Storage.events = {
+  LIST_OF_SHOPPING_LISTS_CHANGED: 'LIST_OF_SHOPPING_LISTS_CHANGED',
+  SHOPPING_LIST_CHANGED: 'SHOPPING_LIST_CHANGED',
+  SIGN_IN_INFO_CHANGED: 'SIGN_IN_INFO_CHANGED',
+};
+Storage.notifier = new StorageNotifier({});
+Storage.localSubscriptions = [];
 
 // export class Storage {
 //   static async subscribe({

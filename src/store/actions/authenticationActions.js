@@ -1,7 +1,7 @@
 import {
-  LOAD_LOCAL_SIGN_IN_INFO_BEGIN,
-  LOAD_LOCAL_SIGN_IN_INFO_ERROR,
-  LOAD_LOCAL_SIGN_IN_INFO_FINISHED,
+  // LOAD_LOCAL_SIGN_IN_INFO_BEGIN,
+  // LOAD_LOCAL_SIGN_IN_INFO_ERROR,
+  // LOAD_LOCAL_SIGN_IN_INFO_FINISHED,
   RESET_SIGN_ERRORS,
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
@@ -19,7 +19,6 @@ import {
 } from '../types/authenticationTypes';
 import {Authentication} from '../../services/authentication/Authentication';
 import {Storage} from '../../services/storage/Storage';
-import {SIGN_IN_INFO_CHANGED} from '../../services/storage/storageEventTypes';
 
 export const subscribeToLocalSignInInfo = () => {
   return async dispatch => {
@@ -31,7 +30,7 @@ export const subscribeToLocalSignInInfo = () => {
       };
 
       const subscription = await Storage.subscribe({
-        event: SIGN_IN_INFO_CHANGED,
+        event: Storage.events.SIGN_IN_INFO_CHANGED,
         handler: localSignInInfoChangedHandler,
       });
 

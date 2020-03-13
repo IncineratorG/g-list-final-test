@@ -9,7 +9,6 @@ import {
 } from '../types/collaborationTypes';
 import {Collaboration} from '../../services/collaboration/Collaboration';
 import {Storage} from '../../services/storage/Storage';
-import {SHOPPING_LIST_CHANGED} from '../../services/storage/storageEventTypes';
 
 export const clearPotentialCollaboratorData = () => {
   return async dispatch => {
@@ -58,7 +57,7 @@ export const shareShoppingList = ({
 
     const shoppingListData = await Storage.subscribe({
       shoppingListId,
-      event: SHOPPING_LIST_CHANGED,
+      event: Storage.events.SHOPPING_LIST_CHANGED,
       once: true,
     });
 

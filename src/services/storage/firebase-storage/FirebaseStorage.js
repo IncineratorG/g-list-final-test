@@ -1,6 +1,4 @@
 import database from '@react-native-firebase/database';
-import {StorageEvents} from '../StorageEvents';
-import {SIGN_IN_INFO_CHANGED} from '../storageEventTypes';
 import {
   receivedPathHandler,
   sendPathHandler,
@@ -8,6 +6,8 @@ import {
 } from './firebaseHandlers';
 import {FirebasePaths} from './FirebasePaths';
 import {USER_RECEIVED, USER_SEND} from './firebasePathTypes';
+import {Storage} from '../Storage';
+import {StorageNotifier} from '../storage-notifier/StorageNotifier';
 
 export class FirebaseStorage {
   static async init(localSignInInfo) {
@@ -17,22 +17,8 @@ export class FirebaseStorage {
     FirebaseStorage.handlers.set('receivedPath', receivedPathHandler);
     FirebaseStorage.handlers.set('sharedListChanged', sharedListChangedHandler);
 
+    await this.updateSubscriptions();
     this.updateListeners();
-
-    StorageEvents.subscribe({
-      event: SIGN_IN_INFO_CHANGED,
-      handler: signInInfo => {
-        FirebaseStorage.localSignInInfo = signInInfo;
-        this.updateListeners();
-      },
-    });
-
-    // StorageEvents.subscribe({
-    //   event: SHARED_LIST_ADDED,
-    //   handler: sharedShoppingListData => {
-    //
-    //   },
-    // });
   }
 
   static updateListeners() {
@@ -42,6 +28,16 @@ export class FirebaseStorage {
     } else {
       this.removeListeners();
     }
+  }
+
+  static async updateSubscriptions() {
+    console.log('LENGTH: ' + FirebaseStorage.localSubscrtiptions.length);
+    if (FirebaseStorage.localSubscrtiptions.length > 0) {
+      await this.removeSubscriptions();
+      await this.setSubscriptions();
+    }
+
+    await this.setSubscriptions();
   }
 
   static setListeners() {
@@ -92,6 +88,7 @@ export class FirebaseStorage {
   static off() {
     console.log('FIREBASE_STORAGE_OFF');
     this.removeListeners();
+    this.removeSubscriptions();
   }
 
   static async getShoppingLists() {
@@ -128,6 +125,55 @@ export class FirebaseStorage {
   static async getClasses({shoppingListId}) {
     console.log('GET_CLASSES');
   }
+
+  static async setSubscriptions() {
+    console.log('setSubscriptions()');
+
+    const subscriptionData = await Storage.subscribe({
+      event: Storage.events.SIGN_IN_INFO_CHANGED,
+      handler: signInInfo => {
+        FirebaseStorage.localSignInInfo = signInInfo;
+        this.updateListeners();
+      },
+    });
+    FirebaseStorage.localSubscrtiptions.push(subscriptionData.unsubscribe);
+
+    FirebaseStorage.localSubscrtiptions.push(
+      FirebaseStorage.notifier.subscribe({
+        event: FirebaseStorage.localEvents.SEND_LISTS_SET,
+        handler: sharedListsData => {
+          // console.log('EVENT: ' + sendLists.length);
+          console.log();
+          console.log('===SEND_LISTS_SET===');
+          console.log(
+            FirebaseStorage.sharedShoppingLists.size +
+              ' - ' +
+              sharedListsData.length,
+          );
+          console.log('====================');
+          console.log();
+
+          sharedListsData.forEach(sharedListData => {
+            const {shoppingList, units, classes} = sharedListData;
+            FirebaseStorage.sharedShoppingLists.set(shoppingList.id, {
+              shoppingList,
+              units,
+              classes,
+            });
+          });
+        },
+      }),
+    );
+  }
+
+  static removeSubscriptions() {
+    console.log('removeSubscriptions()');
+
+    FirebaseStorage.localSubscrtiptions.forEach(unsubscribeFunc => {
+      unsubscribeFunc();
+    });
+    FirebaseStorage.localSubscrtiptions.length = 0;
+  }
 }
 
 FirebaseStorage.localSignInInfo = undefined;
@@ -135,6 +181,13 @@ FirebaseStorage.handlers = new Map();
 FirebaseStorage.paths = new Map();
 FirebaseStorage.pathHandlerMap = new Map();
 FirebaseStorage.sharedShoppingLists = new Map();
+
+FirebaseStorage.notifier = new StorageNotifier({});
+FirebaseStorage.events = {};
+FirebaseStorage.localEvents = {
+  SEND_LISTS_SET: 'SEND_LISTS_SET',
+};
+FirebaseStorage.localSubscrtiptions = [];
 
 // export class FirebaseStorage {
 //   static async init(localSignInInfo) {

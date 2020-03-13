@@ -15,10 +15,6 @@ import {
   UPDATE_SHOPPING_LIST,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
-import {
-  LIST_OF_SHOPPING_LISTS_CHANGED,
-  SHOPPING_LIST_CHANGED,
-} from '../../services/storage/storageEventTypes';
 
 export const loadUnits = ({shoppingListId}) => {
   return async dispatch => {
@@ -62,7 +58,7 @@ export const subscribeToListOfShoppingLists = () => {
       };
 
       const subscription = await Storage.subscribe({
-        event: LIST_OF_SHOPPING_LISTS_CHANGED,
+        event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
         handler: listOfShoppingListsChangedHandler,
       });
 
@@ -119,7 +115,7 @@ export const subscribeToShoppingList = shoppingListId => {
 
       const subscription = await Storage.subscribe({
         shoppingListId,
-        event: SHOPPING_LIST_CHANGED,
+        event: Storage.events.SHOPPING_LIST_CHANGED,
         handler: shoppingListChangedHandler,
       });
 

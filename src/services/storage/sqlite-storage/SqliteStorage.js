@@ -43,16 +43,7 @@ import {
   AUTHENTICATION_TABLE_PHONE,
 } from './tables-description/authenticationTableDescription';
 import {AuthenticationTableOperations} from './operations-implementation/AuthenticationTableOperations';
-import awaitAsyncGenerator from '@babel/runtime/helpers/esm/awaitAsyncGenerator';
-import {StorageEvents} from '../StorageEvents';
-import {
-  LOCAL_PRODUCT_ADDED,
-  LOCAL_PRODUCT_UPDATED,
-  LOCAL_SHOPPING_LIST_ADDED,
-  LOCAL_SHOPPING_LIST_REMOVED,
-  LOCAL_SIGN_IN_INFO_REMOVED,
-  LOCAL_SIGN_IN_INFO_UPDATED,
-} from '../storageEventTypes';
+import {StorageNotifier} from '../storage-notifier/StorageNotifier';
 
 const DB_NAME = 'glist.db';
 
@@ -60,6 +51,10 @@ const SQlite = require('react-native-sqlite-storage');
 const db = SQlite.openDatabase(DB_NAME);
 
 export class SqliteStorage {
+  static subscribe({entityIds, event, handler}) {
+    return SqliteStorage.notifier.subscribe({entityIds, event, handler});
+  }
+
   static init() {
     const createClassesTableStatement =
       'CREATE TABLE IF NOT EXISTS ' +
@@ -199,8 +194,8 @@ export class SqliteStorage {
       name,
     );
 
-    StorageEvents.fireEvent({
-      event: LOCAL_SHOPPING_LIST_ADDED,
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SHOPPING_LIST_ADDED,
       data: {shoppingListId, name},
     });
 
@@ -218,8 +213,8 @@ export class SqliteStorage {
       shoppingListId,
     );
 
-    StorageEvents.fireEvent({
-      event: LOCAL_SHOPPING_LIST_REMOVED,
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SHOPPING_LIST_REMOVED,
       data: {id: shoppingListId},
     });
 
@@ -274,8 +269,8 @@ export class SqliteStorage {
       completedShoppingListItems.length,
     );
 
-    StorageEvents.fireEvent({
-      event: LOCAL_PRODUCT_ADDED,
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
       data: {
         shoppingListId,
         productId: insertedId,
@@ -317,8 +312,8 @@ export class SqliteStorage {
       completedShoppingListItems.length,
     );
 
-    StorageEvents.fireEvent({
-      event: LOCAL_PRODUCT_UPDATED,
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
       data: {shoppingListId, productId, status},
     });
 
@@ -383,8 +378,8 @@ export class SqliteStorage {
 
     const localSignInInfo = await this.getLocalSignInInfo();
 
-    StorageEvents.fireEvent({
-      event: LOCAL_SIGN_IN_INFO_UPDATED,
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_UPDATED,
       data: {localSignInInfo},
     });
   }
@@ -393,12 +388,22 @@ export class SqliteStorage {
     await AuthenticationTableOperations.removeSignInInfo(db);
     const localSignInInfo = await this.getLocalSignInInfo();
 
-    StorageEvents.fireEvent({
-      event: LOCAL_SIGN_IN_INFO_REMOVED,
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_REMOVED,
       data: {localSignInInfo},
     });
   }
 }
+
+SqliteStorage.events = {
+  LOCAL_SHOPPING_LIST_ADDED: 'LOCAL_SHOPPING_LIST_ADDED',
+  LOCAL_SHOPPING_LIST_REMOVED: 'LOCAL_SHOPPING_LIST_REMOVED',
+  LOCAL_PRODUCT_ADDED: 'LOCAL_PRODUCT_ADDED',
+  LOCAL_PRODUCT_UPDATED: 'LOCAL_PRODUCT_UPDATED',
+  LOCAL_SIGN_IN_INFO_UPDATED: 'LOCAL_SIGN_IN_INFO_UPDATED',
+  LOCAL_SIGN_IN_INFO_REMOVED: 'LOCAL_SIGN_IN_INFO_REMOVED',
+};
+SqliteStorage.notifier = new StorageNotifier({});
 
 // export class SqliteStorage {
 //   static init() {
