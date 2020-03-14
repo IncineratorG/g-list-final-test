@@ -31,7 +31,7 @@ export class FirebaseStorage {
   }
 
   static async updateSubscriptions() {
-    console.log('LENGTH: ' + FirebaseStorage.localSubscrtiptions.length);
+    // console.log('LENGTH: ' + FirebaseStorage.localSubscrtiptions.length);
     if (FirebaseStorage.localSubscrtiptions.length > 0) {
       await this.removeSubscriptions();
       await this.setSubscriptions();
@@ -41,7 +41,7 @@ export class FirebaseStorage {
   }
 
   static setListeners() {
-    console.log('SET_LISTENERS');
+    // console.log('SET_LISTENERS');
     this.removeListeners();
 
     const {phone} = FirebaseStorage.localSignInInfo;
@@ -75,7 +75,7 @@ export class FirebaseStorage {
   }
 
   static removeListeners() {
-    console.log('REMOVE_LISTENERS');
+    // console.log('REMOVE_LISTENERS');
 
     FirebaseStorage.pathHandlerMap.forEach((handler, path) => {
       path.off('value', handler);
@@ -127,7 +127,7 @@ export class FirebaseStorage {
   }
 
   static async setSubscriptions() {
-    console.log('setSubscriptions()');
+    // console.log('setSubscriptions()');
 
     const subscriptionData = await Storage.subscribe({
       event: Storage.events.SIGN_IN_INFO_CHANGED,
@@ -138,32 +138,32 @@ export class FirebaseStorage {
     });
     FirebaseStorage.localSubscrtiptions.push(subscriptionData.unsubscribe);
 
-    FirebaseStorage.localSubscrtiptions.push(
-      FirebaseStorage.notifier.subscribe({
-        event: FirebaseStorage.localEvents.SEND_LISTS_SET,
-        handler: sharedListsData => {
-          // console.log('EVENT: ' + sendLists.length);
-          console.log();
-          console.log('===SEND_LISTS_SET===');
-          console.log(
-            FirebaseStorage.sharedShoppingLists.size +
-              ' - ' +
-              sharedListsData.length,
-          );
-          console.log('====================');
-          console.log();
-
-          sharedListsData.forEach(sharedListData => {
-            const {shoppingList, units, classes} = sharedListData;
-            FirebaseStorage.sharedShoppingLists.set(shoppingList.id, {
-              shoppingList,
-              units,
-              classes,
-            });
-          });
-        },
-      }),
-    );
+    // FirebaseStorage.localSubscrtiptions.push(
+    //   FirebaseStorage.notifier.subscribe({
+    //     event: FirebaseStorage.localEvents.SEND_LISTS_SET,
+    //     handler: sharedListsData => {
+    //       // console.log('EVENT: ' + sendLists.length);
+    //       console.log();
+    //       console.log('===SEND_LISTS_SET===');
+    //       console.log(
+    //         FirebaseStorage.sharedShoppingLists.size +
+    //           ' - ' +
+    //           sharedListsData.length,
+    //       );
+    //       console.log('====================');
+    //       console.log();
+    //
+    //       sharedListsData.forEach(sharedListData => {
+    //         const {shoppingList, units, classes} = sharedListData;
+    //         FirebaseStorage.sharedShoppingLists.set(shoppingList.id, {
+    //           shoppingList,
+    //           units,
+    //           classes,
+    //         });
+    //       });
+    //     },
+    //   }),
+    // );
   }
 
   static removeSubscriptions() {
@@ -183,7 +183,9 @@ FirebaseStorage.pathHandlerMap = new Map();
 FirebaseStorage.sharedShoppingLists = new Map();
 
 FirebaseStorage.notifier = new StorageNotifier({});
-FirebaseStorage.events = {};
+FirebaseStorage.events = {
+  SEND_LISTS_CHANGED: 'SEND_LISTS_CHANGED',
+};
 FirebaseStorage.localEvents = {
   SEND_LISTS_SET: 'SEND_LISTS_SET',
 };

@@ -16,6 +16,7 @@ import {
   SHOPPING_LISTS_TABLE_COMPLETED_ITEMS,
   SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP,
   SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP,
+  SHOPPING_LISTS_TABLE_CREATOR,
 } from './tables-description/shoppingListsTableDescription';
 import {
   SHOPPING_LIST_ITEM_TABLE,
@@ -82,6 +83,8 @@ export class SqliteStorage {
       ' (' +
       SHOPPING_LISTS_TABLE_ID +
       ' INTEGER PRIMARY KEY NOT NULL, ' +
+      SHOPPING_LISTS_TABLE_CREATOR +
+      ' TEXT NOT_NULL, ' +
       SHOPPING_LISTS_TABLE_LIST_NAME +
       ' TEXT NOT NULL, ' +
       SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
@@ -188,10 +191,11 @@ export class SqliteStorage {
     return classes;
   }
 
-  static async addShoppingList(name) {
+  static async addShoppingList(name, creator) {
     const shoppingListId = await ShoppingListsTableOperations.addShoppingList(
       db,
       name,
+      creator,
     );
 
     SqliteStorage.notifier.notify({
@@ -331,14 +335,27 @@ export class SqliteStorage {
       productsList.push(productsListData.item(i));
     }
 
-    const nameData = await ShoppingListsTableOperations.getShoppingListName(
+    const descriptionData = await ShoppingListsTableOperations.getShoppingListDescription(
       db,
       shoppingListId,
     );
 
     return {
       id: shoppingListId,
-      name: nameData.length ? nameData.item(0).listName : '',
+      name: descriptionData.length ? descriptionData.item(0).listName : '',
+      totalItemsCount: descriptionData.length
+        ? descriptionData.item(0).totalItemsCount
+        : '',
+      completedItemsCount: descriptionData.length
+        ? descriptionData.item(0).completedItemsCount
+        : '',
+      createTimestamp: descriptionData.length
+        ? descriptionData.item(0).createTimestamp
+        : '',
+      updateTimestamp: descriptionData.length
+        ? descriptionData.item(0).updateTimestamp
+        : '',
+      creator: descriptionData.length ? descriptionData.item(0).creator : '',
       productsList,
     };
   }

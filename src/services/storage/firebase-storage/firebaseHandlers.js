@@ -10,15 +10,24 @@ export const sendPathHandler = async snapshot => {
     return;
   }
 
-  const sharedListIds = [];
+  // Копия совместных спискв, имеющихся на клиенте.
+  const localSharedShoppingLists = new Map(FirebaseStorage.sharedShoppingLists);
+
+  // Список ID не имеющихся на клиенте совместных списков.
+  const newSharedListsIdsArr = [];
+  // Множество ID совместных списков, имеющихся на сервере.
+  const remoteSharedListsIdsSet = new Set();
+
   snapshot.forEach(child => {
-    if (!FirebaseStorage.sharedShoppingLists.has(child.key)) {
-      sharedListIds.push(child.key);
+    remoteSharedListsIdsSet.add(child.key);
+    if (!localSharedShoppingLists.has(child.key)) {
+      newSharedListsIdsArr.push(child.key);
     }
   });
 
-  const sharedLists = await Promise.all(
-    sharedListIds.map(async id => {
+  // Составляем список новых совместных списков.
+  const newSharedListsData = await Promise.all(
+    newSharedListsIdsArr.map(async id => {
       const sharedShoppingListPath = database().ref(
         FirebasePaths.getPath({
           pathType: SHARED_SHOPPING_LIST,
@@ -33,10 +42,66 @@ export const sendPathHandler = async snapshot => {
     }),
   );
 
-  FirebaseStorage.notifier.notify({
-    event: FirebaseStorage.localEvents.SEND_LISTS_SET,
-    data: sharedLists,
+  // Ищем ID списков, которые были удалены с серверов, но находятся на клиенте.
+  const localSharedListsToRemoveIds = [];
+  localSharedShoppingLists.forEach((list, id) => {
+    if (!remoteSharedListsIdsSet.has(id)) {
+      localSharedListsToRemoveIds.push(id);
+    }
   });
+
+  // Удаляем необходимые спсики с клиента.
+  localSharedListsToRemoveIds.forEach(id => {
+    localSharedShoppingLists.delete(id);
+  });
+
+  // Добавляем новые совместные списки клиенту.
+  newSharedListsData.forEach(sharedListData => {
+    const {shoppingList, units, classes} = sharedListData;
+    localSharedShoppingLists.set(shoppingList.id, {
+      shoppingList,
+      units,
+      classes,
+    });
+  });
+
+  FirebaseStorage.sharedShoppingLists = new Map(localSharedShoppingLists);
+  console.log(
+    'SHARED_SHOPPING_LISTS_SIZE: ' + FirebaseStorage.sharedShoppingLists.size,
+  );
+
+  // FirebaseStorage.notifier.notify({
+  //     event: FirebaseStorage.events.SEND_LISTS_CHANGED,
+  //     data:
+  // })
+
+  // const sharedListIds = [];
+  // snapshot.forEach(child => {
+  //   if (!FirebaseStorage.sharedShoppingLists.has(child.key)) {
+  //     sharedListIds.push(child.key);
+  //   }
+  // });
+  //
+  // const sharedLists = await Promise.all(
+  //   sharedListIds.map(async id => {
+  //     const sharedShoppingListPath = database().ref(
+  //       FirebasePaths.getPath({
+  //         pathType: SHARED_SHOPPING_LIST,
+  //         pathId: id,
+  //       }),
+  //     );
+  //
+  //     const sharedShoppingListSnapshot = await sharedShoppingListPath.once(
+  //       'value',
+  //     );
+  //     return FirebaseConverter.listFromFirebase(sharedShoppingListSnapshot);
+  //   }),
+  // );
+  //
+  // FirebaseStorage.notifier.notify({
+  //   event: FirebaseStorage.localEvents.SEND_LISTS_SET,
+  //   data: sharedLists,
+  // });
 
   // console.log(sharedLists.length);
 

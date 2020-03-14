@@ -6,6 +6,7 @@ import {
   SHOPPING_LISTS_TABLE_TOTAL_ITEMS,
   SHOPPING_LISTS_TABLE_COMPLETED_ITEMS,
   SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP,
+  SHOPPING_LISTS_TABLE_CREATOR,
 } from '../tables-description/shoppingListsTableDescription';
 
 export class ShoppingListsTableOperations {
@@ -27,7 +28,7 @@ export class ShoppingListsTableOperations {
     });
   }
 
-  static addShoppingList(db, name) {
+  static addShoppingList(db, name, creator) {
     const addShoppingListStatement =
       'INSERT INTO ' +
       SHOPPING_LISTS_TABLE +
@@ -41,15 +42,18 @@ export class ShoppingListsTableOperations {
       SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP +
       ', ' +
       SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
-      ') VALUES (?, ?, ?, ?, ?)';
+      ', ' +
+      SHOPPING_LISTS_TABLE_CREATOR +
+      ') VALUES (?, ?, ?, ?, ?, ?)';
 
     const timestamp = Date.now();
+    const listCreator = creator ? creator : '';
 
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
           addShoppingListStatement,
-          [name, 0, 0, timestamp, timestamp],
+          [name, 0, 0, timestamp, timestamp, listCreator],
           (_, result) => resolve(result.insertId),
           (_, error) => reject(error),
         );
@@ -124,10 +128,22 @@ export class ShoppingListsTableOperations {
     });
   }
 
-  static getShoppingListName(db, shoppingListId) {
-    const getShoppingListNameStatement =
+  static getShoppingListDescription(db, shoppingListId) {
+    const getShoppingListDescriptionStatement =
       'SELECT ' +
+      SHOPPING_LISTS_TABLE_ID +
+      ', ' +
       SHOPPING_LISTS_TABLE_LIST_NAME +
+      ', ' +
+      SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
+      ', ' +
+      SHOPPING_LISTS_TABLE_COMPLETED_ITEMS +
+      ', ' +
+      SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP +
+      ', ' +
+      SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
+      ', ' +
+      SHOPPING_LISTS_TABLE_CREATOR +
       ' FROM ' +
       SHOPPING_LISTS_TABLE +
       ' WHERE ' +
@@ -137,7 +153,7 @@ export class ShoppingListsTableOperations {
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
-          getShoppingListNameStatement,
+          getShoppingListDescriptionStatement,
           [shoppingListId],
           (_, result) => resolve(result.rows),
           (_, error) => reject(error),

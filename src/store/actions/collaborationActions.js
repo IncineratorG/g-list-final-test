@@ -53,8 +53,6 @@ export const shareShoppingList = ({
   shoppingListId,
 }) => {
   return async dispatch => {
-    console.log('HERE');
-
     const shoppingListData = await Storage.subscribe({
       shoppingListId,
       event: Storage.events.SHOPPING_LIST_CHANGED,
@@ -64,17 +62,6 @@ export const shareShoppingList = ({
     const shoppingList = shoppingListData.data;
     const units = await Storage.getUnits({shoppingListId});
     const classes = await Storage.getClasses({shoppingListId});
-
-    // const shoppingListName = await Storage.getShoppingListName({
-    //   shoppingListId,
-    // });
-    // const products = await Storage.getProductsList({shoppingListId});
-    //
-    // const shoppingList = {
-    //   id: shoppingListId,
-    //   name: shoppingListName,
-    //   products,
-    // };
 
     await Collaboration.shareShoppingList({
       receiver: receiverPhone,

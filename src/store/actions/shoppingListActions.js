@@ -91,6 +91,8 @@ export const createShoppingList = listName => async dispatch => {
       name: listName,
     },
   });
+
+  dispatch(subscribeToShoppingList(shoppingListId));
 };
 
 export const removeShoppingList = id => {
@@ -110,6 +112,7 @@ export const subscribeToShoppingList = shoppingListId => {
 
     try {
       const shoppingListChangedHandler = shoppingList => {
+        console.log('SHOPPING_LIST_CHANGED');
         dispatch({type: UPDATE_SHOPPING_LIST, payload: {shoppingList}});
       };
 

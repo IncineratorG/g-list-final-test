@@ -8,7 +8,13 @@ export class FirebaseConverter {
     const shoppingListData = shoppingListSnapshot.val().shoppingList;
 
     const id = shoppingListSnapshot.key;
-    const name = shoppingListData.name;
+    const {
+      name,
+      totalItemsCount,
+      completedItemsCount,
+      createTimestamp,
+      updateTimestamp,
+    } = shoppingListData;
 
     const productsList = this.productsFromFirebase(
       shoppingListData.productsList,
@@ -18,6 +24,10 @@ export class FirebaseConverter {
     const shoppingList = {
       id,
       name,
+      totalItemsCount,
+      completedItemsCount,
+      createTimestamp,
+      updateTimestamp,
       productsList,
     };
 
