@@ -60,6 +60,7 @@ export const shareShoppingList = ({
     });
 
     const shoppingList = shoppingListData.data;
+    shoppingList.creator = senderPhone;
     const units = await Storage.getUnits({shoppingListId});
     const classes = await Storage.getClasses({shoppingListId});
 

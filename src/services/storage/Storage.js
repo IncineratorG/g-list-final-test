@@ -196,6 +196,42 @@ export class Storage {
         },
       }),
     );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
+        handler: async () => {
+          console.log('STORAGE->SHARED_SEND_LISTS_CHANGED');
+
+          const localShoppingLists = await SqliteStorage.getShoppingLists();
+          const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
+          localShoppingLists.push(...sharedShoppingLists)
+
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: localShoppingLists,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_CHANGED,
+        handler: async () => {
+          console.log('STORAGE->SHARED_RECEIVED_LISTS_CHANGED');
+
+          const localShoppingLists = await SqliteStorage.getShoppingLists();
+          const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
+          localShoppingLists.push(...sharedShoppingLists);
+
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: localShoppingLists,
+          });
+        },
+      }),
+    );
   }
 
   static removeStorageSubscriptions() {

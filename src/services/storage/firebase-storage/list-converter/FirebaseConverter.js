@@ -10,6 +10,7 @@ export class FirebaseConverter {
     const id = shoppingListSnapshot.key;
     const {
       name,
+      creator,
       totalItemsCount,
       completedItemsCount,
       createTimestamp,
@@ -24,10 +25,12 @@ export class FirebaseConverter {
     const shoppingList = {
       id,
       name,
+      creator,
       totalItemsCount,
       completedItemsCount,
       createTimestamp,
       updateTimestamp,
+      shared: true,
       productsList,
     };
 

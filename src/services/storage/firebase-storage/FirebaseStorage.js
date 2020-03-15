@@ -10,6 +10,10 @@ import {Storage} from '../Storage';
 import {StorageNotifier} from '../storage-notifier/StorageNotifier';
 
 export class FirebaseStorage {
+  static subscribe({entityIds, event, handler}) {
+    return FirebaseStorage.notifier.subscribe({entityIds, event, handler});
+  }
+
   static async init(localSignInInfo) {
     FirebaseStorage.localSignInInfo = localSignInInfo;
 
@@ -93,10 +97,45 @@ export class FirebaseStorage {
 
   static async getShoppingLists() {
     console.log('GET_SHOPPING_LISTS');
+
+    const shoppingLists = [];
+    FirebaseStorage.sharedShoppingLists.forEach((listData, listId) => {
+      const {shoppingList} = listData;
+
+      const {
+        id,
+        name,
+        creator,
+        totalItemsCount,
+        completedItemsCount,
+        createTimestamp,
+        updateTimestamp,
+        shared,
+      } = shoppingList;
+
+      shoppingLists.push({
+        id,
+        listName: name,
+        creator,
+        totalItemsCount,
+        completedItemsCount,
+        createTimestamp,
+        updateTimestamp,
+        shared,
+      });
+    });
+
+    return shoppingLists;
   }
 
   static async getShoppingList(shoppingListId) {
     console.log('GET_SHOPPING_LIST: ' + shoppingListId);
+
+    let {shoppingList} = FirebaseStorage.sharedShoppingLists.get(
+      shoppingListId,
+    );
+
+    return shoppingList;
   }
 
   static async removeShoppingList({shoppingListId}) {
@@ -127,8 +166,6 @@ export class FirebaseStorage {
   }
 
   static async setSubscriptions() {
-    // console.log('setSubscriptions()');
-
     const subscriptionData = await Storage.subscribe({
       event: Storage.events.SIGN_IN_INFO_CHANGED,
       handler: signInInfo => {
@@ -137,33 +174,6 @@ export class FirebaseStorage {
       },
     });
     FirebaseStorage.localSubscrtiptions.push(subscriptionData.unsubscribe);
-
-    // FirebaseStorage.localSubscrtiptions.push(
-    //   FirebaseStorage.notifier.subscribe({
-    //     event: FirebaseStorage.localEvents.SEND_LISTS_SET,
-    //     handler: sharedListsData => {
-    //       // console.log('EVENT: ' + sendLists.length);
-    //       console.log();
-    //       console.log('===SEND_LISTS_SET===');
-    //       console.log(
-    //         FirebaseStorage.sharedShoppingLists.size +
-    //           ' - ' +
-    //           sharedListsData.length,
-    //       );
-    //       console.log('====================');
-    //       console.log();
-    //
-    //       sharedListsData.forEach(sharedListData => {
-    //         const {shoppingList, units, classes} = sharedListData;
-    //         FirebaseStorage.sharedShoppingLists.set(shoppingList.id, {
-    //           shoppingList,
-    //           units,
-    //           classes,
-    //         });
-    //       });
-    //     },
-    //   }),
-    // );
   }
 
   static removeSubscriptions() {
@@ -180,14 +190,15 @@ FirebaseStorage.localSignInInfo = undefined;
 FirebaseStorage.handlers = new Map();
 FirebaseStorage.paths = new Map();
 FirebaseStorage.pathHandlerMap = new Map();
+
 FirebaseStorage.sharedShoppingLists = new Map();
+FirebaseStorage.sendSharedShoppingListsIds = new Set();
+FirebaseStorage.receivedSharedShoppingListsIds = new Set();
 
 FirebaseStorage.notifier = new StorageNotifier({});
 FirebaseStorage.events = {
-  SEND_LISTS_CHANGED: 'SEND_LISTS_CHANGED',
-};
-FirebaseStorage.localEvents = {
-  SEND_LISTS_SET: 'SEND_LISTS_SET',
+  SHARED_SEND_LISTS_CHANGED: 'SHARED_SEND_LISTS_CHANGED',
+  SHARED_RECEIVED_LISTS_CHANGED: 'SHARED_RECEIVED_LISTS_CHANGED',
 };
 FirebaseStorage.localSubscrtiptions = [];
 
