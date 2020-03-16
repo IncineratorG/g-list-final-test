@@ -11,6 +11,7 @@ const MainView = ({styles, model, controller}) => {
     removeConfirmationDialogVisible,
     removeItemName,
     shoppingLists,
+    sectionsShoppingLists,
     shoppingListsLoading,
   } = model;
 
@@ -68,6 +69,7 @@ const MainView = ({styles, model, controller}) => {
     <View style={styles.listOfShoppingListContainer}>
       <ListOfShoppingLists
         list={shoppingLists}
+        sectionList={sectionsShoppingLists}
         onItemPress={listItemPressHandler}
         onRemovePress={listItemRemoveHandler}
       />

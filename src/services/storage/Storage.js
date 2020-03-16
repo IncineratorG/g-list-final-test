@@ -105,11 +105,13 @@ export class Storage {
       SqliteStorage.subscribe({
         event: SqliteStorage.events.LOCAL_SHOPPING_LIST_ADDED,
         handler: async () => {
-          const shoppingLists = await SqliteStorage.getShoppingLists();
+          const localShoppingLists = await SqliteStorage.getShoppingLists();
+          const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
+          localShoppingLists.push(...sharedShoppingLists);
 
           Storage.notifier.notify({
             event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
+            data: localShoppingLists,
           });
         },
       }),
@@ -119,11 +121,13 @@ export class Storage {
       SqliteStorage.subscribe({
         event: SqliteStorage.events.LOCAL_SHOPPING_LIST_REMOVED,
         handler: async () => {
-          const shoppingLists = await SqliteStorage.getShoppingLists();
+          const localShoppingLists = await SqliteStorage.getShoppingLists();
+          const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
+          localShoppingLists.push(...sharedShoppingLists);
 
           Storage.notifier.notify({
             event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
+            data: localShoppingLists,
           });
         },
       }),
@@ -133,14 +137,17 @@ export class Storage {
       SqliteStorage.subscribe({
         event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
         handler: async ({shoppingListId}) => {
-          const shoppingLists = await SqliteStorage.getShoppingLists();
+          const localShoppingLists = await SqliteStorage.getShoppingLists();
+          const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
+          localShoppingLists.push(...sharedShoppingLists);
+
           const shoppingList = await SqliteStorage.getShoppingList(
             shoppingListId,
           );
 
           Storage.notifier.notify({
             event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
+            data: localShoppingLists,
           });
           Storage.notifier.notify({
             entityIds: {shoppingListId},
@@ -155,14 +162,17 @@ export class Storage {
       SqliteStorage.subscribe({
         event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
         handler: async ({shoppingListId}) => {
-          const shoppingLists = await SqliteStorage.getShoppingLists();
+          const localShoppingLists = await SqliteStorage.getShoppingLists();
+          const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
+          localShoppingLists.push(...sharedShoppingLists);
+
           const shoppingList = await SqliteStorage.getShoppingList(
             shoppingListId,
           );
 
           Storage.notifier.notify({
             event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
+            data: localShoppingLists,
           });
           Storage.notifier.notify({
             entityIds: {shoppingListId},
@@ -205,7 +215,7 @@ export class Storage {
 
           const localShoppingLists = await SqliteStorage.getShoppingLists();
           const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
-          localShoppingLists.push(...sharedShoppingLists)
+          localShoppingLists.push(...sharedShoppingLists);
 
           Storage.notifier.notify({
             event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,

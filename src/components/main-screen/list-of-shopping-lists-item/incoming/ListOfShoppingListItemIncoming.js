@@ -1,7 +1,7 @@
+import {Text, TouchableHighlight, View} from 'react-native';
 import React from 'react';
-import {View, Text, TouchableHighlight} from 'react-native';
 
-export const ListOfShoppingListsItemNotCompleted = ({
+export const ListOfShoppingListsItemIncoming = ({
   styles,
   listItem,
   onItemPress,
@@ -11,6 +11,8 @@ export const ListOfShoppingListsItemNotCompleted = ({
       onItemPress(listItem.id);
     }
   };
+
+  const sharedLabel = listItem.shared ? 'Shared' : 'Not Shared';
 
   return (
     <TouchableHighlight
