@@ -342,7 +342,7 @@ export class SqliteStorage {
 
     return {
       id: shoppingListId,
-      name: descriptionData.length ? descriptionData.item(0).listName : '',
+      name: descriptionData.length ? descriptionData.item(0).name : '',
       totalItemsCount: descriptionData.length
         ? descriptionData.item(0).totalItemsCount
         : '',

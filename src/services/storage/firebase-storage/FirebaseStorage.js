@@ -96,33 +96,14 @@ export class FirebaseStorage {
   }
 
   static async getShoppingLists() {
-    console.log('GET_SHOPPING_LISTS');
-
     const shoppingLists = [];
-    FirebaseStorage.sharedShoppingLists.forEach((listData, listId) => {
+    FirebaseStorage.sendSharedShoppingLists.forEach((listData, listId) => {
       const {shoppingList} = listData;
-
-      const {
-        id,
-        name,
-        creator,
-        totalItemsCount,
-        completedItemsCount,
-        createTimestamp,
-        updateTimestamp,
-        shared,
-      } = shoppingList;
-
-      shoppingLists.push({
-        id,
-        listName: name,
-        creator,
-        totalItemsCount,
-        completedItemsCount,
-        createTimestamp,
-        updateTimestamp,
-        shared,
-      });
+      shoppingLists.push(shoppingList);
+    });
+    FirebaseStorage.receivedSharedShoppingLists.forEach((listData, listId) => {
+      const {shoppingList} = listData;
+      shoppingLists.push(shoppingList);
     });
 
     return shoppingLists;
@@ -131,15 +112,26 @@ export class FirebaseStorage {
   static async getShoppingList(shoppingListId) {
     console.log('GET_SHOPPING_LIST: ' + shoppingListId);
 
-    let {shoppingList} = FirebaseStorage.sharedShoppingLists.get(
-      shoppingListId,
-    );
+    if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
+      return FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+        .shoppingList;
+    } else if (
+      FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId)
+    ) {
+      return FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId)
+        .shoppingList;
+    } else {
+      console.log(
+        'FIREBASE_STORAGE->getShoppingList: BAD_SHOPPING_LIST_ID: ' +
+          shoppingListId,
+      );
 
-    return shoppingList;
+      return undefined;
+    }
   }
 
   static async removeShoppingList({shoppingListId}) {
-    console.log('REMOVE_SHOPPING_LIST: ' + shoppingListId);
+    console.log('REMOVE_SHARED_SHOPPING_LIST: ' + shoppingListId);
   }
 
   static async addShoppingListItem({
@@ -191,8 +183,9 @@ FirebaseStorage.handlers = new Map();
 FirebaseStorage.paths = new Map();
 FirebaseStorage.pathHandlerMap = new Map();
 
-FirebaseStorage.sharedShoppingLists = new Map();
+FirebaseStorage.sendSharedShoppingLists = new Map();
 FirebaseStorage.sendSharedShoppingListsIds = new Set();
+FirebaseStorage.receivedSharedShoppingLists = new Map();
 FirebaseStorage.receivedSharedShoppingListsIds = new Set();
 
 FirebaseStorage.notifier = new StorageNotifier({});

@@ -59,6 +59,10 @@ export const useMainScreenModel = () => {
   if (incomingLists.length) {
     sectionsShoppingLists.push({title: 'Полученные', data: incomingLists});
   }
+  sectionsShoppingLists.push({
+    title: '',
+    data: [{id: 'MAX_VALUE', extra: true}],
+  });
 
   useEffect(() => {
     dispatch(subscribeToListOfShoppingLists());

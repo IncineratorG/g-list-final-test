@@ -37,20 +37,29 @@ export const ListOfShoppingLists = ({
         closeOnRowBeginSwipe={true}
         friction={80}
         renderSectionHeader={({section}) => <Text>{section.title}</Text>}
-        renderHiddenItem={(data, rowMap) => (
-          <View style={styles.options}>
-            <TouchableHighlight
-              style={styles.removeButtonTouchable}
-              onPress={() => {
-                // rowMap[data.item.id.toString()].closeRow();
-                removeOptionHandler(data.item, rowMap[data.item.id.toString()]);
-              }}>
-              <View style={styles.removeButtonContainer}>
-                <Image style={styles.removeIcon} source={icons.trash} />
-              </View>
-            </TouchableHighlight>
-          </View>
-        )}
+        renderHiddenItem={(data, rowMap) => {
+          const {item} = data;
+          if (item.extra) {
+            return <View />;
+          }
+          return (
+            <View style={styles.options}>
+              <TouchableHighlight
+                style={styles.removeButtonTouchable}
+                onPress={() => {
+                  // rowMap[data.item.id.toString()].closeRow();
+                  removeOptionHandler(
+                    data.item,
+                    rowMap[data.item.id.toString()],
+                  );
+                }}>
+                <View style={styles.removeButtonContainer}>
+                  <Image style={styles.removeIcon} source={icons.trash} />
+                </View>
+              </TouchableHighlight>
+            </View>
+          );
+        }}
         rightOpenValue={-75}
       />
     </View>

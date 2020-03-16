@@ -5,62 +5,20 @@ import {FirebaseConverter} from './list-converter/FirebaseConverter';
 import {FirebaseStorage} from './FirebaseStorage';
 
 export const sendPathHandler = async snapshot => {
-  if (snapshot.val() === null) {
-    // Удаляем с клиента все отправленные списки покупок.
-    FirebaseStorage.sendSharedShoppingListsIds.forEach(id => {
-      FirebaseStorage.sendSharedShoppingListsIds.delete(id);
-    });
-
-    FirebaseStorage.sendSharedShoppingListsIds.clear();
-
-    FirebaseStorage.notifier.notify({
-      event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
-    });
-
-    return;
-  }
-
-  const {
-    sharedShoppingLists,
-    remoteSharedListsIdsSet,
-  } = await processSharedPathSnapshot(snapshot);
-
-  FirebaseStorage.sendSharedShoppingListsIds = new Set(remoteSharedListsIdsSet);
-
-  FirebaseStorage.sharedShoppingLists = new Map(sharedShoppingLists);
-  FirebaseStorage.notifier.notify({
-    event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
+  await processSharedPathSnapshot({
+    snapshot,
+    localSharedListMap: FirebaseStorage.sendSharedShoppingLists,
+    localSharedListIdsSet: FirebaseStorage.sendSharedShoppingListsIds,
+    changeEvent: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
   });
 };
 
 export const receivedPathHandler = async snapshot => {
-  if (snapshot.val() === null) {
-    // Удаляем с клиента все полученные списки покупок.
-    FirebaseStorage.sendSharedShoppingListsIds.forEach(id => {
-      FirebaseStorage.receivedSharedShoppingListsIds.delete(id);
-    });
-
-    FirebaseStorage.receivedSharedShoppingListsIds.clear();
-
-    FirebaseStorage.notifier.notify({
-      event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_CHANGED,
-    });
-
-    return;
-  }
-
-  const {
-    sharedShoppingLists,
-    remoteSharedListsIdsSet,
-  } = await processSharedPathSnapshot(snapshot);
-
-  FirebaseStorage.receivedSharedShoppingListsIds = new Set(
-    remoteSharedListsIdsSet,
-  );
-
-  FirebaseStorage.sharedShoppingLists = new Map(sharedShoppingLists);
-  FirebaseStorage.notifier.notify({
-    event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_CHANGED,
+  await processSharedPathSnapshot({
+    snapshot,
+    localSharedListMap: FirebaseStorage.receivedSharedShoppingLists,
+    localSharedListIdsSet: FirebaseStorage.receivedSharedShoppingListsIds,
+    changeEvent: FirebaseStorage.events.SHARED_RECEIVED_LISTS_CHANGED,
   });
 };
 
@@ -68,18 +26,31 @@ export const sharedListChangedHandler = () => {
   console.log('SHARED_LIST_CHANGED_HANDLER');
 };
 
-const processSharedPathSnapshot = async snapshot => {
-  // Копия совместных спискв, имеющихся на клиенте.
-  const localSharedShoppingLists = new Map(FirebaseStorage.sharedShoppingLists);
+const processSharedPathSnapshot = async ({
+  snapshot,
+  localSharedListMap,
+  localSharedListIdsSet,
+  changeEvent,
+}) => {
+  if (snapshot.val() === null) {
+    // Удаляем с клиента соответсвующие списки покупок.
+    localSharedListMap.clear();
+    localSharedListIdsSet.clear();
 
-  // Список ID не имеющихся на клиенте совместных списков.
+    FirebaseStorage.notifier.notify({
+      event: changeEvent,
+    });
+
+    return;
+  }
+
+  // Список ID не имеющихся на клиенте списков.
   const newSharedListsIdsArr = [];
-  // Множество ID совместных списков, имеющихся на сервере.
-  const remoteSharedListsIdsSet = new Set();
 
+  localSharedListIdsSet.clear();
   snapshot.forEach(child => {
-    remoteSharedListsIdsSet.add(child.key);
-    if (!localSharedShoppingLists.has(child.key)) {
+    localSharedListIdsSet.add(child.key);
+    if (!localSharedListMap.has(child.key)) {
       newSharedListsIdsArr.push(child.key);
     }
   });
@@ -103,29 +74,28 @@ const processSharedPathSnapshot = async snapshot => {
 
   // Ищем ID списков, которые были удалены с серверов, но находятся на клиенте.
   const localSharedListsToRemoveIds = [];
-  localSharedShoppingLists.forEach((list, id) => {
-    if (!remoteSharedListsIdsSet.has(id)) {
+  localSharedListMap.forEach((list, id) => {
+    if (!localSharedListIdsSet.has(id)) {
       localSharedListsToRemoveIds.push(id);
     }
   });
 
   // Удаляем необходимые спсики с клиента.
   localSharedListsToRemoveIds.forEach(id => {
-    localSharedShoppingLists.delete(id);
+    localSharedListMap.delete(id);
   });
 
   // Добавляем новые совместные списки клиенту.
   newSharedListsData.forEach(sharedListData => {
     const {shoppingList, units, classes} = sharedListData;
-    localSharedShoppingLists.set(shoppingList.id, {
+    localSharedListMap.set(shoppingList.id, {
       shoppingList,
       units,
       classes,
     });
   });
 
-  return {
-    sharedShoppingLists: localSharedShoppingLists,
-    remoteSharedListsIdsSet,
-  };
+  FirebaseStorage.notifier.notify({
+    event: changeEvent,
+  });
 };

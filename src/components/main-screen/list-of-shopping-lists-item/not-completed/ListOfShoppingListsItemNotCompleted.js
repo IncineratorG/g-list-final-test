@@ -19,7 +19,7 @@ export const ListOfShoppingListsItemNotCompleted = ({
       <View style={styles.mainContainer}>
         <View style={styles.infoContainer}>
           <View style={styles.nameContainer}>
-            <Text style={styles.nameNotFinished}>{listItem.listName}</Text>
+            <Text style={styles.nameNotFinished}>{listItem.name}</Text>
           </View>
           <View style={styles.footerContainer}>
             <Text style={styles.completionNotFinished}>

@@ -10,7 +10,7 @@ export const useMainScreenController = model => {
   };
 
   const listItemRemoveHandler = (listItem, row) => {
-    model.setters.setRemoveItemName(listItem.listName);
+    model.setters.setRemoveItemName(listItem.name);
     model.setters.setRemoveItemId(listItem.id);
     model.setters.setListItemRow(row);
     model.setters.setRemoveConfirmationDialogVisible(true);

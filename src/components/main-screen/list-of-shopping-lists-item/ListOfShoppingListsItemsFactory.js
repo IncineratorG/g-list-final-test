@@ -7,6 +7,8 @@ import {listOfShoppingListsItemStylesIncoming} from './incoming/styles/listOfSho
 import {ListOfShoppingListsItemIncoming} from './incoming/ListOfShoppingListItemIncoming';
 import {ListOfShoppingListsItemOutgoing} from './outgoing/ListOfShoppingListItemOutgoing';
 import {listOfShoppingListsItemStylesOutgoing} from './outgoing/styles/listOfShoppingListItemStylesOutgoing';
+import {ListOfShoppingListsItemExtra} from './extra/ListOfShoppingListsItemExtra';
+import {listOfShoppingListsItemStylesExtra} from './extra/styles/listOfShoppingListsItemStylesExtra';
 
 export default class ListOfShoppingListsItemsFactory {
   static get(listItem, onItemPress) {
@@ -14,6 +16,7 @@ export default class ListOfShoppingListsItemsFactory {
     const notCompletedItemStyles = listOfShoppingListsItemStylesNotCompleted;
     const incomingItemStyles = listOfShoppingListsItemStylesIncoming;
     const outgoingItemStyles = listOfShoppingListsItemStylesOutgoing;
+    const extraItemStyles = listOfShoppingListsItemStylesExtra;
 
     const completedItem = (
       <View>
@@ -41,16 +44,26 @@ export default class ListOfShoppingListsItemsFactory {
         onItemPress={onItemPress}
       />
     );
+    const extraItem = (
+      <ListOfShoppingListsItemExtra
+        styles={extraItemStyles}
+        listItem={listItem}
+        onItemPress={onItemPress}
+      />
+    );
 
     const listItemCompleted =
       listItem.totalItemsCount > 0 &&
       listItem.completedItemsCount >= listItem.totalItemsCount;
 
+    const listItemExtra = listItem.extra;
     const listItemLocal = listItem.local;
     const listItemIncoming = listItem.incoming;
     const listItemOutgoing = listItem.outgoing;
 
-    if (listItemLocal) {
+    if (listItemExtra) {
+      return extraItem;
+    } else if (listItemLocal) {
       return listItemCompleted ? completedItem : notCompletedItem;
     } else if (listItemOutgoing) {
       return outgoingItem;
