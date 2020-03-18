@@ -3,6 +3,7 @@ import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
 import {FirebaseStorage} from './firebase-storage/FirebaseStorage';
 import {StorageNotifier} from './storage-notifier/StorageNotifier';
 import {StorageDataExtractor} from './StorageDataExtractor';
+import {IdResolver} from './IdResolver';
 
 export class Storage {
   static async subscribe({
@@ -51,7 +52,14 @@ export class Storage {
   }
 
   static async removeShoppingList({shoppingListId}) {
-    return await SqliteStorage.removeShoppingList(shoppingListId);
+    const listType = IdResolver.resolve(shoppingListId);
+    if (listType === IdResolver.types.LOCAL) {
+      await SqliteStorage.removeShoppingList(shoppingListId);
+    } else {
+      await FirebaseStorage.removeShoppingList(shoppingListId);
+    }
+
+    return {listType};
   }
 
   static async addProduct({

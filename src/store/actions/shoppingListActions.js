@@ -3,7 +3,6 @@ import {
   CREATE_SHOPPING_LIST,
   LOAD_CLASSES,
   LOAD_UNITS,
-  REMOVE_SHOPPING_LIST,
   SET_PRODUCT_STATUS,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_BEGIN,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_ERROR,
@@ -13,6 +12,9 @@ import {
   SUBSCRIBE_TO_SHOPPING_LIST_ERROR,
   SUBSCRIBE_TO_SHOPPING_LIST_FINISHED,
   UPDATE_SHOPPING_LIST,
+  REMOVE_SHOPPING_LIST_BEGIN,
+  REMOVE_SHOPPING_LIST_FINISHED,
+  REMOVE_SHOPPING_LIST_ERROR,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 
@@ -97,11 +99,17 @@ export const createShoppingList = listName => async dispatch => {
 
 export const removeShoppingList = id => {
   return async dispatch => {
+    dispatch({type: REMOVE_SHOPPING_LIST_BEGIN});
+
     try {
-      await Storage.removeShoppingList({shoppingListId: id});
-      dispatch({type: REMOVE_SHOPPING_LIST, payload: id});
+      const {listType} = await Storage.removeShoppingList({shoppingListId: id});
+
+      console.log('LIST_TYPE: ' + listType);
+
+      dispatch({type: REMOVE_SHOPPING_LIST_FINISHED, payload: id});
     } catch (e) {
       console.log('shoppingListActions->removeShoppingList() ERROR: ' + e);
+      dispatch({type: REMOVE_SHOPPING_LIST_ERROR});
     }
   };
 };
@@ -112,7 +120,6 @@ export const subscribeToShoppingList = shoppingListId => {
 
     try {
       const shoppingListChangedHandler = shoppingList => {
-        console.log('SHOPPING_LIST_CHANGED');
         dispatch({type: UPDATE_SHOPPING_LIST, payload: {shoppingList}});
       };
 

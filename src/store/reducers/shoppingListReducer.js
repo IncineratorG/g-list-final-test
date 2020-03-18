@@ -3,7 +3,9 @@ import {
   CREATE_SHOPPING_LIST,
   LOAD_CLASSES,
   LOAD_UNITS,
-  REMOVE_SHOPPING_LIST,
+  REMOVE_SHOPPING_LIST_BEGIN,
+  REMOVE_SHOPPING_LIST_ERROR,
+  REMOVE_SHOPPING_LIST_FINISHED,
   SET_PRODUCT_STATUS,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_BEGIN,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_ERROR,
@@ -21,6 +23,7 @@ const initialState = {
   allShoppingLists: {
     unsubscribeHandler: undefined,
     loading: true,
+    removing: false,
     error: '',
     data: [],
   },
@@ -48,8 +51,34 @@ export const shoppingListReducer = (state = initialState, action) => {
       };
     }
 
-    case REMOVE_SHOPPING_LIST: {
-      return {...state};
+    case REMOVE_SHOPPING_LIST_BEGIN: {
+      return {
+        ...state,
+        allShoppingLists: {
+          ...state.allShoppingLists,
+          removing: true,
+        },
+      };
+    }
+
+    case REMOVE_SHOPPING_LIST_FINISHED: {
+      return {
+        ...state,
+        allShoppingLists: {
+          ...state.allShoppingLists,
+          removing: false,
+        },
+      };
+    }
+
+    case REMOVE_SHOPPING_LIST_ERROR: {
+      return {
+        ...state,
+        allShoppingLists: {
+          ...state.allShoppingLists,
+          removing: false,
+        },
+      };
     }
 
     case LOAD_UNITS: {

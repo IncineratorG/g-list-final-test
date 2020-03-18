@@ -130,7 +130,7 @@ export class FirebaseStorage {
     }
   }
 
-  static async removeShoppingList({shoppingListId}) {
+  static async removeShoppingList(shoppingListId) {
     console.log('REMOVE_SHARED_SHOPPING_LIST: ' + shoppingListId);
   }
 
