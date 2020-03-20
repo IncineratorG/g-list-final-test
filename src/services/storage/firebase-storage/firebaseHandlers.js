@@ -51,13 +51,13 @@ const processSharedPathSnapshot = async ({
   snapshot.forEach(child => {
     localSharedListIdsSet.add(child.key);
     if (!localSharedListMap.has(child.key)) {
-      newSharedListsIdsArr.push(child.key);
+      newSharedListsIdsArr.push({id: child.key, touched: child.val().touched});
     }
   });
 
   // Составляем список новых совместных списков.
   const newSharedListsData = await Promise.all(
-    newSharedListsIdsArr.map(async id => {
+    newSharedListsIdsArr.map(async ({id, touched}) => {
       const sharedShoppingListPath = database().ref(
         FirebasePaths.getPath({
           pathType: SHARED_SHOPPING_LIST,
@@ -68,7 +68,13 @@ const processSharedPathSnapshot = async ({
       const sharedShoppingListSnapshot = await sharedShoppingListPath.once(
         'value',
       );
-      return FirebaseConverter.listFromFirebase(sharedShoppingListSnapshot);
+
+      const sharedListData = FirebaseConverter.listFromFirebase(
+        sharedShoppingListSnapshot,
+      );
+      sharedListData.touched = touched;
+
+      return sharedListData;
     }),
   );
 
@@ -87,12 +93,15 @@ const processSharedPathSnapshot = async ({
 
   // Добавляем новые совместные списки клиенту.
   newSharedListsData.forEach(sharedListData => {
-    const {shoppingList, units, classes} = sharedListData;
-    localSharedListMap.set(shoppingList.id, {
-      shoppingList,
-      units,
-      classes,
-    });
+    if (sharedListData) {
+      const {shoppingList, units, classes, touched} = sharedListData;
+      localSharedListMap.set(shoppingList.id, {
+        shoppingList,
+        units,
+        classes,
+        touched,
+      });
+    }
   });
 
   FirebaseStorage.notifier.notify({

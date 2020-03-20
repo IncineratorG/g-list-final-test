@@ -12,6 +12,7 @@ export const useShoppingListScreenModel = () => {
   const dispatch = useDispatch();
 
   const [inputAreaVisible, setInputAreaVisible] = useState(false);
+  const [editable, setEditable] = useState(false);
 
   const units = useSelector(state => state.shoppingList.units);
   const classes = useSelector(state => state.shoppingList.classes);
@@ -27,8 +28,17 @@ export const useShoppingListScreenModel = () => {
   const listLoading = useSelector(
     state => state.shoppingList.currentShoppingList.loading,
   );
+  const shared = useSelector(
+    state => state.shoppingList.currentShoppingList.shared,
+  );
+  const creator = useSelector(
+    state => state.shoppingList.currentShoppingList.creator,
+  );
   const signedIn = useSelector(
     state => state.authentication.currentUser.signedIn,
+  );
+  const currentPhone = useSelector(
+    state => state.authentication.currentUser.phone,
   );
 
   const getUnitName = unitId => {
@@ -63,8 +73,17 @@ export const useShoppingListScreenModel = () => {
 
   useEffect(() => {
     navigation.setParams({shoppingListName});
+    navigation.setParams({editable});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shoppingListName]);
+  }, [shoppingListName, editable]);
+
+  useEffect(() => {
+    if (creator.length <= 0 || creator === currentPhone) {
+      setEditable(true);
+    } else {
+      setEditable(false);
+    }
+  }, [creator, currentPhone]);
 
   return {
     data: {
@@ -75,6 +94,8 @@ export const useShoppingListScreenModel = () => {
       products,
       units,
       signedIn,
+      editable,
+      shared,
     },
     setters: {setInputAreaVisible},
     navigation,

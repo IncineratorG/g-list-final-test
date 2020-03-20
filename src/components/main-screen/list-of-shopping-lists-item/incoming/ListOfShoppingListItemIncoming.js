@@ -14,6 +14,11 @@ export const ListOfShoppingListsItemIncoming = ({
 
   const sharedLabel = listItem.shared ? 'Shared' : 'Not Shared';
 
+  let touchedIndicatorComponent = null;
+  if (!listItem.touched) {
+    touchedIndicatorComponent = <View style={styles.touched} />;
+  }
+
   return (
     <TouchableHighlight
       style={styles.mainContainerTouchable}
@@ -24,6 +29,7 @@ export const ListOfShoppingListsItemIncoming = ({
             <Text style={styles.nameNotFinished}>{listItem.name}</Text>
           </View>
           <View style={styles.footerContainer}>
+            {touchedIndicatorComponent}
             <Text style={styles.completionNotFinished}>
               Куплено {listItem.completedItemsCount} из{' '}
               {listItem.totalItemsCount}

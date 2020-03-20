@@ -17,6 +17,8 @@ import {
   REMOVE_SHOPPING_LIST_ERROR,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
+import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
+import {Collaboration} from '../../services/collaboration/Collaboration';
 
 export const loadUnits = ({shoppingListId}) => {
   return async dispatch => {
@@ -102,9 +104,14 @@ export const removeShoppingList = id => {
     dispatch({type: REMOVE_SHOPPING_LIST_BEGIN});
 
     try {
-      const {listType} = await Storage.removeShoppingList({shoppingListId: id});
+      const {listType, canRemove} = await Storage.removeShoppingList({
+        shoppingListId: id,
+      });
 
-      console.log('LIST_TYPE: ' + listType);
+      if (listType === StorageIdResolver.listTypes.FIREBASE && canRemove) {
+        console.log('LIST_TYPE: FIREBASE && CAN_REMOVE');
+        await Collaboration.removeSharedShoppingList({shoppingListId: id});
+      }
 
       dispatch({type: REMOVE_SHOPPING_LIST_FINISHED, payload: id});
     } catch (e) {

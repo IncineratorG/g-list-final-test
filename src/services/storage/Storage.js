@@ -3,7 +3,7 @@ import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
 import {FirebaseStorage} from './firebase-storage/FirebaseStorage';
 import {StorageNotifier} from './storage-notifier/StorageNotifier';
 import {StorageDataExtractor} from './StorageDataExtractor';
-import {IdResolver} from './IdResolver';
+import {StorageIdResolver} from './StorageIdResolver';
 
 export class Storage {
   static async subscribe({
@@ -52,14 +52,16 @@ export class Storage {
   }
 
   static async removeShoppingList({shoppingListId}) {
-    const listType = IdResolver.resolve(shoppingListId);
-    if (listType === IdResolver.types.LOCAL) {
+    const listType = StorageIdResolver.resolve(shoppingListId);
+    let canRemove = true;
+
+    if (listType === StorageIdResolver.listTypes.LOCAL) {
       await SqliteStorage.removeShoppingList(shoppingListId);
     } else {
-      await FirebaseStorage.removeShoppingList(shoppingListId);
+      canRemove = await FirebaseStorage.removeShoppingList(shoppingListId);
     }
 
-    return {listType};
+    return {listType, canRemove};
   }
 
   static async addProduct({
@@ -81,11 +83,20 @@ export class Storage {
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
-    await SqliteStorage.setShoppingListItemStatus({
-      shoppingListId,
-      productId,
-      status,
-    });
+    const listType = StorageIdResolver.resolve(shoppingListId);
+    if (listType === StorageIdResolver.listTypes.LOCAL) {
+      await SqliteStorage.setShoppingListItemStatus({
+        shoppingListId,
+        productId,
+        status,
+      });
+    } else {
+      await FirebaseStorage.setProductStatus({
+        shoppingListId,
+        productId,
+        status,
+      });
+    }
   }
 
   static async updateSignInInfo({phone, email, password}) {
@@ -235,6 +246,29 @@ export class Storage {
           Storage.notifier.notify({
             event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
             data: shoppingLists,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+        handler: async ({shoppingListId}) => {
+          const shoppingLists = await StorageDataExtractor.getShoppingLists();
+
+          const shoppingList = await StorageDataExtractor.getShoppingList(
+            shoppingListId,
+          );
+
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: shoppingLists,
+          });
+          Storage.notifier.notify({
+            entityIds: {shoppingListId},
+            event: Storage.events.SHOPPING_LIST_CHANGED,
+            data: shoppingList,
           });
         },
       }),

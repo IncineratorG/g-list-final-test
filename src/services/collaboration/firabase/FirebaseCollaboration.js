@@ -62,18 +62,20 @@ export class FirebaseCollaboration {
   }
 
   static async shareShoppingList({
-    receiver,
+    receivers,
     sender,
     shoppingList,
+    shoppingListCard,
     units,
     classes,
   }) {
     console.log('HERE_HERE_HERE');
 
     const data = {
-      receiver,
+      receivers,
       sender,
       shoppingList,
+      shoppingListCard: shoppingListCard,
       units,
       classes,
     };
@@ -98,6 +100,35 @@ export class FirebaseCollaboration {
 
       console.log('RESPONSE_STATUS: ' + status);
       console.log('RESPONSE_KEY: ' + sharedListKey);
+
+      return 'SUCCESS';
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async removeSharedShoppingList({shoppingListId}) {
+    const data = {shoppingListId};
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/removeShoppingList',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status} = responseData;
+
+      console.log('RESPONSE_STATUS: ' + status);
 
       return 'SUCCESS';
     } catch (e) {

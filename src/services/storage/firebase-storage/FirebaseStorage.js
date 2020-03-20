@@ -5,9 +5,16 @@ import {
   sharedListChangedHandler,
 } from './firebaseHandlers';
 import {FirebasePaths} from './FirebasePaths';
-import {USER_RECEIVED, USER_SEND} from './firebasePathTypes';
+import {
+  SHARED_SHOPPING_LIST,
+  SHARED_SHOPPING_LIST_DELIM,
+  USER_RECEIVED,
+  USER_RECEIVED_DELIM,
+  USER_SEND,
+} from './firebasePathTypes';
 import {Storage} from '../Storage';
 import {StorageNotifier} from '../storage-notifier/StorageNotifier';
+import {PRODUCT_COMPLETED, PRODUCT_NOT_COMPLETED} from '../data/productStatus';
 
 export class FirebaseStorage {
   static subscribe({entityIds, event, handler}) {
@@ -98,11 +105,12 @@ export class FirebaseStorage {
   static async getShoppingLists() {
     const shoppingLists = [];
     FirebaseStorage.sendSharedShoppingLists.forEach((listData, listId) => {
-      const {shoppingList} = listData;
+      let {shoppingList} = listData;
       shoppingLists.push(shoppingList);
     });
     FirebaseStorage.receivedSharedShoppingLists.forEach((listData, listId) => {
-      const {shoppingList} = listData;
+      let {shoppingList} = listData;
+      shoppingList.touched = listData.touched;
       shoppingLists.push(shoppingList);
     });
 
@@ -110,19 +118,38 @@ export class FirebaseStorage {
   }
 
   static async getShoppingList(shoppingListId) {
-    console.log('GET_SHOPPING_LIST: ' + shoppingListId);
-
     if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
       return FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
         .shoppingList;
     } else if (
       FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId)
     ) {
-      return FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId)
-        .shoppingList;
+      let listData = FirebaseStorage.receivedSharedShoppingLists.get(
+        shoppingListId,
+      );
+
+      if (!listData.touched) {
+        listData.touched = true;
+        FirebaseStorage.receivedSharedShoppingLists.set(
+          shoppingListId,
+          listData,
+        );
+
+        let receivedPath = FirebasePaths.getPath({
+          pathType: USER_RECEIVED_DELIM,
+          pathId: FirebaseStorage.localSignInInfo.phone,
+        });
+
+        database()
+          .ref(receivedPath)
+          .child(shoppingListId)
+          .update({touched: true});
+      }
+
+      return listData.shoppingList;
     } else {
       console.log(
-        'FIREBASE_STORAGE->getShoppingList: BAD_SHOPPING_LIST_ID: ' +
+        'FirebaseStorage->getShoppingList: BAD_SHOPPING_LIST_ID: ' +
           shoppingListId,
       );
 
@@ -132,6 +159,19 @@ export class FirebaseStorage {
 
   static async removeShoppingList(shoppingListId) {
     console.log('REMOVE_SHARED_SHOPPING_LIST: ' + shoppingListId);
+
+    if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
+      FirebaseStorage.sendSharedShoppingLists.delete(shoppingListId);
+      FirebaseStorage.sendSharedShoppingListsIds.delete(shoppingListId);
+
+      FirebaseStorage.notifier.notify({
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
+      });
+
+      return true;
+    }
+
+    return false;
   }
 
   static async addShoppingListItem({
@@ -147,6 +187,103 @@ export class FirebaseStorage {
 
   static async setProductStatus({shoppingListId, productId, status}) {
     console.log('SET_PRODUCT_STATUS: ' + shoppingListId);
+
+    if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
+      console.log(
+        'FirebaseStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
+      );
+      return;
+    }
+
+    let shoppingListData;
+    if (FirebaseStorage.receivedSharedShoppingLists.has(shoppingListId)) {
+      shoppingListData = FirebaseStorage.receivedSharedShoppingLists.get(
+        shoppingListId,
+      );
+    } else if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
+      shoppingListData = FirebaseStorage.sendSharedShoppingLists.get(
+        shoppingListId,
+      );
+    } else {
+      console.log(
+        'FirebaseStorage->setProductStatus(): BAD_SHOPPING_LIST_ID: ' +
+          shoppingListId,
+      );
+      return;
+    }
+
+    let {shoppingList} = shoppingListData;
+    let {productsList} = shoppingList;
+
+    let productData = productsList.filter(product => product.id === productId);
+    if (!productData.length) {
+      console.log(
+        'FirebaseStorage->setProductStatus()=>UNABLE_TO_FIND_PRODUCT_WITH_ID: ' +
+          productId,
+      );
+      return;
+    }
+
+    let product = productData[0];
+    product.completionStatus = status;
+
+    let completedItemsCount = 0;
+    productsList.forEach(p => {
+      if (p.completionStatus === PRODUCT_COMPLETED) {
+        ++completedItemsCount;
+      }
+    });
+
+    shoppingList.updateTimestamp = Date.now();
+    shoppingList.totalItemsCount = productsList.length;
+    shoppingList.completedItemsCount = completedItemsCount;
+
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+      data: {shoppingListId, productId, status},
+    });
+
+    let shoppingListSharedPath = FirebasePaths.getPath({
+      pathType: SHARED_SHOPPING_LIST,
+      pathId: shoppingListId,
+    });
+
+    console.log('PATH: ' + shoppingListSharedPath);
+
+    // let updates = {};
+    // updates[shoppingListSharedPath + '/shoppingList/'] = {
+    //   updateTimestamp: shoppingList.updateTimestamp,
+    //   completedItemsCount: shoppingList.completedItemsCount,
+    //   productsList: productsList,
+    // };
+
+    database()
+      .ref(shoppingListSharedPath)
+      .child('shoppingList')
+      .child('productsList')
+      .push({
+        // updateTimestamp: shoppingList.updateTimestamp,
+        // completedItemsCount: shoppingList.completedItemsCount,
+        productsList,
+      });
+
+    // if (!listData.touched) {
+    //   listData.touched = true;
+    //   FirebaseStorage.receivedSharedShoppingLists.set(
+    //     shoppingListId,
+    //     listData,
+    //   );
+    //
+    //   let receivedPath = FirebasePaths.getPath({
+    //     pathType: USER_RECEIVED_DELIM,
+    //     pathId: FirebaseStorage.localSignInInfo.phone,
+    //   });
+    //
+    //   database()
+    //     .ref(receivedPath)
+    //     .child(shoppingListId)
+    //     .update({touched: true});
+    // }
   }
 
   static async getUnits({shoppingListId}) {
@@ -184,14 +321,17 @@ FirebaseStorage.paths = new Map();
 FirebaseStorage.pathHandlerMap = new Map();
 
 FirebaseStorage.sendSharedShoppingLists = new Map();
+FirebaseStorage.sendSharedShoppingListsCards = new Map();
 FirebaseStorage.sendSharedShoppingListsIds = new Set();
 FirebaseStorage.receivedSharedShoppingLists = new Map();
+FirebaseStorage.receivedSharedShoppingListsCards = new Map();
 FirebaseStorage.receivedSharedShoppingListsIds = new Set();
 
 FirebaseStorage.notifier = new StorageNotifier({});
 FirebaseStorage.events = {
   SHARED_SEND_LISTS_CHANGED: 'SHARED_SEND_LISTS_CHANGED',
   SHARED_RECEIVED_LISTS_CHANGED: 'SHARED_RECEIVED_LISTS_CHANGED',
+  SHARED_PRODUCT_UPDATED: 'SHARED_PRODUCT_UPDATED',
 };
 FirebaseStorage.localSubscrtiptions = [];
 

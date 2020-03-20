@@ -33,6 +33,8 @@ const initialState = {
     error: '',
     id: undefined,
     name: '',
+    shared: false,
+    creator: '',
     products: [],
   },
 };
@@ -125,7 +127,7 @@ export const shoppingListReducer = (state = initialState, action) => {
           loading: false,
           error: '',
           unsubscribeHandler: action.payload.unsubscribe,
-          data: action.payload.listOfShoppingLists,
+          data: [...action.payload.listOfShoppingLists],
         },
       };
     }
@@ -147,7 +149,7 @@ export const shoppingListReducer = (state = initialState, action) => {
         ...state,
         allShoppingLists: {
           ...state.allShoppingLists,
-          data: action.payload,
+          data: [...action.payload],
         },
       };
     }
@@ -185,7 +187,11 @@ export const shoppingListReducer = (state = initialState, action) => {
           error: '',
           id: action.payload.shoppingList.id,
           name: action.payload.shoppingList.name,
-          products: action.payload.shoppingList.productsList,
+          shared: action.payload.shoppingList.shared ? true : false,
+          creator: action.payload.shoppingList.creator
+            ? action.payload.shoppingList.creator
+            : '',
+          products: [...action.payload.shoppingList.productsList],
         },
       };
     }
@@ -208,7 +214,7 @@ export const shoppingListReducer = (state = initialState, action) => {
           ...state.currentShoppingList,
           id: action.payload.shoppingList.id,
           name: action.payload.shoppingList.name,
-          products: action.payload.shoppingList.productsList,
+          products: [...action.payload.shoppingList.productsList],
         },
       };
     }

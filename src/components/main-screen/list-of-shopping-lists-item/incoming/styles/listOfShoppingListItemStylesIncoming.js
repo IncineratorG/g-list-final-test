@@ -6,7 +6,7 @@ export const listOfShoppingListsItemStylesIncoming = StyleSheet.create({
   },
   footerContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
   },
   completionNotFinished: {
     marginLeft: 20,
@@ -16,7 +16,15 @@ export const listOfShoppingListsItemStylesIncoming = StyleSheet.create({
     fontSize: 14,
     color: 'grey',
   },
-
+  touched: {
+    height: 20,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 7,
+    marginBottom: 7,
+    backgroundColor: 'blue',
+    flex: 1,
+  },
   mainContainer: {
     backgroundColor: 'white',
     flex: 1,

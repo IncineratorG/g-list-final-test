@@ -7,7 +7,7 @@ import InputArea from '../../../components/shopping-list-screen/input-area/Input
 import {AddButton} from '../../../components/common/AddButton';
 
 const ShoppingListView = ({styles, model, controller}) => {
-  const {inputAreaVisible, listLoading, products, units} = model;
+  const {inputAreaVisible, listLoading, products, units, editable} = model;
 
   const {
     addProductButtonHandler,
@@ -63,14 +63,18 @@ const ShoppingListView = ({styles, model, controller}) => {
     ? shoppingListComponent
     : emptyShoppingListScreenComponent;
 
+  const addButtonComponent = editable ? (
+    <AddButton
+      style={[styles.addShoppingListItemButton, {zIndex: 20}]}
+      onClick={addProductButtonHandler}
+    />
+  ) : null;
+
   return (
     <View style={styles.mainContainer}>
       {shoppingListScreenContent}
       <View style={styles.addShoppingListItemButtonContainer}>
-        <AddButton
-          style={[styles.addShoppingListItemButton, {zIndex: 20}]}
-          onClick={addProductButtonHandler}
-        />
+        {addButtonComponent}
       </View>
       {inputAreaComponent}
       {shadedBackgroundComponent}

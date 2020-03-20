@@ -64,10 +64,23 @@ export const shareShoppingList = ({
     const units = await Storage.getUnits({shoppingListId});
     const classes = await Storage.getClasses({shoppingListId});
 
+    const receivers = [];
+    receivers.push(receiverPhone);
+
+    const shoppingListCard = {
+      name: shoppingList.name,
+      totalItemsCount: shoppingList.totalItemsCount,
+      completedItemsCount: shoppingList.completedItemsCount,
+      createTimestamp: shoppingList.createTimestamp,
+      updateTimestamp: shoppingList.updateTimestamp,
+      creator: senderPhone,
+    };
+
     await Collaboration.shareShoppingList({
-      receiver: receiverPhone,
+      receivers: receivers,
       sender: senderPhone,
       shoppingList,
+      shoppingListCard,
       units,
       classes,
     });

@@ -1,5 +1,13 @@
 export class FirebaseConverter {
+  static listFromCard(shoppingListCard) {
+    console.log('listFromCard: ' + JSON.stringify(shoppingListCard));
+  }
+
   static listFromFirebase(shoppingListSnapshot) {
+    if (shoppingListSnapshot.val() === null) {
+      return undefined;
+    }
+
     const units = this.unitsFromFirebase(shoppingListSnapshot.val().units);
     const classes = this.classesFromFirebase(
       shoppingListSnapshot.val().classes,
@@ -38,6 +46,10 @@ export class FirebaseConverter {
   }
 
   static productsFromFirebase(productsSnapshot, shoppingListId) {
+    if (!productsSnapshot) {
+      return [];
+    }
+
     return productsSnapshot.map(productSnapshot => {
       return {
         id: productSnapshot.id,
