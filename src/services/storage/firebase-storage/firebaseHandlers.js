@@ -1,6 +1,5 @@
 import database from '@react-native-firebase/database';
 import {FirebasePaths} from './FirebasePaths';
-import {SHARED_SHOPPING_LIST} from './firebasePathTypes';
 import {FirebaseConverter} from './list-converter/FirebaseConverter';
 import {FirebaseStorage} from './FirebaseStorage';
 
@@ -55,26 +54,26 @@ const processSharedPathSnapshot = async ({
     }
   });
 
-  // Составляем список новых совместных списков.
-  const newSharedListsData = await Promise.all(
+  // Составляем список карточек новых совместных списков.
+  const newSharedListsCardsData = await Promise.all(
     newSharedListsIdsArr.map(async ({id, touched}) => {
-      const sharedShoppingListPath = database().ref(
+      const sharedShoppingListCardPath = database().ref(
         FirebasePaths.getPath({
-          pathType: SHARED_SHOPPING_LIST,
-          pathId: id,
+          pathType: FirebasePaths.paths.SHOPPING_LIST_CARD,
+          shoppingListId: id,
         }),
       );
 
-      const sharedShoppingListSnapshot = await sharedShoppingListPath.once(
+      const sharedShoppingListCardSnapshot = await sharedShoppingListCardPath.once(
         'value',
       );
 
-      const sharedListData = FirebaseConverter.listFromFirebase(
-        sharedShoppingListSnapshot,
+      const sharedListCard = FirebaseConverter.cardFromFirebase(
+        id,
+        sharedShoppingListCardSnapshot,
       );
-      sharedListData.touched = touched;
 
-      return sharedListData;
+      return {sharedListCard, touched};
     }),
   );
 
@@ -91,14 +90,13 @@ const processSharedPathSnapshot = async ({
     localSharedListMap.delete(id);
   });
 
-  // Добавляем новые совместные списки клиенту.
-  newSharedListsData.forEach(sharedListData => {
-    if (sharedListData) {
-      const {shoppingList, units, classes, touched} = sharedListData;
-      localSharedListMap.set(shoppingList.id, {
-        shoppingList,
-        units,
-        classes,
+  // Добавляем новые карточки совместных списков клиенту.
+  newSharedListsCardsData.forEach(sharedListCardData => {
+    if (sharedListCardData) {
+      const {sharedListCard, touched} = sharedListCardData;
+
+      localSharedListMap.set(sharedListCard.id, {
+        shoppingListCard: sharedListCard,
         touched,
       });
     }
@@ -108,3 +106,86 @@ const processSharedPathSnapshot = async ({
     event: changeEvent,
   });
 };
+
+// const processSharedPathSnapshot = async ({
+//   snapshot,
+//   localSharedListMap,
+//   localSharedListIdsSet,
+//   changeEvent,
+// }) => {
+//   if (snapshot.val() === null) {
+//     // Удаляем с клиента соответсвующие списки покупок.
+//     localSharedListMap.clear();
+//     localSharedListIdsSet.clear();
+//
+//     FirebaseStorage.notifier.notify({
+//       event: changeEvent,
+//     });
+//
+//     return;
+//   }
+//
+//   // Список ID не имеющихся на клиенте списков.
+//   const newSharedListsIdsArr = [];
+//
+//   localSharedListIdsSet.clear();
+//   snapshot.forEach(child => {
+//     localSharedListIdsSet.add(child.key);
+//     if (!localSharedListMap.has(child.key)) {
+//       newSharedListsIdsArr.push({id: child.key, touched: child.val().touched});
+//     }
+//   });
+//
+//   // Составляем список новых совместных списков.
+//   const newSharedListsData = await Promise.all(
+//     newSharedListsIdsArr.map(async ({id, touched}) => {
+//       const sharedShoppingListPath = database().ref(
+//         FirebasePaths.getPath({
+//           pathType: SHARED_SHOPPING_LIST,
+//           pathId: id,
+//         }),
+//       );
+//
+//       const sharedShoppingListSnapshot = await sharedShoppingListPath.once(
+//         'value',
+//       );
+//
+//       const sharedListData = FirebaseConverter.listFromFirebase(
+//         sharedShoppingListSnapshot,
+//       );
+//       sharedListData.touched = touched;
+//
+//       return sharedListData;
+//     }),
+//   );
+//
+//   // Ищем ID списков, которые были удалены с серверов, но находятся на клиенте.
+//   const localSharedListsToRemoveIds = [];
+//   localSharedListMap.forEach((list, id) => {
+//     if (!localSharedListIdsSet.has(id)) {
+//       localSharedListsToRemoveIds.push(id);
+//     }
+//   });
+//
+//   // Удаляем необходимые спсики с клиента.
+//   localSharedListsToRemoveIds.forEach(id => {
+//     localSharedListMap.delete(id);
+//   });
+//
+//   // Добавляем новые совместные списки клиенту.
+//   newSharedListsData.forEach(sharedListData => {
+//     if (sharedListData) {
+//       const {shoppingList, units, classes, touched} = sharedListData;
+//       localSharedListMap.set(shoppingList.id, {
+//         shoppingList,
+//         units,
+//         classes,
+//         touched,
+//       });
+//     }
+//   });
+//
+//   FirebaseStorage.notifier.notify({
+//     event: changeEvent,
+//   });
+// };

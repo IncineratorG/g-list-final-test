@@ -1,6 +1,24 @@
 export class FirebaseConverter {
-  static listFromCard(shoppingListCard) {
-    console.log('listFromCard: ' + JSON.stringify(shoppingListCard));
+  static cardFromFirebase(shoppingListId, shoppingListCardSnapshot) {
+    const {
+      name,
+      creator,
+      totalItemsCount,
+      completedItemsCount,
+      createTimestamp,
+      updateTimestamp,
+    } = shoppingListCardSnapshot.val();
+
+    return {
+      id: shoppingListId,
+      name,
+      creator,
+      totalItemsCount,
+      completedItemsCount,
+      createTimestamp,
+      updateTimestamp,
+      shared: true,
+    };
   }
 
   static listFromFirebase(shoppingListSnapshot) {
