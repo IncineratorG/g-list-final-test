@@ -75,13 +75,17 @@ export class FirebaseStorage {
   }
 
   static removeListeners() {
-    // console.log('REMOVE_LISTENERS');
-
     FirebaseStorage.pathHandlersMap.forEach((handler, path) => {
       path.off('value', handler);
     });
-
     FirebaseStorage.pathHandlersMap.clear();
+
+    if (FirebaseStorage.shoppingListPathHandler.path) {
+      FirebaseStorage.shoppingListPathHandler.path.off(
+        'value',
+        FirebaseStorage.shoppingListPathHandler.handler,
+      );
+    }
   }
 
   static off() {
@@ -93,112 +97,79 @@ export class FirebaseStorage {
   static async getShoppingLists() {
     const shoppingLists = [];
     FirebaseStorage.sendSharedShoppingLists.forEach((listData, listId) => {
-      let {shoppingListCard} = listData;
-      shoppingLists.push(shoppingListCard);
+      let {shoppingList} = listData;
+      shoppingLists.push(shoppingList);
     });
     FirebaseStorage.receivedSharedShoppingLists.forEach((listData, listId) => {
-      let {shoppingListCard} = listData;
-      shoppingListCard.touched = listData.touched;
-      shoppingLists.push(shoppingListCard);
+      let {shoppingList} = listData;
+      shoppingList.touched = listData.touched;
+      shoppingLists.push(shoppingList);
     });
 
     return shoppingLists;
   }
 
-  static async getShoppingList(shoppingListId) {
-    console.log('FirebaseStorage->getShoppingList()');
+  static async getShoppingList(shoppingListId, once) {
+    // Получаем данные соответсвующего списка покупок.
+    const listData = FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)
+      ? FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+      : FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
 
-    const path = FirebasePaths.getPath({
+    // Уведомляем списком покупок из запрошенных данных всех слушателей текущего списка.
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+      data: listData.shoppingList,
+    });
+
+    // Если на кокой-либо список покупок в firebase установлен слушатель - снимаем его.
+    if (FirebaseStorage.shoppingListPathHandler.path) {
+      FirebaseStorage.shoppingListPathHandler.path.off(
+        'value',
+        FirebaseStorage.shoppingListPathHandler.handler,
+      );
+    }
+
+    // Получаем путь до соответвующего списка покупок.
+    const shoppingListPath = FirebasePaths.getPath({
       pathType: FirebasePaths.paths.SHOPPING_LIST,
       shoppingListId,
     });
 
-    console.log(path);
+    // Устанавливаем слушатель на соответсвующий список покупок в firebase.
+    const shoppingListPathRef = database().ref(shoppingListPath);
+    shoppingListPathRef.on(
+      'value',
+      FirebaseStorage.handlers.get('sharedListChanged'),
+    );
 
-    // if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
-    //   return FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
-    //     .shoppingList;
-    // } else if (
-    //   FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId)
-    // ) {
-    //   let listData = FirebaseStorage.receivedSharedShoppingLists.get(
-    //     shoppingListId,
-    //   );
-    //
-    //   if (!listData.touched) {
-    //     listData.touched = true;
-    //     FirebaseStorage.receivedSharedShoppingLists.set(
-    //       shoppingListId,
-    //       listData,
-    //     );
-    //
-    //     let receivedPath = FirebasePaths.getPath({
-    //       pathType: FirebasePaths.paths.USER_RECEIVED_DELIM,
-    //       // pathId: FirebaseStorage.localSignInInfo.phone,
-    //       userId: FirebaseStorage.localSignInInfo.phone,
-    //     });
-    //
-    //     database()
-    //       .ref(receivedPath)
-    //       .child(shoppingListId)
-    //       .update({touched: true});
-    //   }
-    //
-    //   return listData.shoppingList;
-    // } else {
-    //   console.log(
-    //     'FirebaseStorage->getShoppingList: BAD_SHOPPING_LIST_ID: ' +
-    //       shoppingListId,
-    //   );
-    //
-    //   return undefined;
-    // }
+    FirebaseStorage.shoppingListPathHandler.path = shoppingListPathRef;
+    FirebaseStorage.shoppingListPathHandler.handler = FirebaseStorage.handlers.get(
+      'sharedListChanged',
+    );
+
+    // Помечаем список покупок как прочитанный.
+    if (
+      FirebaseStorage.receivedSharedShoppingLists.has(shoppingListId) &&
+      !listData.touched
+    ) {
+      listData.touched = true;
+      FirebaseStorage.receivedSharedShoppingLists.set(shoppingListId, listData);
+
+      const receivedPath = FirebasePaths.getPath({
+        pathType: FirebasePaths.paths.USER_RECEIVED_DELIM,
+        userId: FirebaseStorage.localSignInInfo.phone,
+      });
+
+      database()
+        .ref(receivedPath)
+        .child(shoppingListId)
+        .update({touched: true});
+    }
+
+    return listData.shoppingList;
   }
 
-  // static async getShoppingList(shoppingListId) {
-  //   if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
-  //     return FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
-  //       .shoppingList;
-  //   } else if (
-  //     FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId)
-  //   ) {
-  //     let listData = FirebaseStorage.receivedSharedShoppingLists.get(
-  //       shoppingListId,
-  //     );
-  //
-  //     if (!listData.touched) {
-  //       listData.touched = true;
-  //       FirebaseStorage.receivedSharedShoppingLists.set(
-  //         shoppingListId,
-  //         listData,
-  //       );
-  //
-  //       let receivedPath = FirebasePaths.getPath({
-  //         pathType: FirebasePaths.paths.USER_RECEIVED_DELIM,
-  //         // pathId: FirebaseStorage.localSignInInfo.phone,
-  //         userId: FirebaseStorage.localSignInInfo.phone,
-  //       });
-  //
-  //       database()
-  //         .ref(receivedPath)
-  //         .child(shoppingListId)
-  //         .update({touched: true});
-  //     }
-  //
-  //     return listData.shoppingList;
-  //   } else {
-  //     console.log(
-  //       'FirebaseStorage->getShoppingList: BAD_SHOPPING_LIST_ID: ' +
-  //         shoppingListId,
-  //     );
-  //
-  //     return undefined;
-  //   }
-  // }
-
   static async removeShoppingList(shoppingListId) {
-    console.log('REMOVE_SHARED_SHOPPING_LIST: ' + shoppingListId);
-
     if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
       FirebaseStorage.sendSharedShoppingLists.delete(shoppingListId);
       FirebaseStorage.sendSharedShoppingListsIds.delete(shoppingListId);
@@ -225,8 +196,6 @@ export class FirebaseStorage {
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
-    console.log('SET_PRODUCT_STATUS: ' + shoppingListId);
-
     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
       console.log(
         'FirebaseStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
@@ -234,27 +203,17 @@ export class FirebaseStorage {
       return;
     }
 
-    let shoppingListData;
-    if (FirebaseStorage.receivedSharedShoppingLists.has(shoppingListId)) {
-      shoppingListData = FirebaseStorage.receivedSharedShoppingLists.get(
-        shoppingListId,
-      );
-    } else if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
-      shoppingListData = FirebaseStorage.sendSharedShoppingLists.get(
-        shoppingListId,
-      );
-    } else {
-      console.log(
-        'FirebaseStorage->setProductStatus(): BAD_SHOPPING_LIST_ID: ' +
-          shoppingListId,
-      );
-      return;
-    }
+    // Получаем данные списка покупок.
+    const listData = FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)
+      ? FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+      : FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
 
-    let {shoppingList} = shoppingListData;
-    let {productsList} = shoppingList;
-
-    let productData = productsList.filter(product => product.id === productId);
+    // Получаем соответсвующий продукт.
+    const {shoppingList, shoppingListCard} = listData;
+    const {productsList} = shoppingList;
+    const productData = productsList.filter(
+      product => product.id === productId,
+    );
     if (!productData.length) {
       console.log(
         'FirebaseStorage->setProductStatus()=>UNABLE_TO_FIND_PRODUCT_WITH_ID: ' +
@@ -263,67 +222,89 @@ export class FirebaseStorage {
       return;
     }
 
-    let product = productData[0];
+    // Устанавливаем у продукта соответсвтующий сттатус
+    const product = productData[0];
     product.completionStatus = status;
 
+    // Устанавливаем статистические параметры спсика и карточки списка.
     let completedItemsCount = 0;
     productsList.forEach(p => {
       if (p.completionStatus === PRODUCT_COMPLETED) {
         ++completedItemsCount;
       }
     });
+    const totalItemsCount = productsList.length;
+    const updateTimestamp = Date.now();
 
-    shoppingList.updateTimestamp = Date.now();
-    shoppingList.totalItemsCount = productsList.length;
     shoppingList.completedItemsCount = completedItemsCount;
+    shoppingList.totalItemsCount = totalItemsCount;
+    shoppingList.updateTimestamp = updateTimestamp;
 
+    shoppingListCard.completedItemsCount = completedItemsCount;
+    shoppingListCard.totalItemsCount = totalItemsCount;
+    shoppingListCard.updateTimestamp = updateTimestamp;
+
+    // Уведомляем списком покупок из запрошенных данных всех слушателей текущего списка.
     FirebaseStorage.notifier.notify({
       event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-      data: {shoppingListId, productId, status},
+      data: shoppingList,
     });
 
-    let shoppingListSharedPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.SHOPPING_LIST_DATA,
+    // Получаем пути в firebase до списка покупок
+    const listPath = FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.SHOPPING_LIST,
       shoppingListId,
-      // pathId: shoppingListId,
+    });
+    const listCardPath = FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.SHOPPING_LIST_CARD,
+      shoppingListId,
+    });
+    const productPath = FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.PRODUCT,
+      shoppingListId,
+      productId,
     });
 
-    console.log('PATH: ' + shoppingListSharedPath);
-
-    // let updates = {};
-    // updates[shoppingListSharedPath + '/shoppingList/'] = {
-    //   updateTimestamp: shoppingList.updateTimestamp,
-    //   completedItemsCount: shoppingList.completedItemsCount,
-    //   productsList: productsList,
-    // };
+    // Обновляем данные по соответвующим путям.
+    const updates = {};
+    updates[
+      listPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
+    ] = completedItemsCount;
+    updates[
+      listPath + FirebasePaths.d + FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
+    ] = totalItemsCount;
+    updates[
+      listPath + FirebasePaths.d + FirebasePaths.folderNames.UPDATE_TIMESTAMP
+    ] = updateTimestamp;
+    updates[
+      listCardPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
+    ] = completedItemsCount;
+    updates[
+      listCardPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
+    ] = totalItemsCount;
+    updates[
+      listCardPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.UPDATE_TIMESTAMP
+    ] = updateTimestamp;
+    updates[
+      productPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.COMPLETION_STATUS
+    ] = product.completionStatus;
+    updates[
+      productPath + FirebasePaths.d + FirebasePaths.folderNames.UPDATE_TIMESTAMP
+    ] = updateTimestamp;
 
     database()
-      .ref(shoppingListSharedPath)
-      .child('shoppingList')
-      .child('productsList')
-      .push({
-        // updateTimestamp: shoppingList.updateTimestamp,
-        // completedItemsCount: shoppingList.completedItemsCount,
-        productsList,
-      });
-
-    // if (!listData.touched) {
-    //   listData.touched = true;
-    //   FirebaseStorage.receivedSharedShoppingLists.set(
-    //     shoppingListId,
-    //     listData,
-    //   );
-    //
-    //   let receivedPath = FirebasePaths.getPath({
-    //     pathType: USER_RECEIVED_DELIM,
-    //     pathId: FirebaseStorage.localSignInInfo.phone,
-    //   });
-    //
-    //   database()
-    //     .ref(receivedPath)
-    //     .child(shoppingListId)
-    //     .update({touched: true});
-    // }
+      .ref()
+      .update(updates);
   }
 
   static async getUnits({shoppingListId}) {
@@ -359,6 +340,8 @@ FirebaseStorage.localSignInInfo = undefined;
 FirebaseStorage.handlers = new Map();
 FirebaseStorage.pathHandlersMap = new Map();
 
+FirebaseStorage.shoppingListPathHandler = {path: undefined, handler: undefined};
+
 FirebaseStorage.sendSharedShoppingLists = new Map();
 FirebaseStorage.sendSharedShoppingListsIds = new Set();
 FirebaseStorage.receivedSharedShoppingLists = new Map();
@@ -371,159 +354,3 @@ FirebaseStorage.events = {
   SHARED_PRODUCT_UPDATED: 'SHARED_PRODUCT_UPDATED',
 };
 FirebaseStorage.localSubscrtiptions = [];
-
-// export class FirebaseStorage {
-//   static async init(localSignInInfo) {
-//     console.log('FIREBASE_STORAGE_INIT');
-//
-//
-//     const pathsMap = new Map();
-//     pathsMap.set('send', undefined);
-//     pathsMap.set('received', undefined);
-//
-//
-//     this.createHandlers();
-//
-//     FirebaseStorage.handlersMap = new Map();
-//
-//     FirebaseStorage.localSignInInfo = localSignInInfo;
-//     await this.handleFirebaseListeners();
-//
-//     StorageEvents.subscribe({
-//       event: SIGN_IN_INFO_CHANGED,
-//       handler: async signInInfo => {
-//         FirebaseStorage.localSignInInfo = signInInfo;
-//         await this.handleFirebaseListeners();
-//       },
-//     });
-//   }
-//
-//   static createHandlers() {
-//     const sendPathHandler = snapshot => {
-//       console.log('sendPathHandler()');
-//     };
-//
-//     const receivedPathHandler = snapshot => {
-//       console.log('receivedPathHandler()');
-//     };
-//
-//     const listChangedHandler = snapshot => {
-//       console.log('listChangedHandler()');
-//     };
-//
-//     FirebaseStorage.handlers = {
-//       sendPathHandler,
-//       receivedPathHandler,
-//       listChangedHandler,
-//     };
-//   }
-//
-//   static async handleFirebaseListeners() {
-//     const {phone} = FirebaseStorage.localSignInInfo;
-//     if (!phone) {
-//       this.removeListeners();
-//     } else {
-//       this.setListeners();
-//     }
-//   }
-//
-//   static async setListeners() {
-//     console.log('SET_LISTENERS');
-//
-//     const {phone} = FirebaseStorage.localSignInInfo;
-//     if (!phone) {
-//       console.log('NO_PHONE');
-//       return;
-//     }
-//
-//     this.removeListeners();
-//
-//     FirebaseStorage.sendShoppingListsPathChangeHandler = snapshot => {
-//       // console.log('SEND: ' + JSON.stringify(snapshot.val()));
-//
-//       snapshot.forEach(async child => {
-//         // console.log('VALUE: ' + child.key + ' - ' + JSON.stringify(child.val()));
-//
-//         const shoppingListKey = child.key;
-//         const shoppingListPath = database().ref(
-//           '/shared/shoppingLists/' + shoppingListKey,
-//         );
-//
-//         const shoppingListData = await shoppingListPath.once('value');
-//         const {shoppingList, units, classes} = FirebaseConverter.listFromFirebase(
-//           shoppingListData,
-//         );
-//       });
-//     };
-//     FirebaseStorage.receivedShoppingListsPathChangeHandler = snapshot => {
-//       console.log('RECEIVED: ' + JSON.stringify(snapshot.val()));
-//     };
-//
-//     FirebaseStorage.sendShoppingListsPath = database().ref(
-//       '/users/' + phone + '/send',
-//     );
-//     FirebaseStorage.receivedShoppingListsPath = database().ref(
-//       '/users/' + phone + '/received',
-//     );
-//
-//     FirebaseStorage.sendShoppingListsPath.on(
-//       'value',
-//       FirebaseStorage.sendShoppingListsPathChangeHandler,
-//     );
-//     FirebaseStorage.receivedShoppingListsPath.on(
-//       'value',
-//       FirebaseStorage.receivedShoppingListsPathChangeHandler,
-//     );
-//   }
-//
-//   static removeListeners() {
-//     console.log('REMOVE_LISTENERS');
-//
-//     if (
-//       FirebaseStorage.sendShoppingListsPath &&
-//       FirebaseStorage.sendShoppingListsPathChangeHandler
-//     ) {
-//       FirebaseStorage.sendShoppingListsPath.off(
-//         'value',
-//         FirebaseStorage.sendShoppingListsPathChangeHandler,
-//       );
-//     }
-//
-//     if (
-//       FirebaseStorage.receivedShoppingListsPath &&
-//       FirebaseStorage.receivedShoppingListsPathChangeHandler
-//     ) {
-//       FirebaseStorage.receivedShoppingListsPath.off(
-//         'value',
-//         FirebaseStorage.receivedShoppingListsPathChangeHandler,
-//       );
-//     }
-//   }
-//
-//   // static fromFirebase(shoppingListSnapshot) {
-//   //   console.log('fromFirebase()');
-//   //
-//   //   // const shoppingListData = shoppingListSnapshot.val().shoppingList;
-//   //   //
-//   //   // const id = shoppingListSnapshot.key;
-//   //   // const name = shoppingListData.name;
-//   //   //
-//   //   // const productsList = [];
-//   //   // shoppingListData.productsList.forEach(product => {
-//   //   //   console.log('PRODUCT: ' + JSON.stringify(product));
-//   //   // });
-//   // }
-//
-//   static off() {
-//     console.log('FIREBASE_STORAGE_OFF');
-//     this.removeListeners();
-//   }
-// }
-//
-// FirebaseStorage.localSignInInfo = {};
-// FirebaseStorage.sendShoppingListsPath = undefined;
-// FirebaseStorage.receivedShoppingListsPath = undefined;
-// FirebaseStorage.sendShoppingListsPathChangeHandler = undefined;
-// FirebaseStorage.receivedShoppingListsPathChangeHandler = undefined;
-// FirebaseStorage.handlersMap = undefined;
-// FirebaseStorage.handlers = undefined;

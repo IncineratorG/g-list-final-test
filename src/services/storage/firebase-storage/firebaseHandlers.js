@@ -21,8 +21,51 @@ export const receivedPathHandler = async snapshot => {
   });
 };
 
-export const sharedListChangedHandler = () => {
-  console.log('SHARED_LIST_CHANGED_HANDLER');
+export const sharedListChangedHandler = async snapshot => {
+  if (snapshot.val() === null) {
+    return;
+  }
+
+  const shoppingListCard = FirebaseConverter.cardFromFirebase(
+    snapshot.val().id,
+    snapshot,
+  );
+
+  const productsListSnapshot = snapshot.child('productsList');
+
+  const productsList = FirebaseConverter.productsFromFirebase_V2(
+    productsListSnapshot,
+    shoppingListCard.id,
+  );
+
+  const shoppingList = {
+    id: shoppingListCard.id,
+    name: shoppingListCard.name,
+    totalItemsCount: shoppingListCard.totalItemsCount,
+    completedItemsCount: shoppingListCard.completedItemsCount,
+    createTimestamp: shoppingListCard.createTimestamp,
+    updateTimestamp: shoppingListCard.updateTimestamp,
+    creator: shoppingListCard.creator,
+    shared: true,
+    productsList,
+  };
+
+  if (FirebaseStorage.sendSharedShoppingLists.has(shoppingList.id)) {
+    FirebaseStorage.sendSharedShoppingLists.get(
+      shoppingList.id,
+    ).shoppingList = shoppingList;
+  } else if (FirebaseStorage.receivedSharedShoppingLists.has(shoppingList.id)) {
+    FirebaseStorage.receivedSharedShoppingLists.get(
+      shoppingList.id,
+    ).shoppingList = shoppingList;
+  } else {
+    console.log('UNKNOWN_ID');
+  }
+
+  FirebaseStorage.notifier.notify({
+    event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+    data: shoppingList,
+  });
 };
 
 const processSharedPathSnapshot = async ({
@@ -94,9 +137,11 @@ const processSharedPathSnapshot = async ({
   newSharedListsCardsData.forEach(sharedListCardData => {
     if (sharedListCardData) {
       const {sharedListCard, touched} = sharedListCardData;
+      sharedListCard.productsList = [];
 
       localSharedListMap.set(sharedListCard.id, {
         shoppingListCard: sharedListCard,
+        shoppingList: sharedListCard,
         touched,
       });
     }

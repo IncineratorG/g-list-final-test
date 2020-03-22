@@ -214,6 +214,10 @@ export const shoppingListReducer = (state = initialState, action) => {
           ...state.currentShoppingList,
           id: action.payload.shoppingList.id,
           name: action.payload.shoppingList.name,
+          shared: action.payload.shoppingList.shared ? true : false,
+          creator: action.payload.shoppingList.creator
+            ? action.payload.shoppingList.creator
+            : '',
           products: [...action.payload.shoppingList.productsList],
         },
       };

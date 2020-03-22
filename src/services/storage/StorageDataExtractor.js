@@ -11,12 +11,12 @@ export class StorageDataExtractor {
     return localShoppingLists;
   }
 
-  static async getShoppingList(shoppingListId) {
+  static async getShoppingList(shoppingListId, once) {
     const listType = StorageIdResolver.resolve(shoppingListId);
     if (listType === StorageIdResolver.listTypes.LOCAL) {
       return await SqliteStorage.getShoppingList(shoppingListId);
     } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
-      return await FirebaseStorage.getShoppingList(shoppingListId);
+      return await FirebaseStorage.getShoppingList(shoppingListId, once);
     } else {
       console.log(
         'StorageDataExtractor->getShoppingList(): UNKNOWN_ID: ' + listType,

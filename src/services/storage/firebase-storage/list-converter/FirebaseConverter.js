@@ -84,6 +84,32 @@ export class FirebaseConverter {
     });
   }
 
+  static productsFromFirebase_V2(productsSnapshot) {
+    const productsList = [];
+    if (productsSnapshot.val() === null) {
+      return productsList;
+    }
+
+    productsSnapshot.forEach(child => {
+      const product = child.val();
+
+      productsList.push({
+        id: product.id,
+        parentId: product.shoppingListId,
+        name: product.name,
+        unitId: product.unitId,
+        quantity: product.quantity,
+        classId: product.classId,
+        note: product.note,
+        completionStatus: product.completionStatus,
+        createTimestamp: product.createTimestamp,
+        updateTimestamp: product.updateTimestamp,
+      });
+    });
+
+    return productsList;
+  }
+
   static unitsFromFirebase(unitsSnapshot) {
     return unitsSnapshot.map(unitSnapshot => {
       return {id: unitSnapshot.id, name: unitSnapshot.name};
