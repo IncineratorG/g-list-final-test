@@ -51,6 +51,14 @@ export class Collaboration {
       throw new Error(e);
     }
   }
+
+  static async updateListTimestamp({editor, shoppingListId}) {
+    try {
+      await FirebaseCollaboration.updateListTimestamp({editor, shoppingListId});
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }
 
 // const usedUnits = [];

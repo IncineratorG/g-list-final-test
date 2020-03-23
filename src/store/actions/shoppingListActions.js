@@ -175,15 +175,25 @@ export const addProduct = ({
   };
 };
 
-export const setProductStatus = (shoppingListId, productId, status) => {
+export const setProductStatus = ({
+  editor,
+  shoppingListId,
+  productId,
+  status,
+}) => {
   return async dispatch => {
     try {
-      await Storage.setProductStatus({
+      const listType = await Storage.setProductStatus({
         shoppingListId,
         productId,
         status,
       });
+
       dispatch({type: SET_PRODUCT_STATUS});
+
+      if (listType === StorageIdResolver.listTypes.FIREBASE) {
+        Collaboration.updateListTimestamp({editor, shoppingListId});
+      }
     } catch (e) {
       console.log('shoppingListActions->setProductStatus() ERROR: ' + e);
     }

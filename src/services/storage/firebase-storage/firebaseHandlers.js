@@ -86,20 +86,28 @@ const processSharedPathSnapshot = async ({
     return;
   }
 
-  // Список ID не имеющихся на клиенте списков.
+  // Список ID не имеющихся на клиенте списков или спсиков, требующих обновления.
   const newSharedListsIdsArr = [];
 
   localSharedListIdsSet.clear();
   snapshot.forEach(child => {
     localSharedListIdsSet.add(child.key);
-    if (!localSharedListMap.has(child.key)) {
-      newSharedListsIdsArr.push({id: child.key, touched: child.val().touched});
+
+    const value = child.val();
+
+    const listData = localSharedListMap.get(child.key);
+    if (!listData || listData.updateTimestamp < value.updateTimestamp) {
+      newSharedListsIdsArr.push({
+        id: child.key,
+        touched: value.touched,
+        updateTimestamp: value.updateTimestamp,
+      });
     }
   });
 
   // Составляем список карточек новых совместных списков.
   const newSharedListsCardsData = await Promise.all(
-    newSharedListsIdsArr.map(async ({id, touched}) => {
+    newSharedListsIdsArr.map(async ({id, touched, updateTimestamp}) => {
       const sharedShoppingListCardPath = database().ref(
         FirebasePaths.getPath({
           pathType: FirebasePaths.paths.SHOPPING_LIST_CARD,
@@ -116,7 +124,7 @@ const processSharedPathSnapshot = async ({
         sharedShoppingListCardSnapshot,
       );
 
-      return {sharedListCard, touched};
+      return {sharedListCard, touched, updateTimestamp};
     }),
   );
 
@@ -136,16 +144,36 @@ const processSharedPathSnapshot = async ({
   // Добавляем новые карточки совместных списков клиенту.
   newSharedListsCardsData.forEach(sharedListCardData => {
     if (sharedListCardData) {
-      const {sharedListCard, touched} = sharedListCardData;
+      const {sharedListCard, touched, updateTimestamp} = sharedListCardData;
       sharedListCard.productsList = [];
+
+      const listData = localSharedListMap.get(sharedListCard.id);
+      const shoppingList =
+        listData && listData.shoppingList
+          ? listData.shoppingList
+          : sharedListCard;
 
       localSharedListMap.set(sharedListCard.id, {
         shoppingListCard: sharedListCard,
-        shoppingList: sharedListCard,
+        shoppingList,
         touched,
+        updateTimestamp,
       });
     }
   });
+  // newSharedListsCardsData.forEach(sharedListCardData => {
+  //   if (sharedListCardData) {
+  //     const {sharedListCard, touched, updateTimestamp} = sharedListCardData;
+  //     sharedListCard.productsList = [];
+  //
+  //     localSharedListMap.set(sharedListCard.id, {
+  //       shoppingListCard: sharedListCard,
+  //       shoppingList: sharedListCard,
+  //       touched,
+  //       updateTimestamp,
+  //     });
+  //   }
+  // });
 
   FirebaseStorage.notifier.notify({
     event: changeEvent,

@@ -97,13 +97,13 @@ export class FirebaseStorage {
   static async getShoppingLists() {
     const shoppingLists = [];
     FirebaseStorage.sendSharedShoppingLists.forEach((listData, listId) => {
-      let {shoppingList} = listData;
-      shoppingLists.push(shoppingList);
+      let {shoppingListCard} = listData;
+      shoppingLists.push(shoppingListCard);
     });
     FirebaseStorage.receivedSharedShoppingLists.forEach((listData, listId) => {
-      let {shoppingList} = listData;
-      shoppingList.touched = listData.touched;
-      shoppingLists.push(shoppingList);
+      let {shoppingListCard} = listData;
+      shoppingListCard.touched = listData.touched;
+      shoppingLists.push(shoppingListCard);
     });
 
     return shoppingLists;

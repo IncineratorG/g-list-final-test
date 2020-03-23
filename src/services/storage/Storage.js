@@ -98,6 +98,7 @@ export class Storage {
         status,
       });
     }
+    return listType;
   }
 
   static async updateSignInInfo({phone, email, password}) {

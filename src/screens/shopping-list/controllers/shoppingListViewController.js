@@ -37,7 +37,12 @@ export const useShoppingListScreenController = model => {
 
   const statusPressHandler = (productId, status) => {
     model.dispatch(
-      setProductStatus(model.data.shoppingListId, productId, status),
+      setProductStatus({
+        editor: model.data.currentPhone,
+        shoppingListId: model.data.shoppingListId,
+        productId,
+        status,
+      }),
     );
   };
 

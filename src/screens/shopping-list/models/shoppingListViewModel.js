@@ -96,6 +96,7 @@ export const useShoppingListScreenModel = () => {
       signedIn,
       editable,
       shared,
+      currentPhone,
     },
     setters: {setInputAreaVisible},
     navigation,
