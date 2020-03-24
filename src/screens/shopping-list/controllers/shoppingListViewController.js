@@ -25,6 +25,7 @@ export const useShoppingListScreenController = model => {
   const inputAreaSubmitValuesHandler = values => {
     model.dispatch(
       addProduct({
+        editor: model.data.currentPhone,
         shoppingListId: model.data.shoppingListId,
         name: values.productName,
         quantity: values.quantityValue,

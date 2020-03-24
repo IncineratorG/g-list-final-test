@@ -73,14 +73,27 @@ export class Storage {
     note,
     classId,
   }) {
-    return await SqliteStorage.addShoppingListItem({
-      shoppingListId,
-      name,
-      quantity,
-      unitId,
-      note,
-      classId,
-    });
+    const listType = StorageIdResolver.resolve(shoppingListId);
+    if (listType === StorageIdResolver.listTypes.LOCAL) {
+      await SqliteStorage.addShoppingListItem({
+        shoppingListId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+      });
+    } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
+      await FirebaseStorage.addShoppingListItem({
+        shoppingListId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+      });
+    }
+    return listType;
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
@@ -256,6 +269,25 @@ export class Storage {
     Storage.localSubscriptions.push(
       FirebaseStorage.subscribe({
         event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+        handler: async shoppingList => {
+          const shoppingLists = await StorageDataExtractor.getShoppingLists();
+
+          Storage.notifier.notify({
+            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+            data: shoppingLists,
+          });
+          Storage.notifier.notify({
+            entityIds: {shoppingListId: shoppingList.id},
+            event: Storage.events.SHOPPING_LIST_CHANGED,
+            data: shoppingList,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_PRODUCT_ADDED,
         handler: async shoppingList => {
           const shoppingLists = await StorageDataExtractor.getShoppingLists();
 

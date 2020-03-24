@@ -150,6 +150,7 @@ export const subscribeToShoppingList = shoppingListId => {
 };
 
 export const addProduct = ({
+  editor,
   shoppingListId,
   name,
   quantity,
@@ -159,7 +160,7 @@ export const addProduct = ({
 }) => {
   return async dispatch => {
     try {
-      await Storage.addProduct({
+      const listType = await Storage.addProduct({
         shoppingListId,
         name,
         quantity,
@@ -169,6 +170,10 @@ export const addProduct = ({
       });
 
       dispatch({type: ADD_PRODUCT});
+
+      if (listType === StorageIdResolver.listTypes.FIREBASE) {
+        Collaboration.updateListTimestamp({editor, shoppingListId});
+      }
     } catch (e) {
       console.log('shoppingListActions->addProduct() ERROR: ' + e);
     }

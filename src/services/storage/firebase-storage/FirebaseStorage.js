@@ -193,6 +193,125 @@ export class FirebaseStorage {
     classId,
   }) {
     console.log('ADD_SHOPPING_LIST_ITEM: ' + shoppingListId);
+
+    // Получаем данные списка покупок.
+    const listData = FirebaseStorage.sendSharedShoppingLists.get(
+      shoppingListId,
+    );
+    if (!listData) {
+      console.log(
+        'FirebaseStorage->addShoppingListItem(): UNABLE_TO_FIND_SEND_LIST_DATA_WITH_ID: ' +
+          shoppingListId,
+      );
+      return;
+    }
+
+    // Получаем текущее время и статус нового продукта.
+    const currentDate = Date.now();
+    const completionStatus = PRODUCT_NOT_COMPLETED;
+
+    // Получаем путь в firebase до списка продуктов.
+    const productsListPath = FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.PRODUCTS_LIST,
+      shoppingListId,
+    });
+
+    // Получаем ID нового продукта.
+    const productKey = database()
+      .ref(productsListPath)
+      .push().key;
+
+    // Получаем список покупок и карточку списка покупок.
+    const {shoppingList, shoppingListCard} = listData;
+
+    // Добавляем продукт в локальный список покупок.
+    const newProduct = {
+      id: productKey,
+      parentId: shoppingListId,
+      name: name,
+      unitId: unitId,
+      quantity: quantity,
+      classId: classId,
+      note: note,
+      completionStatus: completionStatus,
+      createTimestamp: currentDate,
+      updateTimestamp: currentDate,
+    };
+    shoppingList.productsList.push(newProduct);
+
+    // Устанавливаем статистические параметры спсика и карточки списка.
+    let completedItemsCount = 0;
+    shoppingList.productsList.forEach(p => {
+      if (p.completionStatus === PRODUCT_COMPLETED) {
+        ++completedItemsCount;
+      }
+    });
+    const totalItemsCount = shoppingList.productsList.length;
+
+    shoppingList.completedItemsCount = completedItemsCount;
+    shoppingList.totalItemsCount = totalItemsCount;
+    shoppingList.updateTimestamp = currentDate;
+
+    shoppingListCard.completedItemsCount = completedItemsCount;
+    shoppingListCard.totalItemsCount = totalItemsCount;
+    shoppingListCard.updateTimestamp = currentDate;
+
+    // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCT_ADDED,
+      data: shoppingList,
+    });
+
+    // Получаем пути в firebase до списка покупок
+    const listPath = FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.SHOPPING_LIST,
+      shoppingListId,
+    });
+    const listCardPath = FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.SHOPPING_LIST_CARD,
+      shoppingListId,
+    });
+    const productPath = FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.PRODUCT,
+      shoppingListId,
+      productId: productKey,
+    });
+
+    // Обновляем данные по соответвующим путям.
+    const updates = {};
+    updates[
+      listPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
+    ] = completedItemsCount;
+    updates[
+      listPath + FirebasePaths.d + FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
+    ] = totalItemsCount;
+    updates[
+      listPath + FirebasePaths.d + FirebasePaths.folderNames.UPDATE_TIMESTAMP
+    ] = currentDate;
+
+    updates[
+      listCardPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
+    ] = completedItemsCount;
+    updates[
+      listCardPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
+    ] = totalItemsCount;
+    updates[
+      listCardPath +
+        FirebasePaths.d +
+        FirebasePaths.folderNames.UPDATE_TIMESTAMP
+    ] = currentDate;
+
+    updates[productPath] = newProduct;
+
+    database()
+      .ref()
+      .update(updates);
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
@@ -244,7 +363,7 @@ export class FirebaseStorage {
     shoppingListCard.totalItemsCount = totalItemsCount;
     shoppingListCard.updateTimestamp = updateTimestamp;
 
-    // Уведомляем списком покупок из запрошенных данных всех слушателей текущего списка.
+    // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
     FirebaseStorage.notifier.notify({
       event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
       data: shoppingList,
@@ -352,5 +471,6 @@ FirebaseStorage.events = {
   SHARED_SEND_LISTS_CHANGED: 'SHARED_SEND_LISTS_CHANGED',
   SHARED_RECEIVED_LISTS_CHANGED: 'SHARED_RECEIVED_LISTS_CHANGED',
   SHARED_PRODUCT_UPDATED: 'SHARED_PRODUCT_UPDATED',
+  SHARED_PRODUCT_ADDED: 'SHARED_PRODUCT_ADDED',
 };
 FirebaseStorage.localSubscrtiptions = [];

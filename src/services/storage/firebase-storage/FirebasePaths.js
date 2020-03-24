@@ -247,7 +247,9 @@ export class FirebasePaths {
           productId === undefined ||
           productId.length <= 0
         ) {
-          console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
+          console.log(
+            'FirebasePaths->getPath() => BAD_SHOPPING_LIST_OR_PRODUCT_ID',
+          );
           return '';
         } else {
           return (
@@ -274,7 +276,9 @@ export class FirebasePaths {
           productId === undefined ||
           productId.length <= 0
         ) {
-          console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
+          console.log(
+            'FirebasePaths->getPath() => BAD_SHOPPING_LIST_OR_PRODUCT_ID',
+          );
           return '';
         } else {
           return (
