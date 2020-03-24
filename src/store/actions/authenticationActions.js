@@ -1,7 +1,7 @@
 import {
-  LOAD_LOCAL_SIGN_IN_INFO_BEGIN,
-  LOAD_LOCAL_SIGN_IN_INFO_ERROR,
-  LOAD_LOCAL_SIGN_IN_INFO_FINISHED,
+  // LOAD_LOCAL_SIGN_IN_INFO_BEGIN,
+  // LOAD_LOCAL_SIGN_IN_INFO_ERROR,
+  // LOAD_LOCAL_SIGN_IN_INFO_FINISHED,
   RESET_SIGN_ERRORS,
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
@@ -12,22 +12,53 @@ import {
   SIGN_UP_BEGIN,
   SIGN_UP_ERROR,
   SIGN_UP_FINISHED,
+  SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_BEGIN,
+  SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_ERROR,
+  SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_FINISHED,
+  UPDATE_LOCAL_SIGN_IN_INFO,
 } from '../types/authenticationTypes';
 import {Authentication} from '../../services/authentication/Authentication';
 import {Storage} from '../../services/storage/Storage';
 
-export const loadLocalSignInInfo = () => {
+export const subscribeToLocalSignInInfo = () => {
   return async dispatch => {
-    dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_BEGIN});
+    dispatch({type: SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_BEGIN});
 
     try {
-      const signInInfo = await Storage.getSignInInfo();
-      dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_FINISHED, payload: signInInfo});
+      const localSignInInfoChangedHandler = signInInfo => {
+        dispatch({type: UPDATE_LOCAL_SIGN_IN_INFO, payload: signInInfo});
+      };
+
+      const subscription = await Storage.subscribe({
+        event: Storage.events.SIGN_IN_INFO_CHANGED,
+        handler: localSignInInfoChangedHandler,
+      });
+
+      dispatch({
+        type: SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_FINISHED,
+        payload: {
+          unsubscribe: subscription.unsubscribe,
+          signInInfo: subscription.data,
+        },
+      });
     } catch (e) {
-      dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_ERROR, payload: {}});
+      dispatch({type: SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_ERROR, payload: e});
     }
   };
 };
+
+// export const loadLocalSignInInfo = () => {
+//   return async dispatch => {
+//     dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_BEGIN});
+//
+//     try {
+//       const signInInfo = await Storage.getSignInInfo();
+//       dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_FINISHED, payload: signInInfo});
+//     } catch (e) {
+//       dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_ERROR, payload: {}});
+//     }
+//   };
+// };
 
 export const signUp = ({phone, email, password}) => {
   return async dispatch => {
@@ -38,7 +69,7 @@ export const signUp = ({phone, email, password}) => {
       if (result.status === 'SUCCESS') {
         await Storage.updateSignInInfo({phone, email, password});
 
-        dispatch({type: SIGN_UP_FINISHED, payload: {phone, email, password}});
+        dispatch({type: SIGN_UP_FINISHED});
       } else {
         dispatch({type: SIGN_UP_ERROR, payload: result});
       }
@@ -61,10 +92,7 @@ export const signIn = ({phone, password}) => {
         const email = '';
         await Storage.updateSignInInfo({phone, email, password});
 
-        dispatch({
-          type: SIGN_IN_FINISHED,
-          payload: {phone, password, email: ''},
-        });
+        dispatch({type: SIGN_IN_FINISHED});
       } else {
         dispatch({type: SIGN_IN_ERROR, payload: result});
       }

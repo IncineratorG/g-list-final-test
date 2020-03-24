@@ -1,16 +1,16 @@
 import {
-  loadShoppingList,
   removeShoppingList,
+  subscribeToShoppingList,
 } from '../../../store/actions/shoppingListActions';
 
 export const useMainScreenController = model => {
   const listItemPressHandler = listItemId => {
-    model.dispatch(loadShoppingList(listItemId));
+    model.dispatch(subscribeToShoppingList(listItemId));
     model.navigation.navigate('ShoppingList');
   };
 
   const listItemRemoveHandler = (listItem, row) => {
-    model.setters.setRemoveItemName(listItem.listName);
+    model.setters.setRemoveItemName(listItem.name);
     model.setters.setRemoveItemId(listItem.id);
     model.setters.setListItemRow(row);
     model.setters.setRemoveConfirmationDialogVisible(true);

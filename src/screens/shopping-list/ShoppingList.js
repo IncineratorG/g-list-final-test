@@ -10,12 +10,8 @@ const ShoppingList = () => {
   const model = useShoppingListScreenModel();
   const controller = useShoppingListScreenController(model);
 
-  const collaborationButton = (
-    <CollaborationButton onPress={controller.navigationButtonHandler} />
-  );
-
   useEffect(() => {
-    model.navigation.setParams({collaborationButton});
+    model.navigation.setParams({controller});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -30,7 +26,12 @@ const ShoppingList = () => {
 
 ShoppingList.navigationOptions = ({navigation}) => {
   const shoppingListName = navigation.getParam('shoppingListName');
-  const collaborationButton = navigation.getParam('collaborationButton');
+  const editable = navigation.getParam('editable');
+  const controller = navigation.getParam('controller');
+
+  const collaborationButton = editable ? (
+    <CollaborationButton onPress={controller.navigationButtonHandler} />
+  ) : null;
 
   return {
     headerTitle: shoppingListName ? shoppingListName : '',

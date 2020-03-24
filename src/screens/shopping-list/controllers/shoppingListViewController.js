@@ -25,6 +25,7 @@ export const useShoppingListScreenController = model => {
   const inputAreaSubmitValuesHandler = values => {
     model.dispatch(
       addProduct({
+        editor: model.data.currentPhone,
         shoppingListId: model.data.shoppingListId,
         name: values.productName,
         quantity: values.quantityValue,
@@ -36,7 +37,14 @@ export const useShoppingListScreenController = model => {
   };
 
   const statusPressHandler = (productId, status) => {
-    model.dispatch(setProductStatus(productId, status));
+    model.dispatch(
+      setProductStatus({
+        editor: model.data.currentPhone,
+        shoppingListId: model.data.shoppingListId,
+        productId,
+        status,
+      }),
+    );
   };
 
   return {

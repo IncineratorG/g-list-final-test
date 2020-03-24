@@ -1,7 +1,4 @@
 import {
-  LOAD_LOCAL_SIGN_IN_INFO_BEGIN,
-  LOAD_LOCAL_SIGN_IN_INFO_ERROR,
-  LOAD_LOCAL_SIGN_IN_INFO_FINISHED,
   RESET_SIGN_ERRORS,
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
@@ -12,10 +9,15 @@ import {
   SIGN_UP_BEGIN,
   SIGN_UP_ERROR,
   SIGN_UP_FINISHED,
+  SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_BEGIN,
+  SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_ERROR,
+  SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_FINISHED,
+  UPDATE_LOCAL_SIGN_IN_INFO,
 } from '../types/authenticationTypes';
 
 const initialState = {
   currentUser: {
+    unsubscribeHandler: undefined,
     signedIn: false,
     loading: false,
     phone: '',
@@ -31,22 +33,11 @@ const initialState = {
 
 export const authenticationReducer = (state = initialState, action) => {
   switch (action.type) {
-    case RESET_SIGN_ERRORS: {
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          error: {
-            ...state.currentUser.error,
-            hasError: false,
-            description: '',
-            status: '',
-          },
-        },
-      };
-    }
+    case SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_BEGIN: {
+      if (state.currentUser.unsubscribeHandler) {
+        state.currentUser.unsubscribeHandler();
+      }
 
-    case LOAD_LOCAL_SIGN_IN_INFO_BEGIN: {
       return {
         ...state,
         currentUser: {
@@ -62,21 +53,32 @@ export const authenticationReducer = (state = initialState, action) => {
       };
     }
 
-    case LOAD_LOCAL_SIGN_IN_INFO_FINISHED: {
+    case SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_FINISHED: {
+      if (state.currentUser.unsubscribeHandler) {
+        state.currentUser.unsubscribeHandler();
+      }
+
       return {
         ...state,
         currentUser: {
           ...state.currentUser,
+          unsubscribeHandler: action.payload.unsubscribe,
+          signedIn: action.payload.signInInfo.phone ? true : false,
           loading: false,
-          signedIn: action.payload.phone ? true : false,
-          phone: action.payload.phone ? action.payload.phone : '',
-          email: action.payload.email ? action.payload.email : '',
-          password: action.payload.password ? action.payload.password : '',
+          phone: action.payload.signInInfo.phone
+            ? action.payload.signInInfo.phone
+            : '',
+          email: action.payload.signInInfo.email
+            ? action.payload.signInInfo.email
+            : '',
+          password: action.payload.signInInfo.password
+            ? action.payload.signInInfo.password
+            : '',
         },
       };
     }
 
-    case LOAD_LOCAL_SIGN_IN_INFO_ERROR: {
+    case SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_ERROR: {
       return {
         ...state,
         currentUser: {
@@ -90,6 +92,34 @@ export const authenticationReducer = (state = initialState, action) => {
               ? action.payload.description
               : '',
             status: action.payload.status ? action.payload.status : '',
+          },
+        },
+      };
+    }
+
+    case UPDATE_LOCAL_SIGN_IN_INFO: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          signedIn: action.payload.phone ? true : false,
+          phone: action.payload.phone,
+          email: action.payload.email,
+          password: action.payload.password,
+        },
+      };
+    }
+
+    case RESET_SIGN_ERRORS: {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          error: {
+            ...state.currentUser.error,
+            hasError: false,
+            description: '',
+            status: '',
           },
         },
       };
@@ -120,11 +150,7 @@ export const authenticationReducer = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...state.currentUser,
-          signedIn: true,
           loading: false,
-          phone: action.payload.phone,
-          email: action.payload.email,
-          password: action.payload.password,
           error: {
             ...state.currentUser.error,
             hasError: false,
@@ -182,11 +208,7 @@ export const authenticationReducer = (state = initialState, action) => {
         ...state,
         currentUser: {
           ...state.currentUser,
-          signedIn: true,
           loading: false,
-          phone: action.payload.phone,
-          email: action.payload.email,
-          password: action.payload.password,
         },
       };
     }

@@ -4,7 +4,7 @@ export const listOfShoppingListsItemStylesNotCompleted = StyleSheet.create({
   infoContainer: {
     flex: 1,
   },
-  completionContainer: {
+  footerContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },

@@ -21,21 +21,21 @@ export const useCollaboratorsScreenController = model => {
 
     console.log('SHOPPING_LIST_ID: ' + model.data.currentShoppingListId);
 
-    model.dispatch(
-      sendTextMessage({
-        receiverPhone: model.data.enteredPhone,
-        senderPhone: model.data.currentPhone,
-        messageText: 'MESSAGE',
-      }),
-    );
-
     // model.dispatch(
-    //   shareShoppingList({
+    //   sendTextMessage({
     //     receiverPhone: model.data.enteredPhone,
     //     senderPhone: model.data.currentPhone,
-    //     shoppingListId: model.data.currentShoppingListId,
+    //     messageText: 'MESSAGE',
     //   }),
     // );
+
+    model.dispatch(
+      shareShoppingList({
+        receiverPhone: model.data.enteredPhone,
+        senderPhone: model.data.currentPhone,
+        shoppingListId: model.data.currentShoppingListId,
+      }),
+    );
   };
 
   return {

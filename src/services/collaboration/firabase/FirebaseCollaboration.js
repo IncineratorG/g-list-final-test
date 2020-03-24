@@ -62,20 +62,22 @@ export class FirebaseCollaboration {
   }
 
   static async shareShoppingList({
-    receiver,
+    receivers,
     sender,
     shoppingList,
-    usedUnits,
-    usedClasses,
+    shoppingListCard,
+    units,
+    classes,
   }) {
     console.log('HERE_HERE_HERE');
 
     const data = {
-      receiver,
+      receivers,
       sender,
       shoppingList,
-      usedUnits,
-      usedClasses,
+      shoppingListCard: shoppingListCard,
+      units,
+      classes,
     };
     const serializedData = JSON.stringify(data);
 
@@ -96,8 +98,66 @@ export class FirebaseCollaboration {
 
       const {status, sharedListKey} = responseData;
 
-      // console.log('RESPONSE_STATUS: ' + status);
+      console.log('RESPONSE_STATUS: ' + status);
       console.log('RESPONSE_KEY: ' + sharedListKey);
+
+      return 'SUCCESS';
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async removeSharedShoppingList({shoppingListId}) {
+    const data = {shoppingListId};
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/removeShoppingList',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status} = responseData;
+
+      console.log('RESPONSE_STATUS: ' + status);
+
+      return 'SUCCESS';
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async updateListTimestamp({editor, shoppingListId}) {
+    const data = {editor, shoppingListId};
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/updateTimestamp',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status} = responseData;
+
+      console.log('RESPONSE_STATUS: ' + status);
 
       return 'SUCCESS';
     } catch (e) {

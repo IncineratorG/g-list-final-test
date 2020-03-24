@@ -16,6 +16,7 @@ import {
   SHOPPING_LISTS_TABLE_COMPLETED_ITEMS,
   SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP,
   SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP,
+  SHOPPING_LISTS_TABLE_CREATOR,
 } from './tables-description/shoppingListsTableDescription';
 import {
   SHOPPING_LIST_ITEM_TABLE,
@@ -43,6 +44,7 @@ import {
   AUTHENTICATION_TABLE_PHONE,
 } from './tables-description/authenticationTableDescription';
 import {AuthenticationTableOperations} from './operations-implementation/AuthenticationTableOperations';
+import {StorageNotifier} from '../storage-notifier/StorageNotifier';
 
 const DB_NAME = 'glist.db';
 
@@ -50,6 +52,10 @@ const SQlite = require('react-native-sqlite-storage');
 const db = SQlite.openDatabase(DB_NAME);
 
 export class SqliteStorage {
+  static subscribe({entityIds, event, handler}) {
+    return SqliteStorage.notifier.subscribe({entityIds, event, handler});
+  }
+
   static init() {
     const createClassesTableStatement =
       'CREATE TABLE IF NOT EXISTS ' +
@@ -77,6 +83,8 @@ export class SqliteStorage {
       ' (' +
       SHOPPING_LISTS_TABLE_ID +
       ' INTEGER PRIMARY KEY NOT NULL, ' +
+      SHOPPING_LISTS_TABLE_CREATOR +
+      ' TEXT NOT_NULL, ' +
       SHOPPING_LISTS_TABLE_LIST_NAME +
       ' TEXT NOT NULL, ' +
       SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
@@ -157,28 +165,77 @@ export class SqliteStorage {
     return UnitsTableOperations.addUnit(db, unitName);
   }
 
-  static removeUnit(unitName) {
-    UnitsTableOperations.removeUnit(db, unitName);
-  }
+  static async getUnits() {
+    const unitsData = await UnitsTableOperations.getUnits(db);
 
-  static getUnits() {
-    return UnitsTableOperations.getUnits(db);
+    const units = [];
+    for (let i = 0; i < unitsData.length; ++i) {
+      units.push(unitsData.item(i));
+    }
+
+    return units;
   }
 
   static addClass(className) {
     return ClassesTableOperations.addClass(db, className);
   }
 
-  static getClasses() {
-    return ClassesTableOperations.getClasses(db);
+  static async getClasses() {
+    const classesData = await ClassesTableOperations.getClasses(db);
+
+    const classes = [];
+    for (let i = 0; i < classesData.length; ++i) {
+      classes.push(classesData.item(i));
+    }
+
+    return classes;
   }
 
-  static addShoppingList(name) {
-    return ShoppingListsTableOperations.addShoppingList(db, name);
+  static async addShoppingList(name, creator) {
+    const shoppingListId = await ShoppingListsTableOperations.addShoppingList(
+      db,
+      name,
+      creator,
+    );
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SHOPPING_LIST_ADDED,
+      data: {shoppingListId, name},
+    });
+
+    return shoppingListId;
   }
 
-  static getShoppingLists() {
-    return ShoppingListsTableOperations.getShoppingLists(db);
+  static async removeShoppingList(shoppingListId) {
+    const removedShoppingListsCount = await ShoppingListsTableOperations.removeShoppingList(
+      db,
+      shoppingListId,
+    );
+
+    const removedProductsCount = await ShoppingListItemsTableOperations.removeItemsWithShoppingListId(
+      db,
+      shoppingListId,
+    );
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SHOPPING_LIST_REMOVED,
+      data: {id: shoppingListId},
+    });
+
+    return {removedShoppingListsCount, removedProductsCount};
+  }
+
+  static async getShoppingLists() {
+    const shoppingListsTableData = await ShoppingListsTableOperations.getShoppingLists(
+      db,
+    );
+
+    const shoppingLists = [];
+    for (let i = 0; i < shoppingListsTableData.length; ++i) {
+      shoppingLists.push(shoppingListsTableData.item(i));
+    }
+
+    return shoppingLists;
   }
 
   static async addShoppingListItem({
@@ -216,12 +273,23 @@ export class SqliteStorage {
       completedShoppingListItems.length,
     );
 
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
+      data: {
+        shoppingListId,
+        productId: insertedId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+      },
+    });
+
     return insertedId;
   }
 
-  static async changeProductStatus(productId) {}
-
-  static async setShoppingListItemStatus({productId, status}) {
+  static async setShoppingListItemStatus({shoppingListId, productId, status}) {
     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
       console.log(
         'SqliteStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
@@ -230,67 +298,86 @@ export class SqliteStorage {
     }
 
     await ShoppingListItemsTableOperations.setItemStatus(db, productId, status);
-    const parentShoppingListIdData = await ShoppingListItemsTableOperations.getParentListId(
-      db,
-      productId,
-    );
-
-    const parentShoppingListId =
-      parentShoppingListIdData.length > 0
-        ? parentShoppingListIdData.item(0).parentId
-        : -1;
-
-    if (parentShoppingListId === -1) {
-      return -1;
-    }
 
     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
       db,
-      parentShoppingListId,
+      shoppingListId,
     );
 
     const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
       db,
-      parentShoppingListId,
+      shoppingListId,
     );
 
     await ShoppingListsTableOperations.updateShoppingList(
       db,
-      parentShoppingListId,
+      shoppingListId,
       totalShoppingListItems.length,
       completedShoppingListItems.length,
     );
 
-    return parentShoppingListId;
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
+      data: {shoppingListId, productId, status},
+    });
+
+    return shoppingListId;
   }
 
-  static getShoppingListItems(shoppingListId) {
-    return ShoppingListItemsTableOperations.getItems(db, shoppingListId);
-  }
-
-  static getShoppingListName(shoppingListId) {
-    return ShoppingListsTableOperations.getShoppingListName(db, shoppingListId);
-  }
-
-  static async removeShoppingList(shoppingListId) {
-    const removedShoppingListsCount = await ShoppingListsTableOperations.removeShoppingList(
+  static async getShoppingList(shoppingListId) {
+    const productsListData = await ShoppingListItemsTableOperations.getItems(
       db,
       shoppingListId,
     );
 
-    const removedProductsCount = await ShoppingListItemsTableOperations.removeItemsWithShoppingListId(
+    const productsList = [];
+    for (let i = 0; i < productsListData.length; ++i) {
+      productsList.push(productsListData.item(i));
+    }
+
+    const descriptionData = await ShoppingListsTableOperations.getShoppingListDescription(
       db,
       shoppingListId,
     );
 
-    return {removedShoppingListsCount, removedProductsCount};
+    return {
+      id: shoppingListId,
+      name: descriptionData.length ? descriptionData.item(0).name : '',
+      totalItemsCount: descriptionData.length
+        ? descriptionData.item(0).totalItemsCount
+        : '',
+      completedItemsCount: descriptionData.length
+        ? descriptionData.item(0).completedItemsCount
+        : '',
+      createTimestamp: descriptionData.length
+        ? descriptionData.item(0).createTimestamp
+        : '',
+      updateTimestamp: descriptionData.length
+        ? descriptionData.item(0).updateTimestamp
+        : '',
+      creator: descriptionData.length ? descriptionData.item(0).creator : '',
+      productsList,
+    };
   }
 
-  static async getSignInInfo() {
-    return await AuthenticationTableOperations.getSignInInfo(db);
+  static async getLocalSignInInfo() {
+    const localSignInInfo = await AuthenticationTableOperations.getSignInInfo(
+      db,
+    );
+
+    return {
+      phone:
+        localSignInInfo.length > 0 ? localSignInInfo.item(0).phone : undefined,
+      email:
+        localSignInInfo.length > 0 ? localSignInInfo.item(0).email : undefined,
+      password:
+        localSignInInfo.length > 0
+          ? localSignInInfo.item(0).password
+          : undefined,
+    };
   }
 
-  static async updateSignInInfo({phone, email, password}) {
+  static async updateLocalSignInInfo({phone, email, password}) {
     const currentSignInInfoData = await AuthenticationTableOperations.getSignInInfo(
       db,
     );
@@ -305,9 +392,651 @@ export class SqliteStorage {
       email,
       password,
     );
+
+    const localSignInInfo = await this.getLocalSignInInfo();
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_UPDATED,
+      data: {localSignInInfo},
+    });
   }
 
-  static async removeSignInInfo() {
+  static async removeLocalSignInInfo() {
     await AuthenticationTableOperations.removeSignInInfo(db);
+    const localSignInInfo = await this.getLocalSignInInfo();
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_REMOVED,
+      data: {localSignInInfo},
+    });
   }
 }
+
+SqliteStorage.events = {
+  LOCAL_SHOPPING_LIST_ADDED: 'LOCAL_SHOPPING_LIST_ADDED',
+  LOCAL_SHOPPING_LIST_REMOVED: 'LOCAL_SHOPPING_LIST_REMOVED',
+  LOCAL_PRODUCT_ADDED: 'LOCAL_PRODUCT_ADDED',
+  LOCAL_PRODUCT_UPDATED: 'LOCAL_PRODUCT_UPDATED',
+  LOCAL_SIGN_IN_INFO_UPDATED: 'LOCAL_SIGN_IN_INFO_UPDATED',
+  LOCAL_SIGN_IN_INFO_REMOVED: 'LOCAL_SIGN_IN_INFO_REMOVED',
+};
+SqliteStorage.notifier = new StorageNotifier({});
+
+// export class SqliteStorage {
+//   static init() {
+//     const createClassesTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       CLASSES_TABLE +
+//       ' ' +
+//       '(' +
+//       CLASSES_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       CLASSES_TABLE_CLASS_NAME +
+//       ' TEXT NOT NULL)';
+//
+//     const createUnitsTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       UNITS_TABLE +
+//       ' ' +
+//       '(' +
+//       UNITS_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       UNITS_TABLE_UNIT_NAME +
+//       ' TEXT NOT NULL)';
+//
+//     const createShoppingListTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       SHOPPING_LISTS_TABLE +
+//       ' (' +
+//       SHOPPING_LISTS_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_LIST_NAME +
+//       ' TEXT NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
+//       ' INTEGER NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_COMPLETED_ITEMS +
+//       ' INTEGER NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP +
+//       ' INTEGER NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
+//       ' INTEGER NOT NULL)';
+//
+//     const createShoppingListItemTable =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       SHOPPING_LIST_ITEM_TABLE +
+//       ' (' +
+//       SHOPPING_LIST_ITEM_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
+//       ' TEXT, ' +
+//       SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_NOTE +
+//       ' TEXT, ' +
+//       SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+//       ' TEXT, ' +
+//       SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP +
+//       ' INTEGER NOT_NULL, ' +
+//       SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP +
+//       ' INTEGER NOT_NULL)';
+//
+//     const createAuthenticationTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       AUTHENTICATION_TABLE +
+//       ' (' +
+//       AUTHENTICATION_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       AUTHENTICATION_TABLE_PHONE +
+//       ' TEXT, ' +
+//       AUTHENTICATION_TABLE_EMAIL +
+//       ' TEXT, ' +
+//       AUTHENTICATION_TABLE_PASSWORD +
+//       ' TEXT)';
+//
+//     return new Promise((resolve, reject) => {
+//       db.transaction(tx => {
+//         tx.executeSql(createClassesTableStatement, [], (tx, result) => {
+//           tx.executeSql(createUnitsTableStatement, [], (tx, result) => {
+//             tx.executeSql(
+//               createShoppingListTableStatement,
+//               [],
+//               (tx, result) => {
+//                 tx.executeSql(createShoppingListItemTable, [], (tx, result) => {
+//                   tx.executeSql(
+//                     createAuthenticationTableStatement,
+//                     [],
+//                     resolve,
+//                   );
+//                 });
+//               },
+//             );
+//           });
+//         });
+//       });
+//     });
+//   }
+//
+//   static isInitialized() {
+//     return ShoppingListsTableOperations.isInitialized(db);
+//   }
+//
+//   static addUnit(unitName) {
+//     return UnitsTableOperations.addUnit(db, unitName);
+//   }
+//
+//   static async getUnits() {
+//     const unitsData = await UnitsTableOperations.getUnits(db);
+//
+//     const units = [];
+//     for (let i = 0; i < unitsData.length; ++i) {
+//       units.push(unitsData.item(i));
+//     }
+//
+//     return units;
+//   }
+//
+//   static addClass(className) {
+//     return ClassesTableOperations.addClass(db, className);
+//   }
+//
+//   static async getClasses() {
+//     const classesData = await ClassesTableOperations.getClasses(db);
+//
+//     const classes = [];
+//     for (let i = 0; i < classesData.length; ++i) {
+//       classes.push(classesData.item(i));
+//     }
+//
+//     return classes;
+//   }
+//
+//   static async addShoppingList(name) {
+//     const shoppingListId = await ShoppingListsTableOperations.addShoppingList(
+//       db,
+//       name,
+//     );
+//
+//     // StorageEvents.fireEvent({
+//     //   event: LOCAL_SHOPPING_LIST_ADDED,
+//     //   data: {id: shoppingListId, name},
+//     // });
+//
+//     return shoppingListId;
+//   }
+//
+//   static async getShoppingLists() {
+//     const shoppingListsTableData = await ShoppingListsTableOperations.getShoppingLists(
+//       db,
+//     );
+//
+//     const shoppingLists = [];
+//     for (let i = 0; i < shoppingListsTableData.length; ++i) {
+//       shoppingLists.push(shoppingListsTableData.item(i));
+//     }
+//
+//     return shoppingLists;
+//   }
+//
+//   static async addShoppingListItem({
+//     shoppingListId,
+//     name,
+//     quantity,
+//     unitId,
+//     note,
+//     classId,
+//   }) {
+//     const insertedId = await ShoppingListItemsTableOperations.addItem(
+//       db,
+//       shoppingListId,
+//       name,
+//       quantity,
+//       unitId,
+//       note,
+//       classId,
+//     );
+//
+//     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     await ShoppingListsTableOperations.updateShoppingList(
+//       db,
+//       shoppingListId,
+//       totalShoppingListItems.length,
+//       completedShoppingListItems.length,
+//     );
+//
+//     return insertedId;
+//   }
+//
+//   static async setShoppingListItemStatus({shoppingListId, productId, status}) {
+//     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
+//       console.log(
+//         'SqliteStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
+//       );
+//       return -1;
+//     }
+//
+//     await ShoppingListItemsTableOperations.setItemStatus(db, productId, status);
+//
+//     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     await ShoppingListsTableOperations.updateShoppingList(
+//       db,
+//       shoppingListId,
+//       totalShoppingListItems.length,
+//       completedShoppingListItems.length,
+//     );
+//
+//     return shoppingListId;
+//   }
+//
+//   static async getShoppingList(shoppingListId) {
+//     const productsListData = await ShoppingListItemsTableOperations.getItems(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     const productsList = [];
+//     for (let i = 0; i < productsListData.length; ++i) {
+//       productsList.push(productsListData.item(i));
+//     }
+//
+//     const nameData = await ShoppingListsTableOperations.getShoppingListName(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     return {
+//       id: shoppingListId,
+//       name: nameData.length ? nameData.item(0).listName : '',
+//       productsList,
+//     };
+//   }
+//
+//   static async removeShoppingList(shoppingListId) {
+//     const removedShoppingListsCount = await ShoppingListsTableOperations.removeShoppingList(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     const removedProductsCount = await ShoppingListItemsTableOperations.removeItemsWithShoppingListId(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     return {removedShoppingListsCount, removedProductsCount};
+//   }
+//
+//   static async getLocalSignInInfo() {
+//     const localSignInInfo = await AuthenticationTableOperations.getSignInInfo(
+//       db,
+//     );
+//
+//     return {
+//       phone:
+//         localSignInInfo.length > 0 ? localSignInInfo.item(0).phone : undefined,
+//       email:
+//         localSignInInfo.length > 0 ? localSignInInfo.item(0).email : undefined,
+//       password:
+//         localSignInInfo.length > 0
+//           ? localSignInInfo.item(0).password
+//           : undefined,
+//     };
+//   }
+//
+//   static async updateLocalSignInInfo({phone, email, password}) {
+//     const currentSignInInfoData = await AuthenticationTableOperations.getSignInInfo(
+//       db,
+//     );
+//
+//     if (currentSignInInfoData.length > 0) {
+//       await AuthenticationTableOperations.removeSignInInfo(db);
+//     }
+//
+//     await AuthenticationTableOperations.createSignInInfo(
+//       db,
+//       phone,
+//       email,
+//       password,
+//     );
+//   }
+//
+//   static async removeLocalSignInInfo() {
+//     await AuthenticationTableOperations.removeSignInInfo(db);
+//   }
+// }
+
+// import {
+//   CLASSES_TABLE,
+//   CLASSES_TABLE_ID,
+//   CLASSES_TABLE_CLASS_NAME,
+// } from './tables-description/classesTableDescription';
+// import {
+//   UNITS_TABLE,
+//   UNITS_TABLE_ID,
+//   UNITS_TABLE_UNIT_NAME,
+// } from './tables-description/unitsTableDescription';
+// import {
+//   SHOPPING_LISTS_TABLE,
+//   SHOPPING_LISTS_TABLE_ID,
+//   SHOPPING_LISTS_TABLE_LIST_NAME,
+//   SHOPPING_LISTS_TABLE_TOTAL_ITEMS,
+//   SHOPPING_LISTS_TABLE_COMPLETED_ITEMS,
+//   SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP,
+//   SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP,
+// } from './tables-description/shoppingListsTableDescription';
+// import {
+//   SHOPPING_LIST_ITEM_TABLE,
+//   SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID,
+//   SHOPPING_LIST_ITEM_TABLE_CLASS_ID,
+//   SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS,
+//   SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP,
+//   SHOPPING_LIST_ITEM_TABLE_ID,
+//   SHOPPING_LIST_ITEM_TABLE_NOTE,
+//   SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT,
+//   SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME,
+//   SHOPPING_LIST_ITEM_TABLE_UNIT_ID,
+//   SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP,
+// } from './tables-description/shoppingListItemTableDescription';
+// import {UnitsTableOperations} from './operations-implementation/UnitsTableOperations';
+// import {ClassesTableOperations} from './operations-implementation/ClassesTableOperations';
+// import {ShoppingListsTableOperations} from './operations-implementation/ShoppingListsTableOperations';
+// import {ShoppingListItemsTableOperations} from './operations-implementation/ShoppingListItemsTableOperations';
+// import {PRODUCT_COMPLETED, PRODUCT_NOT_COMPLETED} from '../data/productStatus';
+// import {
+//   AUTHENTICATION_TABLE,
+//   AUTHENTICATION_TABLE_EMAIL,
+//   AUTHENTICATION_TABLE_ID,
+//   AUTHENTICATION_TABLE_PASSWORD,
+//   AUTHENTICATION_TABLE_PHONE,
+// } from './tables-description/authenticationTableDescription';
+// import {AuthenticationTableOperations} from './operations-implementation/AuthenticationTableOperations';
+//
+// const DB_NAME = 'glist.db';
+//
+// const SQlite = require('react-native-sqlite-storage');
+// const db = SQlite.openDatabase(DB_NAME);
+//
+// export class SqliteStorage {
+//   static init() {
+//     const createClassesTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       CLASSES_TABLE +
+//       ' ' +
+//       '(' +
+//       CLASSES_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       CLASSES_TABLE_CLASS_NAME +
+//       ' TEXT NOT NULL)';
+//
+//     const createUnitsTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       UNITS_TABLE +
+//       ' ' +
+//       '(' +
+//       UNITS_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       UNITS_TABLE_UNIT_NAME +
+//       ' TEXT NOT NULL)';
+//
+//     const createShoppingListTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       SHOPPING_LISTS_TABLE +
+//       ' (' +
+//       SHOPPING_LISTS_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_LIST_NAME +
+//       ' TEXT NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_TOTAL_ITEMS +
+//       ' INTEGER NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_COMPLETED_ITEMS +
+//       ' INTEGER NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_CREATE_TIMESTAMP +
+//       ' INTEGER NOT NULL, ' +
+//       SHOPPING_LISTS_TABLE_UPDATE_TIMESTAMP +
+//       ' INTEGER NOT NULL)';
+//
+//     const createShoppingListItemTable =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       SHOPPING_LIST_ITEM_TABLE +
+//       ' (' +
+//       SHOPPING_LIST_ITEM_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
+//       ' TEXT, ' +
+//       SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
+//       ' INTEGER, ' +
+//       SHOPPING_LIST_ITEM_TABLE_NOTE +
+//       ' TEXT, ' +
+//       SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+//       ' TEXT, ' +
+//       SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP +
+//       ' INTEGER NOT_NULL, ' +
+//       SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP +
+//       ' INTEGER NOT_NULL)';
+//
+//     const createAuthenticationTableStatement =
+//       'CREATE TABLE IF NOT EXISTS ' +
+//       AUTHENTICATION_TABLE +
+//       ' (' +
+//       AUTHENTICATION_TABLE_ID +
+//       ' INTEGER PRIMARY KEY NOT NULL, ' +
+//       AUTHENTICATION_TABLE_PHONE +
+//       ' TEXT, ' +
+//       AUTHENTICATION_TABLE_EMAIL +
+//       ' TEXT, ' +
+//       AUTHENTICATION_TABLE_PASSWORD +
+//       ' TEXT)';
+//
+//     return new Promise((resolve, reject) => {
+//       db.transaction(tx => {
+//         tx.executeSql(createClassesTableStatement, [], (tx, result) => {
+//           tx.executeSql(createUnitsTableStatement, [], (tx, result) => {
+//             tx.executeSql(
+//               createShoppingListTableStatement,
+//               [],
+//               (tx, result) => {
+//                 tx.executeSql(createShoppingListItemTable, [], (tx, result) => {
+//                   tx.executeSql(
+//                     createAuthenticationTableStatement,
+//                     [],
+//                     resolve,
+//                   );
+//                 });
+//               },
+//             );
+//           });
+//         });
+//       });
+//     });
+//   }
+//
+//   static isInitialized() {
+//     return ShoppingListsTableOperations.isInitialized(db);
+//   }
+//
+//   static addUnit(unitName) {
+//     return UnitsTableOperations.addUnit(db, unitName);
+//   }
+//
+//   static removeUnit(unitName) {
+//     UnitsTableOperations.removeUnit(db, unitName);
+//   }
+//
+//   static getUnits() {
+//     return UnitsTableOperations.getUnits(db);
+//   }
+//
+//   static addClass(className) {
+//     return ClassesTableOperations.addClass(db, className);
+//   }
+//
+//   static getClasses() {
+//     return ClassesTableOperations.getClasses(db);
+//   }
+//
+//   static addShoppingList(name) {
+//     return ShoppingListsTableOperations.addShoppingList(db, name);
+//   }
+//
+//   static getShoppingLists() {
+//     return ShoppingListsTableOperations.getShoppingLists(db);
+//   }
+//
+//   static async addShoppingListItem({
+//     shoppingListId,
+//     name,
+//     quantity,
+//     unitId,
+//     note,
+//     classId,
+//   }) {
+//     const insertedId = await ShoppingListItemsTableOperations.addItem(
+//       db,
+//       shoppingListId,
+//       name,
+//       quantity,
+//       unitId,
+//       note,
+//       classId,
+//     );
+//
+//     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     await ShoppingListsTableOperations.updateShoppingList(
+//       db,
+//       shoppingListId,
+//       totalShoppingListItems.length,
+//       completedShoppingListItems.length,
+//     );
+//
+//     return insertedId;
+//   }
+//
+//   static async changeProductStatus(productId) {}
+//
+//   static async setShoppingListItemStatus({productId, status}) {
+//     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
+//       console.log(
+//         'SqliteStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
+//       );
+//       return -1;
+//     }
+//
+//     await ShoppingListItemsTableOperations.setItemStatus(db, productId, status);
+//     const parentShoppingListIdData = await ShoppingListItemsTableOperations.getParentListId(
+//       db,
+//       productId,
+//     );
+//
+//     const parentShoppingListId =
+//       parentShoppingListIdData.length > 0
+//         ? parentShoppingListIdData.item(0).parentId
+//         : -1;
+//
+//     if (parentShoppingListId === -1) {
+//       return -1;
+//     }
+//
+//     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+//       db,
+//       parentShoppingListId,
+//     );
+//
+//     const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+//       db,
+//       parentShoppingListId,
+//     );
+//
+//     await ShoppingListsTableOperations.updateShoppingList(
+//       db,
+//       parentShoppingListId,
+//       totalShoppingListItems.length,
+//       completedShoppingListItems.length,
+//     );
+//
+//     return parentShoppingListId;
+//   }
+//
+//   static getShoppingListItems(shoppingListId) {
+//     return ShoppingListItemsTableOperations.getItems(db, shoppingListId);
+//   }
+//
+//   static getShoppingListName(shoppingListId) {
+//     return ShoppingListsTableOperations.getShoppingListName(db, shoppingListId);
+//   }
+//
+//   static async removeShoppingList(shoppingListId) {
+//     const removedShoppingListsCount = await ShoppingListsTableOperations.removeShoppingList(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     const removedProductsCount = await ShoppingListItemsTableOperations.removeItemsWithShoppingListId(
+//       db,
+//       shoppingListId,
+//     );
+//
+//     return {removedShoppingListsCount, removedProductsCount};
+//   }
+//
+//   static async getSignInInfo() {
+//     return await AuthenticationTableOperations.getSignInInfo(db);
+//   }
+//
+//   static async updateSignInInfo({phone, email, password}) {
+//     const currentSignInInfoData = await AuthenticationTableOperations.getSignInInfo(
+//       db,
+//     );
+//
+//     if (currentSignInInfoData.length > 0) {
+//       await AuthenticationTableOperations.removeSignInInfo(db);
+//     }
+//
+//     await AuthenticationTableOperations.createSignInInfo(
+//       db,
+//       phone,
+//       email,
+//       password,
+//     );
+//   }
+//
+//   static async removeSignInInfo() {
+//     await AuthenticationTableOperations.removeSignInInfo(db);
+//   }
+// }

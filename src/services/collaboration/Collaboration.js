@@ -23,38 +23,38 @@ export class Collaboration {
   }
 
   static async shareShoppingList({
-    receiver,
+    receivers,
     sender,
     shoppingList,
+    shoppingListCard,
     units,
     classes,
   }) {
-    const {products} = shoppingList;
-
-    const usedUnitsIds = [];
-    const usedClassesIds = [];
-    products.map(product => {
-      if (usedUnitsIds.indexOf(product.unitId) < 0) {
-        usedUnitsIds.push(product.unitId);
-      }
-      if (usedClassesIds.indexOf(product.classId) < 0) {
-        usedClassesIds.push(product.classId);
-      }
-    });
-
-    const usedUnits = units.filter(unit => usedUnitsIds.indexOf(unit.id) >= 0);
-    const usedClasses = classes.filter(
-      cl => usedClassesIds.indexOf(cl.id) >= 0,
-    );
-
     try {
       await FirebaseCollaboration.shareShoppingList({
-        receiver,
+        receivers,
         sender,
         shoppingList,
-        usedUnits,
-        usedClasses,
+        shoppingListCard,
+        units,
+        classes,
       });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async removeSharedShoppingList({shoppingListId}) {
+    try {
+      await FirebaseCollaboration.removeSharedShoppingList({shoppingListId});
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async updateListTimestamp({editor, shoppingListId}) {
+    try {
+      await FirebaseCollaboration.updateListTimestamp({editor, shoppingListId});
     } catch (e) {
       throw new Error(e);
     }
