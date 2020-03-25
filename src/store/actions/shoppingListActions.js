@@ -160,7 +160,7 @@ export const addProduct = ({
 }) => {
   return async dispatch => {
     try {
-      const listType = await Storage.addProduct({
+      const {listType, firebaseUpdateData} = await Storage.addProduct({
         shoppingListId,
         name,
         quantity,
@@ -172,7 +172,19 @@ export const addProduct = ({
       dispatch({type: ADD_PRODUCT});
 
       if (listType === StorageIdResolver.listTypes.FIREBASE) {
-        Collaboration.updateListTimestamp({editor, shoppingListId});
+        const {
+          completedItemsCount,
+          totalItemsCount,
+          product,
+        } = firebaseUpdateData;
+
+        Collaboration.addProduct({
+          editor,
+          shoppingListId,
+          product,
+          completedItemsCount,
+          totalItemsCount,
+        });
       }
     } catch (e) {
       console.log('shoppingListActions->addProduct() ERROR: ' + e);
@@ -188,7 +200,7 @@ export const setProductStatus = ({
 }) => {
   return async dispatch => {
     try {
-      const listType = await Storage.setProductStatus({
+      const {listType, firebaseUpdateData} = await Storage.setProductStatus({
         shoppingListId,
         productId,
         status,
@@ -197,7 +209,16 @@ export const setProductStatus = ({
       dispatch({type: SET_PRODUCT_STATUS});
 
       if (listType === StorageIdResolver.listTypes.FIREBASE) {
-        Collaboration.updateListTimestamp({editor, shoppingListId});
+        const {completedItemsCount, totalItemsCount} = firebaseUpdateData;
+
+        Collaboration.setProductStatus({
+          editor,
+          shoppingListId,
+          productId,
+          status,
+          completedItemsCount,
+          totalItemsCount,
+        });
       }
     } catch (e) {
       console.log('shoppingListActions->setProductStatus() ERROR: ' + e);

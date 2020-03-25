@@ -164,4 +164,88 @@ export class FirebaseCollaboration {
       throw new Error(e);
     }
   }
+
+  static async setProductStatus({
+    editor,
+    shoppingListId,
+    productId,
+    status,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    const data = {
+      editor,
+      shoppingListId,
+      productId,
+      status,
+      completedItemsCount,
+      totalItemsCount,
+    };
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/setProductStatus',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status} = responseData;
+
+      console.log('RESPONSE_STATUS: ' + status);
+
+      return 'SUCCESS';
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async addProduct({
+    editor,
+    shoppingListId,
+    product,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    const data = {
+      editor,
+      shoppingListId,
+      product,
+      completedItemsCount,
+      totalItemsCount,
+    };
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/addProduct',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status} = responseData;
+
+      console.log('RESPONSE_STATUS: ' + status);
+
+      return 'SUCCESS';
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }

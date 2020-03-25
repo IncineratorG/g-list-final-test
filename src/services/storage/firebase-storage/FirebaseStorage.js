@@ -192,8 +192,6 @@ export class FirebaseStorage {
     note,
     classId,
   }) {
-    console.log('ADD_SHOPPING_LIST_ITEM: ' + shoppingListId);
-
     // Получаем данные списка покупок.
     const listData = FirebaseStorage.sendSharedShoppingLists.get(
       shoppingListId,
@@ -262,56 +260,7 @@ export class FirebaseStorage {
       data: shoppingList,
     });
 
-    // Получаем пути в firebase до списка покупок
-    const listPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.SHOPPING_LIST,
-      shoppingListId,
-    });
-    const listCardPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.SHOPPING_LIST_CARD,
-      shoppingListId,
-    });
-    const productPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.PRODUCT,
-      shoppingListId,
-      productId: productKey,
-    });
-
-    // Обновляем данные по соответвующим путям.
-    const updates = {};
-    updates[
-      listPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
-    ] = completedItemsCount;
-    updates[
-      listPath + FirebasePaths.d + FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
-    ] = totalItemsCount;
-    updates[
-      listPath + FirebasePaths.d + FirebasePaths.folderNames.UPDATE_TIMESTAMP
-    ] = currentDate;
-
-    updates[
-      listCardPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
-    ] = completedItemsCount;
-    updates[
-      listCardPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
-    ] = totalItemsCount;
-    updates[
-      listCardPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.UPDATE_TIMESTAMP
-    ] = currentDate;
-
-    updates[productPath] = newProduct;
-
-    database()
-      .ref()
-      .update(updates);
+    return {completedItemsCount, totalItemsCount, product: newProduct};
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
@@ -369,61 +318,7 @@ export class FirebaseStorage {
       data: shoppingList,
     });
 
-    // Получаем пути в firebase до списка покупок
-    const listPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.SHOPPING_LIST,
-      shoppingListId,
-    });
-    const listCardPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.SHOPPING_LIST_CARD,
-      shoppingListId,
-    });
-    const productPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.PRODUCT,
-      shoppingListId,
-      productId,
-    });
-
-    // Обновляем данные по соответвующим путям.
-    const updates = {};
-    updates[
-      listPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
-    ] = completedItemsCount;
-    updates[
-      listPath + FirebasePaths.d + FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
-    ] = totalItemsCount;
-    updates[
-      listPath + FirebasePaths.d + FirebasePaths.folderNames.UPDATE_TIMESTAMP
-    ] = updateTimestamp;
-    updates[
-      listCardPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.COMPLETED_ITEMS_COUNT
-    ] = completedItemsCount;
-    updates[
-      listCardPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.TOTAL_ITEMS_COUNT
-    ] = totalItemsCount;
-    updates[
-      listCardPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.UPDATE_TIMESTAMP
-    ] = updateTimestamp;
-    updates[
-      productPath +
-        FirebasePaths.d +
-        FirebasePaths.folderNames.COMPLETION_STATUS
-    ] = product.completionStatus;
-    updates[
-      productPath + FirebasePaths.d + FirebasePaths.folderNames.UPDATE_TIMESTAMP
-    ] = updateTimestamp;
-
-    database()
-      .ref()
-      .update(updates);
+    return {completedItemsCount, totalItemsCount};
   }
 
   static async getUnits({shoppingListId}) {
