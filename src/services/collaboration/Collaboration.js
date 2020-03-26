@@ -59,6 +59,68 @@ export class Collaboration {
       throw new Error(e);
     }
   }
+
+  static async setProductStatus({
+    editor,
+    shoppingListId,
+    productId,
+    status,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    try {
+      await FirebaseCollaboration.setProductStatus({
+        editor,
+        shoppingListId,
+        productId,
+        status,
+        completedItemsCount,
+        totalItemsCount,
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async addProduct({
+    editor,
+    shoppingListId,
+    product,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    try {
+      await FirebaseCollaboration.addProduct({
+        editor,
+        shoppingListId,
+        product,
+        completedItemsCount,
+        totalItemsCount,
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async removeProduct({
+    editor,
+    shoppingListId,
+    productId,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    try {
+      await FirebaseCollaboration.removeProduct({
+        editor,
+        shoppingListId,
+        productId,
+        completedItemsCount,
+        totalItemsCount,
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }
 
 // const usedUnits = [];

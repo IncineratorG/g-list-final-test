@@ -1,5 +1,7 @@
 import {
   addProduct,
+  removeProduct,
+  removeShoppingList,
   setProductStatus,
 } from '../../../store/actions/shoppingListActions';
 
@@ -47,11 +49,44 @@ export const useShoppingListScreenController = model => {
     );
   };
 
+  const productRemoveHandler = (product, row) => {
+    model.setters.setRemoveProductName(product.name);
+    model.setters.setRemoveProductId(product.id);
+    model.setters.setProductRow(row);
+    model.setters.setRemoveConfirmationDialogVisible(true);
+  };
+
+  const removeConfirmationDialogTouchOutsideHandler = () => {
+    model.setters.setRemoveConfirmationDialogVisible(false);
+  };
+
+  const removeConfirmationDialogRemoveHandler = () => {
+    model.dispatch(
+      removeProduct({
+        editor: model.data.currentPhone,
+        shoppingListId: model.data.shoppingListId,
+        productId: model.data.removeProductId,
+      }),
+    );
+    model.setters.setRemoveConfirmationDialogVisible(false);
+    model.setters.setProductRow(null);
+  };
+
+  const removeConfirmationDialogCancelRemoveHandler = () => {
+    model.setters.setRemoveConfirmationDialogVisible(false);
+    model.data.productRow.closeRow();
+    model.setters.setProductRow(null);
+  };
+
   return {
     addProductButtonHandler,
     inputAreaHideHandler,
     inputAreaSubmitValuesHandler,
     statusPressHandler,
     navigationButtonHandler,
+    productRemoveHandler,
+    removeConfirmationDialogRemoveHandler,
+    removeConfirmationDialogTouchOutsideHandler,
+    removeConfirmationDialogCancelRemoveHandler,
   };
 };

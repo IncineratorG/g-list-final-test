@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, StatusBar} from 'react-native';
 import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
 import LinearGradient from 'react-native-linear-gradient';
 import {EmptyMainScreen} from '../../../components/main-screen/EmptyMainScreen';

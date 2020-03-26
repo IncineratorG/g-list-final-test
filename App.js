@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, AppState} from 'react-native';
+import {View, AppState, StatusBar} from 'react-native';
 import {Provider} from 'react-redux';
 import store from './src/store';
 import AppLoader from './src/components/loader/AppLoader';
@@ -30,6 +30,10 @@ export default function App() {
 
   return (
     <Provider store={store}>
+      <StatusBar
+        backgroundColor="white"
+        barStyle="dark-content" // Here is where you change the font-color
+      />
       <AppLoader />
     </Provider>
   );

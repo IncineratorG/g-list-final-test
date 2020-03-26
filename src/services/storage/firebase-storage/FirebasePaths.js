@@ -1,6 +1,35 @@
 export class FirebasePaths {
   static getPath({pathType, userId, shoppingListId, productId}) {
     switch (pathType) {
+      case FirebasePaths.paths.USER: {
+        if (userId === undefined || userId.length <= 0) {
+          console.log('FirebasePaths->getPath() => BAD_USER_ID');
+          return '';
+        } else {
+          return (
+            FirebasePaths.d +
+            FirebasePaths.folderNames.USERS +
+            FirebasePaths.d +
+            userId
+          );
+        }
+      }
+
+      case FirebasePaths.paths.USER_DELIM: {
+        if (userId === undefined || userId.length <= 0) {
+          console.log('FirebasePaths->getPath() => BAD_USER_ID');
+          return '';
+        } else {
+          return (
+            FirebasePaths.d +
+            FirebasePaths.folderNames.USERS +
+            FirebasePaths.d +
+            userId +
+            FirebasePaths.d
+          );
+        }
+      }
+
       case FirebasePaths.paths.USERS_ROOT: {
         return (
           FirebasePaths.d + FirebasePaths.folderNames.USERS + FirebasePaths.d
@@ -199,6 +228,42 @@ export class FirebasePaths {
         }
       }
 
+      case FirebasePaths.paths.SHOPPING_LIST_SENDER: {
+        if (shoppingListId === undefined || shoppingListId.length <= 0) {
+          console.log('firebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
+          return '';
+        } else {
+          return (
+            FirebasePaths.d +
+            FirebasePaths.folderNames.SHARED +
+            FirebasePaths.d +
+            FirebasePaths.folderNames.SHOPPING_LISTS +
+            FirebasePaths.d +
+            shoppingListId +
+            FirebasePaths.d +
+            FirebasePaths.folderNames.SHOPPING_LIST_SENDER
+          );
+        }
+      }
+
+      case FirebasePaths.paths.SHOPPING_LIST_RECEIVERS: {
+        if (shoppingListId === undefined || shoppingListId.length <= 0) {
+          console.log('firebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
+          return '';
+        } else {
+          return (
+            FirebasePaths.d +
+            FirebasePaths.folderNames.SHARED +
+            FirebasePaths.d +
+            FirebasePaths.folderNames.SHOPPING_LISTS +
+            FirebasePaths.d +
+            shoppingListId +
+            FirebasePaths.d +
+            FirebasePaths.folderNames.SHOPPING_LIST_RECEIVERS
+          );
+        }
+      }
+
       case FirebasePaths.paths.PRODUCTS_LIST: {
         if (shoppingListId === undefined || shoppingListId.length <= 0) {
           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
@@ -308,6 +373,8 @@ export class FirebasePaths {
 }
 
 FirebasePaths.paths = {
+  USER: 'USER',
+  USER_DELIM: 'USER_DELIM',
   USERS_ROOT: 'USERS_ROOT',
   USER_SEND: 'USER_SEND',
   USER_SEND_DELIM: 'USER_SEND_DELIM',
@@ -319,6 +386,8 @@ FirebasePaths.paths = {
   SHOPPING_LIST_DATA_DELIM: 'SHOPPING_LIST_DATA_DELIM',
   SHOPPING_LIST_CARD: 'SHOPPING_LIST_CARD',
   SHOPPING_LIST_CARD_DELIM: 'SHOPPING_LIST_CARD_DELIM',
+  SHOPPING_LIST_SENDER: 'SHOPPING_LIST_SENDER',
+  SHOPPING_LIST_RECEIVERS: 'SHOPPING_LIST_RECEIVERS',
   SHOPPING_LIST: 'SHOPPING_LIST',
   SHOPPING_LIST_DELIM: 'SHOPPING_LIST_DELIM',
   PRODUCTS_LIST: 'PRODUCTS_LIST',
@@ -339,186 +408,7 @@ FirebasePaths.folderNames = {
   COMPLETION_STATUS: 'completionStatus',
   TOTAL_ITEMS_COUNT: 'totalItemsCount',
   UPDATE_TIMESTAMP: 'updateTimestamp',
+  CLASSES: 'classes',
+  UNITS: 'units',
 };
 FirebasePaths.d = '/';
-
-// static getPath({pathType, userId, shoppingListId, productId}) {
-//     switch (pathType) {
-//       case FirebasePaths.paths.USERS_ROOT: {
-//         return '/users/';
-//       }
-//
-//       case FirebasePaths.paths.USER_SEND: {
-//         if (userId === undefined || userId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_USER_ID');
-//           return '';
-//         } else {
-//           return '/users/' + userId + '/send';
-//         }
-//       }
-//
-//       case FirebasePaths.paths.USER_SEND_DELIM: {
-//         if (userId === undefined || userId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_USER_ID');
-//           return '';
-//         } else {
-//           return '/users/' + userId + '/send/';
-//         }
-//       }
-//
-//       case FirebasePaths.paths.USER_RECEIVED: {
-//         if (userId === undefined || userId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_USER_ID');
-//           return '';
-//         } else {
-//           return '/users/' + userId + '/received';
-//         }
-//       }
-//
-//       case FirebasePaths.paths.USER_RECEIVED_DELIM: {
-//         if (userId === undefined || userId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_USER_ID');
-//           return '';
-//         } else {
-//           return '/users/' + userId + '/received/';
-//         }
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LISTS_DATA_ROOT: {
-//         return '/shared/shoppingLists';
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LISTS_DATA_ROOT_DELIM: {
-//         return '/shared/shoppingLists/';
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LIST_DATA: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return '/shared/shoppingLists/' + shoppingListId;
-//         }
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LIST_DATA_DELIM: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return '/shared/shoppingLists/' + shoppingListId + '/';
-//         }
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LIST_CARD: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return (
-//             '/shared/shoppingLists/' + shoppingListId + '/shoppingListCard'
-//           );
-//         }
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LIST_CARD_DELIM: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return (
-//             '/shared/shoppingLists/' + shoppingListId + '/shoppingListCard/'
-//           );
-//         }
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LIST: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return '/shared/shoppingLists/' + shoppingListId + '/shoppingList';
-//         }
-//       }
-//
-//       case FirebasePaths.paths.SHOPPING_LIST_DELIM: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return '/shared/shoppingLists/' + shoppingListId + '/shoppingList/';
-//         }
-//       }
-//
-//       case FirebasePaths.paths.PRODUCTS_LIST: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return (
-//             '/shared/shoppingLists/' +
-//             shoppingListId +
-//             '/shoppingList/productsList'
-//           );
-//         }
-//       }
-//
-//       case FirebasePaths.paths.PRODUCTS_LIST_DELIM: {
-//         if (shoppingListId === undefined || shoppingListId.length <= 0) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return (
-//             '/shared/shoppingLists/' +
-//             shoppingListId +
-//             '/shoppingList/productsList/'
-//           );
-//         }
-//       }
-//
-//       case FirebasePaths.paths.PRODUCT: {
-//         if (
-//           shoppingListId === undefined ||
-//           shoppingListId.length <= 0 ||
-//           productId === undefined ||
-//           productId.length <= 0
-//         ) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return (
-//             '/shared/shoppingLists/' +
-//             shoppingListId +
-//             '/shoppingList/productsList/' +
-//             productId
-//           );
-//         }
-//       }
-//
-//       case FirebasePaths.paths.PRODUCT_DELIM: {
-//         if (
-//           shoppingListId === undefined ||
-//           shoppingListId.length <= 0 ||
-//           productId === undefined ||
-//           productId.length <= 0
-//         ) {
-//           console.log('FirebasePaths->getPath() => BAD_SHOPPING_LIST_ID');
-//           return '';
-//         } else {
-//           return (
-//             '/shared/shoppingLists/' +
-//             shoppingListId +
-//             '/shoppingList/productsList/' +
-//             productId +
-//             '/'
-//           );
-//         }
-//       }
-//
-//       default: {
-//         console.log('FirebasePaths->getPath() => UNKNOWN_PATH: ' + pathType);
-//         return '';
-//       }
-//     }
-//   }
-// }

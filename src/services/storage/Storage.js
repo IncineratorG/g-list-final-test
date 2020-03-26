@@ -74,8 +74,10 @@ export class Storage {
     classId,
   }) {
     const listType = StorageIdResolver.resolve(shoppingListId);
+    let firebaseUpdateData;
+
     if (listType === StorageIdResolver.listTypes.LOCAL) {
-      await SqliteStorage.addShoppingListItem({
+      await SqliteStorage.addProduct({
         shoppingListId,
         name,
         quantity,
@@ -84,7 +86,7 @@ export class Storage {
         classId,
       });
     } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
-      await FirebaseStorage.addShoppingListItem({
+      firebaseUpdateData = await FirebaseStorage.addProduct({
         shoppingListId,
         name,
         quantity,
@@ -93,25 +95,42 @@ export class Storage {
         classId,
       });
     }
-    return listType;
+    return {listType, firebaseUpdateData};
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
     const listType = StorageIdResolver.resolve(shoppingListId);
+    let firebaseUpdateData;
+
     if (listType === StorageIdResolver.listTypes.LOCAL) {
-      await SqliteStorage.setShoppingListItemStatus({
+      await SqliteStorage.setProductStatus({
         shoppingListId,
         productId,
         status,
       });
     } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
-      await FirebaseStorage.setProductStatus({
+      firebaseUpdateData = await FirebaseStorage.setProductStatus({
         shoppingListId,
         productId,
         status,
       });
     }
-    return listType;
+    return {listType, firebaseUpdateData};
+  }
+  static async removeProduct({shoppingListId, productId}) {
+    const listType = StorageIdResolver.resolve(shoppingListId);
+    let firebaseUpdateData;
+
+    if (listType === StorageIdResolver.listTypes.LOCAL) {
+      await SqliteStorage.removeProduct({shoppingListId, productId});
+    } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
+      firebaseUpdateData = await FirebaseStorage.removeProduct({
+        shoppingListId,
+        productId,
+      });
+    }
+
+    return {listType, firebaseUpdateData};
   }
 
   static async updateSignInInfo({phone, email, password}) {

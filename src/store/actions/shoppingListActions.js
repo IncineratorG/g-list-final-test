@@ -15,6 +15,9 @@ import {
   REMOVE_SHOPPING_LIST_BEGIN,
   REMOVE_SHOPPING_LIST_FINISHED,
   REMOVE_SHOPPING_LIST_ERROR,
+  REMOVE_PRODUCT_BEGIN,
+  REMOVE_PRODUCT_FINISHED,
+  REMOVE_PRODUCT_ERROR,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
@@ -160,7 +163,7 @@ export const addProduct = ({
 }) => {
   return async dispatch => {
     try {
-      const listType = await Storage.addProduct({
+      const {listType, firebaseUpdateData} = await Storage.addProduct({
         shoppingListId,
         name,
         quantity,
@@ -172,7 +175,19 @@ export const addProduct = ({
       dispatch({type: ADD_PRODUCT});
 
       if (listType === StorageIdResolver.listTypes.FIREBASE) {
-        Collaboration.updateListTimestamp({editor, shoppingListId});
+        const {
+          completedItemsCount,
+          totalItemsCount,
+          product,
+        } = firebaseUpdateData;
+
+        Collaboration.addProduct({
+          editor,
+          shoppingListId,
+          product,
+          completedItemsCount,
+          totalItemsCount,
+        });
       }
     } catch (e) {
       console.log('shoppingListActions->addProduct() ERROR: ' + e);
@@ -188,7 +203,7 @@ export const setProductStatus = ({
 }) => {
   return async dispatch => {
     try {
-      const listType = await Storage.setProductStatus({
+      const {listType, firebaseUpdateData} = await Storage.setProductStatus({
         shoppingListId,
         productId,
         status,
@@ -197,10 +212,49 @@ export const setProductStatus = ({
       dispatch({type: SET_PRODUCT_STATUS});
 
       if (listType === StorageIdResolver.listTypes.FIREBASE) {
-        Collaboration.updateListTimestamp({editor, shoppingListId});
+        const {completedItemsCount, totalItemsCount} = firebaseUpdateData;
+
+        Collaboration.setProductStatus({
+          editor,
+          shoppingListId,
+          productId,
+          status,
+          completedItemsCount,
+          totalItemsCount,
+        });
       }
     } catch (e) {
       console.log('shoppingListActions->setProductStatus() ERROR: ' + e);
+    }
+  };
+};
+
+export const removeProduct = ({editor, shoppingListId, productId}) => {
+  return async dispatch => {
+    dispatch({type: REMOVE_PRODUCT_BEGIN});
+
+    try {
+      const {listType, firebaseUpdateData} = await Storage.removeProduct({
+        shoppingListId,
+        productId,
+      });
+
+      dispatch({type: REMOVE_PRODUCT_FINISHED});
+
+      if (listType === StorageIdResolver.listTypes.FIREBASE) {
+        const {completedItemsCount, totalItemsCount} = firebaseUpdateData;
+
+        Collaboration.removeProduct({
+          editor,
+          shoppingListId,
+          productId,
+          completedItemsCount,
+          totalItemsCount,
+        });
+      }
+    } catch (e) {
+      console.log('shoppingListActions->removeProduct() ERROR: ' + e);
+      dispatch({type: REMOVE_PRODUCT_ERROR});
     }
   };
 };

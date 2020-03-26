@@ -149,6 +149,26 @@ export class ShoppingListItemsTableOperations {
     });
   }
 
+  static removeItem(db, itemId) {
+    const removeItemStatement =
+      'DELETE FROM ' +
+      SHOPPING_LIST_ITEM_TABLE +
+      ' WHERE ' +
+      SHOPPING_LIST_ITEM_TABLE_ID +
+      ' = ?';
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          removeItemStatement,
+          [itemId],
+          (_, result) => resolve(result.rowsAffected),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
   static getParentListId(db, itemId) {
     const getParentListIdStatement =
       'SELECT ' +

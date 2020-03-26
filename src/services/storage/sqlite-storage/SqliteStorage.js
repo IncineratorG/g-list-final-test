@@ -238,7 +238,7 @@ export class SqliteStorage {
     return shoppingLists;
   }
 
-  static async addShoppingListItem({
+  static async addProduct({
     shoppingListId,
     name,
     quantity,
@@ -289,7 +289,7 @@ export class SqliteStorage {
     return insertedId;
   }
 
-  static async setShoppingListItemStatus({shoppingListId, productId, status}) {
+  static async setProductStatus({shoppingListId, productId, status}) {
     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
       console.log(
         'SqliteStorage->setShoppingListItemStatus(): BAD_STATUS: ' + status,
@@ -318,7 +318,36 @@ export class SqliteStorage {
 
     SqliteStorage.notifier.notify({
       event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-      data: {shoppingListId, productId, status},
+      data: {shoppingListId, productId},
+      // data: {shoppingListId, productId, status},
+    });
+
+    return shoppingListId;
+  }
+
+  static async removeProduct({shoppingListId, productId}) {
+    await ShoppingListItemsTableOperations.removeItem(db, productId);
+
+    const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+      db,
+      shoppingListId,
+    );
+
+    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+      db,
+      shoppingListId,
+    );
+
+    await ShoppingListsTableOperations.updateShoppingList(
+      db,
+      shoppingListId,
+      totalShoppingListItems.length,
+      completedShoppingListItems.length,
+    );
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
+      data: {shoppingListId, productId},
     });
 
     return shoppingListId;
