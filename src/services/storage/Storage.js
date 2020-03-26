@@ -77,7 +77,7 @@ export class Storage {
     let firebaseUpdateData;
 
     if (listType === StorageIdResolver.listTypes.LOCAL) {
-      await SqliteStorage.addShoppingListItem({
+      await SqliteStorage.addProduct({
         shoppingListId,
         name,
         quantity,
@@ -86,7 +86,7 @@ export class Storage {
         classId,
       });
     } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
-      firebaseUpdateData = await FirebaseStorage.addShoppingListItem({
+      firebaseUpdateData = await FirebaseStorage.addProduct({
         shoppingListId,
         name,
         quantity,
@@ -103,7 +103,7 @@ export class Storage {
     let firebaseUpdateData;
 
     if (listType === StorageIdResolver.listTypes.LOCAL) {
-      await SqliteStorage.setShoppingListItemStatus({
+      await SqliteStorage.setProductStatus({
         shoppingListId,
         productId,
         status,
@@ -115,6 +115,21 @@ export class Storage {
         status,
       });
     }
+    return {listType, firebaseUpdateData};
+  }
+  static async removeProduct({shoppingListId, productId}) {
+    const listType = StorageIdResolver.resolve(shoppingListId);
+    let firebaseUpdateData;
+
+    if (listType === StorageIdResolver.listTypes.LOCAL) {
+      await SqliteStorage.removeProduct({shoppingListId, productId});
+    } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
+      firebaseUpdateData = await FirebaseStorage.removeProduct({
+        shoppingListId,
+        productId,
+      });
+    }
+
     return {listType, firebaseUpdateData};
   }
 

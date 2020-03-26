@@ -101,6 +101,26 @@ export class Collaboration {
       throw new Error(e);
     }
   }
+
+  static async removeProduct({
+    editor,
+    shoppingListId,
+    productId,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    try {
+      await FirebaseCollaboration.removeProduct({
+        editor,
+        shoppingListId,
+        productId,
+        completedItemsCount,
+        totalItemsCount,
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
 }
 
 // const usedUnits = [];

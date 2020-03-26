@@ -13,6 +13,13 @@ export const useShoppingListScreenModel = () => {
 
   const [inputAreaVisible, setInputAreaVisible] = useState(false);
   const [editable, setEditable] = useState(false);
+  const [removeProductName, setRemoveProductName] = useState('');
+  const [removeProductId, setRemoveProductId] = useState(-1);
+  const [productRow, setProductRow] = useState(null);
+  const [
+    removeConfirmationDialogVisible,
+    setRemoveConfirmationDialogVisible,
+  ] = useState(false);
 
   const units = useSelector(state => state.shoppingList.units);
   const classes = useSelector(state => state.shoppingList.classes);
@@ -97,8 +104,18 @@ export const useShoppingListScreenModel = () => {
       editable,
       shared,
       currentPhone,
+      removeProductName,
+      removeProductId,
+      productRow,
+      removeConfirmationDialogVisible,
     },
-    setters: {setInputAreaVisible},
+    setters: {
+      setInputAreaVisible,
+      setRemoveProductName,
+      setRemoveProductId,
+      setProductRow,
+      setRemoveConfirmationDialogVisible,
+    },
     navigation,
     dispatch,
   };

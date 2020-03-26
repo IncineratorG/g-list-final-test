@@ -15,6 +15,9 @@ import {
   REMOVE_SHOPPING_LIST_BEGIN,
   REMOVE_SHOPPING_LIST_FINISHED,
   REMOVE_SHOPPING_LIST_ERROR,
+  REMOVE_PRODUCT_BEGIN,
+  REMOVE_PRODUCT_FINISHED,
+  REMOVE_PRODUCT_ERROR,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
@@ -222,6 +225,36 @@ export const setProductStatus = ({
       }
     } catch (e) {
       console.log('shoppingListActions->setProductStatus() ERROR: ' + e);
+    }
+  };
+};
+
+export const removeProduct = ({editor, shoppingListId, productId}) => {
+  return async dispatch => {
+    dispatch({type: REMOVE_PRODUCT_BEGIN});
+
+    try {
+      const {listType, firebaseUpdateData} = await Storage.removeProduct({
+        shoppingListId,
+        productId,
+      });
+
+      dispatch({type: REMOVE_PRODUCT_FINISHED});
+
+      if (listType === StorageIdResolver.listTypes.FIREBASE) {
+        const {completedItemsCount, totalItemsCount} = firebaseUpdateData;
+
+        Collaboration.removeProduct({
+          editor,
+          shoppingListId,
+          productId,
+          completedItemsCount,
+          totalItemsCount,
+        });
+      }
+    } catch (e) {
+      console.log('shoppingListActions->removeProduct() ERROR: ' + e);
+      dispatch({type: REMOVE_PRODUCT_ERROR});
     }
   };
 };

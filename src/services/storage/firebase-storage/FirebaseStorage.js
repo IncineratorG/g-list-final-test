@@ -184,7 +184,7 @@ export class FirebaseStorage {
     return false;
   }
 
-  static async addShoppingListItem({
+  static async addProduct({
     shoppingListId,
     name,
     quantity,
@@ -311,6 +311,58 @@ export class FirebaseStorage {
     shoppingListCard.completedItemsCount = completedItemsCount;
     shoppingListCard.totalItemsCount = totalItemsCount;
     shoppingListCard.updateTimestamp = updateTimestamp;
+
+    // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+      data: shoppingList,
+    });
+
+    return {completedItemsCount, totalItemsCount};
+  }
+
+  static async removeProduct({shoppingListId, productId}) {
+    // Получаем данные списка покупок.
+    let listData = FirebaseStorage.sendSharedShoppingLists.get(shoppingListId);
+    if (!listData) {
+      console.log(
+        'FirebaseStorage->removeProduct(): UNABLE_TO_FIND_SEND_LIST_DATA_WITH_ID: ' +
+          shoppingListId,
+      );
+      return;
+    }
+
+    // Получаем список покупок и карточку списка покупок.
+    let {shoppingList, shoppingListCard} = listData;
+
+    // Удаляем продукт из списка.
+    shoppingList.productsList = shoppingList.productsList.filter(
+      product => product.id !== productId,
+    );
+
+    // Устанавливаем статистические параметры спсика и карточки списка.
+    let completedItemsCount = 0;
+    shoppingList.productsList.forEach(p => {
+      if (p.completionStatus === PRODUCT_COMPLETED) {
+        ++completedItemsCount;
+      }
+    });
+    const totalItemsCount = shoppingList.productsList.length;
+    const updateTimestamp = Date.now();
+
+    shoppingList.completedItemsCount = completedItemsCount;
+    shoppingList.totalItemsCount = totalItemsCount;
+    shoppingList.updateTimestamp = updateTimestamp;
+
+    shoppingListCard.completedItemsCount = completedItemsCount;
+    shoppingListCard.totalItemsCount = totalItemsCount;
+    shoppingListCard.updateTimestamp = updateTimestamp;
+
+    FirebaseStorage.sendSharedShoppingLists.set(shoppingListId, {
+      ...listData,
+      shoppingList,
+      shoppingListCard,
+    });
 
     // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
     FirebaseStorage.notifier.notify({

@@ -3,6 +3,9 @@ import {
   CREATE_SHOPPING_LIST,
   LOAD_CLASSES,
   LOAD_UNITS,
+  REMOVE_PRODUCT_BEGIN,
+  REMOVE_PRODUCT_ERROR,
+  REMOVE_PRODUCT_FINISHED,
   REMOVE_SHOPPING_LIST_BEGIN,
   REMOVE_SHOPPING_LIST_ERROR,
   REMOVE_SHOPPING_LIST_FINISHED,
@@ -96,6 +99,18 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case SET_PRODUCT_STATUS: {
+      return {...state};
+    }
+
+    case REMOVE_PRODUCT_BEGIN: {
+      return {...state};
+    }
+
+    case REMOVE_PRODUCT_FINISHED: {
+      return {...state};
+    }
+
+    case REMOVE_PRODUCT_ERROR: {
       return {...state};
     }
 

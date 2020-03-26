@@ -5,16 +5,48 @@ import {EmptyShoppingListScreen} from '../../../components/shopping-list-screen/
 import {ProductsList} from '../../../components/shopping-list-screen/ProductsList';
 import InputArea from '../../../components/shopping-list-screen/input-area/InputArea';
 import {AddButton} from '../../../components/common/AddButton';
+import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
 
 const ShoppingListView = ({styles, model, controller}) => {
-  const {inputAreaVisible, listLoading, products, units, editable} = model;
+  const {
+    inputAreaVisible,
+    listLoading,
+    products,
+    units,
+    editable,
+    removeProductName,
+    removeConfirmationDialogVisible,
+  } = model;
 
   const {
     addProductButtonHandler,
     inputAreaHideHandler,
     inputAreaSubmitValuesHandler,
     statusPressHandler,
+    productRemoveHandler,
+    removeConfirmationDialogTouchOutsideHandler,
+    removeConfirmationDialogRemoveHandler,
+    removeConfirmationDialogCancelRemoveHandler,
   } = controller;
+
+  const removeConfirmationDialog = (
+    <ConfirmDialog
+      title="Удаление продукта"
+      message={'Удалить ' + removeProductName + '?'}
+      visible={removeConfirmationDialogVisible}
+      onTouchOutside={removeConfirmationDialogTouchOutsideHandler}
+      positiveButton={{
+        title: 'Удалить',
+        titleStyle: {color: 'red'},
+        onPress: removeConfirmationDialogRemoveHandler,
+      }}
+      negativeButton={{
+        title: 'Нет',
+        titleStyle: {color: 'grey'},
+        onPress: removeConfirmationDialogCancelRemoveHandler,
+      }}
+    />
+  );
 
   const bottomGradientComponent = (
     <LinearGradient
@@ -39,7 +71,11 @@ const ShoppingListView = ({styles, model, controller}) => {
 
   const shoppingListComponent = (
     <View style={styles.shoppingListContainer}>
-      <ProductsList list={products} onStatusPress={statusPressHandler} />
+      <ProductsList
+        list={products}
+        onStatusPress={statusPressHandler}
+        onRemovePress={productRemoveHandler}
+      />
     </View>
   );
 
@@ -73,6 +109,7 @@ const ShoppingListView = ({styles, model, controller}) => {
   return (
     <View style={styles.mainContainer}>
       {shoppingListScreenContent}
+      {removeConfirmationDialog}
       <View style={styles.addShoppingListItemButtonContainer}>
         {addButtonComponent}
       </View>
