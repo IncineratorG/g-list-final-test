@@ -5,7 +5,6 @@ import React from 'react';
 import {
   View,
   StyleSheet,
-  FlatList,
   TouchableHighlight,
   Image,
 } from 'react-native';
@@ -13,7 +12,12 @@ import {SwipeListView} from 'react-native-swipe-list-view';
 import ProductsFactory from './product-list-item/ProductsFactory';
 import {icons} from '../../assets/icons';
 
-export const ProductsList = ({list, onStatusPress, onRemovePress}) => {
+export const ProductsList = ({
+  list,
+  onStatusPress,
+  onRemovePress,
+  editable,
+}) => {
   const removeOptionHandler = (listItem, row) => {
     if (onRemovePress) {
       onRemovePress(listItem, row);
@@ -31,7 +35,7 @@ export const ProductsList = ({list, onStatusPress, onRemovePress}) => {
         }}
         keyExtractor={item => item.id.toString()}
         disableRightSwipe={true}
-        disableLeftSwipe={false}
+        disableLeftSwipe={!editable}
         closeOnRowPress={true}
         closeOnRowOpen={true}
         closeOnRowBeginSwipe={true}

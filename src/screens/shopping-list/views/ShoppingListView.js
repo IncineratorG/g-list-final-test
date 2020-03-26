@@ -72,6 +72,7 @@ const ShoppingListView = ({styles, model, controller}) => {
   const shoppingListComponent = (
     <View style={styles.shoppingListContainer}>
       <ProductsList
+        editable={editable}
         list={products}
         onStatusPress={statusPressHandler}
         onRemovePress={productRemoveHandler}
