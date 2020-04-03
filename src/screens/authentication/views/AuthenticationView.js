@@ -10,7 +10,7 @@ import {ProgressDialog} from 'react-native-simple-dialogs';
 const AuthenticationView = ({styles, model, controller}) => {
   const {
     mode,
-    phone,
+    displayPhone,
     email,
     password,
     verifyPassword,
@@ -61,7 +61,7 @@ const AuthenticationView = ({styles, model, controller}) => {
   const inputsComponent =
     mode === 'signUp' ? (
       <SignUpComponent
-        phone={phone}
+        phone={displayPhone}
         email={email}
         password={password}
         verifyPassword={verifyPassword}
@@ -72,7 +72,7 @@ const AuthenticationView = ({styles, model, controller}) => {
       />
     ) : (
       <SignInComponent
-        phone={phone}
+        phone={displayPhone}
         email={email}
         password={password}
         phoneHandler={phoneInputHandler}

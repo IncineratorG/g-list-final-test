@@ -25,7 +25,7 @@ export const SignInComponent = ({
           <View style={styles.phoneInputContainer}>
             <TextInput
               style={styles.phoneTextInput}
-              placeholder={'телефон'}
+              placeholder={'+7 (___) ___-__-__'}
               spellCheck={false}
               autoCapitalize={'none'}
               value={phone}

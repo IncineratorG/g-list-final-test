@@ -25,6 +25,11 @@ export const collaboratorsViewStyles = StyleSheet.create({
   },
   contactsListContainer: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    marginLeft: 8,
+    marginRight: 8,
     // backgroundColor: 'green',
   },
   errorText: {

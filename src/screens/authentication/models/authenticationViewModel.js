@@ -2,6 +2,7 @@ import {useState, useEffect, useCallback} from 'react';
 import {useFocusEffect, useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
 import {resetSignErrors} from '../../../store/actions/authenticationActions';
+import DeviceInfo from 'react-native-device-info';
 
 export const useAuthenticationScreenModel = () => {
   const navigation = useNavigation();
@@ -9,8 +10,12 @@ export const useAuthenticationScreenModel = () => {
 
   const dispatch = useDispatch();
 
+  const validPhoneLength = 12;
+
   const [mode, setMode] = useState('signIn');
-  const [phone, setPhone] = useState('');
+  // const [phone, setPhone] = useState('');
+  const [displayPhone, setDisplayPhone] = useState('');
+  const [internationalPhone, setInternationalPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
@@ -52,7 +57,10 @@ export const useAuthenticationScreenModel = () => {
   return {
     data: {
       mode,
-      phone,
+      // phone,
+      displayPhone,
+      internationalPhone,
+      validPhoneLength,
       email,
       password,
       verifyPassword,
@@ -62,7 +70,9 @@ export const useAuthenticationScreenModel = () => {
     },
     setters: {
       setMode,
-      setPhone,
+      // setPhone,
+      setDisplayPhone,
+      setInternationalPhone,
       setEmail,
       setPassword,
       setVerifyPassword,

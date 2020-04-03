@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, TextInput, Button} from 'react-native';
 import {ProgressDialog} from 'react-native-simple-dialogs';
+import {ContactsList} from '../../../components/collaborators/ContactsList';
 
 const CollaboratorsView = ({styles, model, controller}) => {
   const {
@@ -31,6 +32,12 @@ const CollaboratorsView = ({styles, model, controller}) => {
     </View>
   );
 
+  const contactsListComponent = (
+    <View stlye={styles.contactsListContainer}>
+      <ContactsList />
+    </View>
+  );
+
   return (
     <View style={styles.mainContainer}>
       {checkCollaboratorDialog}
@@ -51,9 +58,7 @@ const CollaboratorsView = ({styles, model, controller}) => {
         </View>
       </View>
       {errorComponent}
-      <View style={styles.contactsListContainer}>
-        <Text>Contacts List</Text>
-      </View>
+      {contactsListComponent}
     </View>
   );
 };

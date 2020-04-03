@@ -2,8 +2,34 @@ import {useState, useCallback} from 'react';
 import {useFocusEffect, useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
 import {clearPotentialCollaboratorData} from '../../../store/actions/collaborationActions';
+import {PermissionsAndroid} from 'react-native';
+import Contacts from 'react-native-contacts';
 
 export const useCollaboratorsScreenModel = () => {
+  // ===
+  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS, {
+    title: 'Contacts',
+    message: 'This app would like to view your contacts.',
+    buttonPositive: 'Please accept bare mortal',
+  }).then(granted => {
+    console.log('HERE: ' + granted);
+    Contacts.getAll((err, contacts) => {
+      if (err === 'denied') {
+        console.log('1');
+        // error
+      } else {
+        console.log('2: ' + contacts.length);
+        contacts.forEach(contact => {
+          contact.phoneNumbers.forEach(({label, number}) => {
+            console.log(number);
+          });
+        });
+        // contacts returned in Array
+      }
+    });
+  });
+  // ===
+
   const navigation = useNavigation();
 
   const dispatch = useDispatch();
