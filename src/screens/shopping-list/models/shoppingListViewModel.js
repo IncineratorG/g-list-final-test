@@ -72,10 +72,12 @@ export const useShoppingListScreenModel = () => {
       };
     })
     .sort((p1, p2) => p1.id < p2.id);
-  products.push({
-    id: 'MAX_VALUE',
-    extra: true,
-  });
+  if (products.length > 0) {
+    products.push({
+      id: 'MAX_VALUE',
+      extra: true,
+    });
+  }
 
   useEffect(() => {
     dispatch(loadUnits({shoppingListId}));
