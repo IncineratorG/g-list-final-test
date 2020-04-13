@@ -2,12 +2,7 @@
  * */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableHighlight,
-  Image,
-} from 'react-native';
+import {View, StyleSheet, TouchableHighlight, Image} from 'react-native';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import ProductsFactory from './product-list-item/ProductsFactory';
 import {icons} from '../../assets/icons';

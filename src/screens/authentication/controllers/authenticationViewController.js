@@ -2,32 +2,101 @@ import {signIn, signUp} from '../../../store/actions/authenticationActions';
 
 export const useRegistrationScreenController = model => {
   const signInButtonHandler = () => {
-    if (model.data.phone.length <= 0 || model.data.password.length <= 0) {
+    const phone = model.data.internationalPhone;
+    const password = model.data.password;
+    const validPhoneLength = model.data.validPhoneLength;
+
+    if (
+      !phone ||
+      phone.length !== validPhoneLength ||
+      !password ||
+      password.length <= 0
+    ) {
+      console.log('BAD_DATA');
       return;
     }
 
-    model.dispatch(
-      signIn({phone: model.data.phone, password: model.data.password}),
-    );
+    model.dispatch(signIn({phone, password}));
   };
 
   const signUpButtonHandler = () => {
-    if (model.data.password !== model.data.verifyPassword) {
-      console.log('BAD_VERIFICATION_PASSWORD');
+    const phone = model.data.internationalPhone;
+    const password = model.data.password;
+    const verifyPassword = model.data.verifyPassword;
+    const validPhoneLength = model.data.validPhoneLength;
+
+    if (
+      !phone ||
+      phone.length !== validPhoneLength ||
+      !password ||
+      password.length <= 0 ||
+      password !== verifyPassword
+    ) {
+      console.log('BAD_DATA');
       return;
     }
 
     model.dispatch(
       signUp({
-        phone: model.data.phone,
+        phone,
         email: model.data.email,
-        password: model.data.password,
+        password,
       }),
     );
   };
 
   const phoneInputHandler = text => {
-    model.setters.setPhone(text);
+    const countryCallingCode = '+7';
+
+    let rawPhone = text;
+    let formattedPhone = '';
+
+    rawPhone = rawPhone.replace(/ /g, '');
+    rawPhone = rawPhone.replace(/-/g, '');
+    rawPhone = rawPhone.replace(/\(/g, '');
+    rawPhone = rawPhone.replace(/\)/g, '');
+    rawPhone = rawPhone.replace(/\+7/g, '');
+
+    if (rawPhone.length > 10) {
+      return;
+    }
+
+    if (rawPhone.length <= 0) {
+      formattedPhone = rawPhone;
+    } else if (rawPhone.length > 0 && rawPhone.length <= 3) {
+      formattedPhone = countryCallingCode + '(' + rawPhone;
+    } else if (rawPhone.length > 3 && rawPhone.length <= 6) {
+      formattedPhone =
+        countryCallingCode +
+        '(' +
+        rawPhone.substr(0, 3) +
+        ') ' +
+        rawPhone.substr(3);
+    } else if (rawPhone.length > 6 && rawPhone.length <= 8) {
+      formattedPhone =
+        countryCallingCode +
+        '(' +
+        rawPhone.substr(0, 3) +
+        ') ' +
+        rawPhone.substr(3, 3) +
+        '-' +
+        rawPhone.substr(6);
+    } else {
+      formattedPhone =
+        countryCallingCode +
+        '(' +
+        rawPhone.substr(0, 3) +
+        ') ' +
+        rawPhone.substr(3, 3) +
+        '-' +
+        rawPhone.substr(6, 2) +
+        '-' +
+        rawPhone.substr(8, 2);
+    }
+
+    // model.setters.setPhone(rawPhone);
+    model.setters.setDisplayPhone(formattedPhone);
+    model.setters.setInternationalPhone(countryCallingCode + rawPhone);
   };
 
   const emailInputHandler = text => {
@@ -45,7 +114,9 @@ export const useRegistrationScreenController = model => {
   const signInLabelPressHandler = () => {
     model.setters.setMode('signIn');
     model.setters.setShowError(false);
-    model.setters.setPhone('');
+    // model.setters.setPhone('');
+    model.setters.setDisplayPhone('');
+    model.setters.setInternationalPhone('');
     model.setters.setEmail('');
     model.setters.setPassword('');
     model.setters.setVerifyPassword('');
@@ -54,7 +125,9 @@ export const useRegistrationScreenController = model => {
   const signUpLabelPressHandler = () => {
     model.setters.setMode('signUp');
     model.setters.setShowError(false);
-    model.setters.setPhone('');
+    // model.setters.setPhone('');
+    model.setters.setDisplayPhone('');
+    model.setters.setInternationalPhone('');
     model.setters.setEmail('');
     model.setters.setPassword('');
     model.setters.setVerifyPassword('');
