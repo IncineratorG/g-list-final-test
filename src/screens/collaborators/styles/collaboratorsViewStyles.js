@@ -6,17 +6,17 @@ export const collaboratorsViewStyles = StyleSheet.create({
     padding: 4,
     backgroundColor: 'lightgrey',
   },
-  phoneInputOuterContainer: {
+  emailInputOuterContainer: {
     height: 50,
     backgroundColor: 'yellow',
     flexDirection: 'row',
   },
-  phoneInputInnerContainer: {
+  emailInputInnerContainer: {
     flex: 1,
     backgroundColor: 'white',
   },
-  phoneInput: {},
-  phoneInputButtonContainer: {
+  emailInput: {},
+  emailInputButtonContainer: {
     height: 50,
     width: 50,
     backgroundColor: 'red',

@@ -3,31 +3,27 @@ import {signIn, signUp} from '../../../store/actions/authenticationActions';
 export const useRegistrationScreenController = model => {
   const signInButtonHandler = () => {
     const phone = model.data.internationalPhone;
+    const email = model.data.email;
     const password = model.data.password;
     const validPhoneLength = model.data.validPhoneLength;
 
-    if (
-      !phone ||
-      phone.length !== validPhoneLength ||
-      !password ||
-      password.length <= 0
-    ) {
+    if (!email || !password || password.length <= 0) {
       console.log('BAD_DATA');
       return;
     }
 
-    model.dispatch(signIn({phone, password}));
+    model.dispatch(signIn({phone, email, password}));
   };
 
   const signUpButtonHandler = () => {
     const phone = model.data.internationalPhone;
+    const email = model.data.email;
     const password = model.data.password;
     const verifyPassword = model.data.verifyPassword;
     const validPhoneLength = model.data.validPhoneLength;
 
     if (
-      !phone ||
-      phone.length !== validPhoneLength ||
+      !email ||
       !password ||
       password.length <= 0 ||
       password !== verifyPassword
@@ -39,7 +35,7 @@ export const useRegistrationScreenController = model => {
     model.dispatch(
       signUp({
         phone,
-        email: model.data.email,
+        email,
         password,
       }),
     );

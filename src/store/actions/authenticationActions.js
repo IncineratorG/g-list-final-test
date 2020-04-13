@@ -82,14 +82,13 @@ export const signUp = ({phone, email, password}) => {
   };
 };
 
-export const signIn = ({phone, password}) => {
+export const signIn = ({phone, email, password}) => {
   return async dispatch => {
     dispatch({type: SIGN_IN_BEGIN});
 
     try {
-      const result = await Authentication.signIn({phone, password});
+      const result = await Authentication.signIn({phone, email, password});
       if (result.status === 'SUCCESS') {
-        const email = '';
         await Storage.updateSignInInfo({phone, email, password});
 
         dispatch({type: SIGN_IN_FINISHED});

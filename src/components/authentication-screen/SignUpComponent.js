@@ -19,20 +19,19 @@ export const SignUpComponent = ({
       colors={['#0072e5', '#00a9f4']}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 0}}>
-      <View style={styles.phoneOuterContainer}>
-        <View style={styles.phoneInnerContainer}>
-          <View style={styles.phoneIconContainer}>
-            <Image style={styles.phoneIcon} source={icons.phone} />
+      <View style={styles.emailOuterContainer}>
+        <View style={styles.emailInnerContainer}>
+          <View style={styles.emailIconContainer}>
+            <Image style={styles.emailIcon} source={icons.email} />
           </View>
-          <View style={styles.phoneInputContainer}>
+          <View style={styles.emailInputContainer}>
             <TextInput
-              style={styles.phoneTextInput}
-              placeholder={'+7 (___) ___-__-__'}
+              style={styles.emailTextInput}
+              placeholder={'user@usermail.com'}
               spellCheck={false}
               autoCapitalize={'none'}
-              value={phone}
-              onChangeText={phoneHandler}
-              keyboardType={'numeric'}
+              value={email}
+              onChangeText={emailHandler}
             />
           </View>
         </View>

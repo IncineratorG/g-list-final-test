@@ -14,12 +14,14 @@ import {
   SUBSCRIBE_TO_LOCAL_SIGN_IN_INFO_FINISHED,
   UPDATE_LOCAL_SIGN_IN_INFO,
 } from '../types/authenticationTypes';
+import {IdManager} from '../../services/storage/firebase-storage/id-manager/IdManager';
 
 const initialState = {
   currentUser: {
     unsubscribeHandler: undefined,
     signedIn: false,
     loading: false,
+    id: '',
     phone: '',
     email: '',
     password: '',
@@ -58,13 +60,16 @@ export const authenticationReducer = (state = initialState, action) => {
         state.currentUser.unsubscribeHandler();
       }
 
+      const userId = IdManager.getLocalId(action.payload.signInInfo);
+
       return {
         ...state,
         currentUser: {
           ...state.currentUser,
           unsubscribeHandler: action.payload.unsubscribe,
-          signedIn: action.payload.signInInfo.phone ? true : false,
+          signedIn: userId ? true : false,
           loading: false,
+          id: userId ? userId : '',
           phone: action.payload.signInInfo.phone
             ? action.payload.signInInfo.phone
             : '',
@@ -98,11 +103,14 @@ export const authenticationReducer = (state = initialState, action) => {
     }
 
     case UPDATE_LOCAL_SIGN_IN_INFO: {
+      const userId = IdManager.getLocalId(action.payload);
+
       return {
         ...state,
         currentUser: {
           ...state.currentUser,
-          signedIn: action.payload.phone ? true : false,
+          signedIn: userId ? true : false,
+          id: userId,
           phone: action.payload.phone,
           email: action.payload.email,
           password: action.payload.password,
@@ -132,6 +140,7 @@ export const authenticationReducer = (state = initialState, action) => {
           ...state.currentUser,
           signedIn: false,
           loading: true,
+          id: '',
           phone: '',
           email: '',
           password: '',
@@ -168,6 +177,7 @@ export const authenticationReducer = (state = initialState, action) => {
           ...state.currentUser,
           signedIn: false,
           loading: false,
+          id: '',
           phone: '',
           email: '',
           password: '',
@@ -190,6 +200,7 @@ export const authenticationReducer = (state = initialState, action) => {
           ...state.currentUser,
           signedIn: false,
           loading: true,
+          id: '',
           phone: '',
           email: '',
           password: '',
@@ -220,6 +231,7 @@ export const authenticationReducer = (state = initialState, action) => {
           ...state.currentUser,
           loading: false,
           signedIn: false,
+          id: '',
           phone: '',
           email: '',
           password: '',
@@ -251,6 +263,7 @@ export const authenticationReducer = (state = initialState, action) => {
           ...state.currentUser,
           loading: false,
           signedIn: false,
+          id: '',
           phone: '',
           email: '',
           password: '',
@@ -264,7 +277,7 @@ export const authenticationReducer = (state = initialState, action) => {
         currentUser: {
           ...state.currentUser,
           loading: false,
-          signedIn: true,
+          // signedIn: true,
           error: {
             hasError: true,
             description: action.payload.description

@@ -38,11 +38,12 @@ export class FirebaseAuthentication {
     }
   }
 
-  static async signIn({phone, password}) {
+  static async signIn({phone, email, password}) {
     const fcmToken = await firebase.messaging().getToken();
 
     const signInData = {
       phone: phone,
+      email: email,
       password: password,
       token: fcmToken,
     };

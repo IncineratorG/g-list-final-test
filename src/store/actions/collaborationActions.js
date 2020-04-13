@@ -47,11 +47,7 @@ export const sendTextMessage = ({receiverPhone, senderPhone, messageText}) => {
   };
 };
 
-export const shareShoppingList = ({
-  receiverPhone,
-  senderPhone,
-  shoppingListId,
-}) => {
+export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
   return async dispatch => {
     const shoppingListData = await Storage.subscribe({
       shoppingListId,
@@ -60,12 +56,12 @@ export const shareShoppingList = ({
     });
 
     const shoppingList = shoppingListData.data;
-    shoppingList.creator = senderPhone;
+    shoppingList.creator = sender;
     const units = await Storage.getUnits({shoppingListId});
     const classes = await Storage.getClasses({shoppingListId});
 
     const receivers = [];
-    receivers.push(receiverPhone);
+    receivers.push(receiver);
 
     const shoppingListCard = {
       name: shoppingList.name,
@@ -73,12 +69,12 @@ export const shareShoppingList = ({
       completedItemsCount: shoppingList.completedItemsCount,
       createTimestamp: shoppingList.createTimestamp,
       updateTimestamp: shoppingList.updateTimestamp,
-      creator: senderPhone,
+      creator: sender,
     };
 
     await Collaboration.shareShoppingList({
       receivers: receivers,
-      sender: senderPhone,
+      sender: sender,
       shoppingList,
       shoppingListCard,
       units,
@@ -86,6 +82,46 @@ export const shareShoppingList = ({
     });
   };
 };
+
+// export const shareShoppingList = ({
+//   receiverPhone,
+//   senderPhone,
+//   shoppingListId,
+// }) => {
+//   return async dispatch => {
+//     const shoppingListData = await Storage.subscribe({
+//       shoppingListId,
+//       event: Storage.events.SHOPPING_LIST_CHANGED,
+//       once: true,
+//     });
+//
+//     const shoppingList = shoppingListData.data;
+//     shoppingList.creator = senderPhone;
+//     const units = await Storage.getUnits({shoppingListId});
+//     const classes = await Storage.getClasses({shoppingListId});
+//
+//     const receivers = [];
+//     receivers.push(receiverPhone);
+//
+//     const shoppingListCard = {
+//       name: shoppingList.name,
+//       totalItemsCount: shoppingList.totalItemsCount,
+//       completedItemsCount: shoppingList.completedItemsCount,
+//       createTimestamp: shoppingList.createTimestamp,
+//       updateTimestamp: shoppingList.updateTimestamp,
+//       creator: senderPhone,
+//     };
+//
+//     await Collaboration.shareShoppingList({
+//       receivers: receivers,
+//       sender: senderPhone,
+//       shoppingList,
+//       shoppingListCard,
+//       units,
+//       classes,
+//     });
+//   };
+// };
 
 // export const shareShoppingList = ({
 //   receiverPhone,

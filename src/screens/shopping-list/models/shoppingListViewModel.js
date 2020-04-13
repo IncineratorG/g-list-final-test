@@ -47,6 +47,7 @@ export const useShoppingListScreenModel = () => {
   const currentPhone = useSelector(
     state => state.authentication.currentUser.phone,
   );
+  const currentId = useSelector(state => state.authentication.currentUser.id);
 
   const getUnitName = unitId => {
     const filteredUnits = units.filter(unit => unit.id === unitId);
@@ -91,12 +92,12 @@ export const useShoppingListScreenModel = () => {
   }, [shoppingListName, editable]);
 
   useEffect(() => {
-    if (creator.length <= 0 || creator === currentPhone) {
+    if (creator.length <= 0 || creator === currentId) {
       setEditable(true);
     } else {
       setEditable(false);
     }
-  }, [creator, currentPhone]);
+  }, [creator, currentId]);
 
   return {
     data: {

@@ -11,6 +11,7 @@ import {
 const initialState = {
   potentialCollaborator: {
     phone: '',
+    email: '',
     checking: false,
     exist: false,
     error: {
@@ -27,6 +28,7 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         potentialCollaborator: {
           phone: '',
+          email: '',
           checking: false,
           exist: false,
           error: {
@@ -43,6 +45,7 @@ export const collaborationReducer = (state = initialState, action) => {
         potentialCollaborator: {
           ...state.potentialCollaborator,
           phone: '',
+          email: '',
           checking: true,
           exist: false,
           error: {
@@ -59,6 +62,7 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         potentialCollaborator: {
           phone: action.payload.phone,
+          email: action.payload.email,
           checking: false,
           exist: action.payload.exist,
           error: {
@@ -75,6 +79,7 @@ export const collaborationReducer = (state = initialState, action) => {
         ...state,
         potentialCollaborator: {
           phone: '',
+          email: '',
           checking: false,
           exist: false,
           error: {

@@ -8,6 +8,7 @@ import {FirebasePaths} from './FirebasePaths';
 import {Storage} from '../Storage';
 import {StorageNotifier} from '../storage-notifier/StorageNotifier';
 import {PRODUCT_COMPLETED, PRODUCT_NOT_COMPLETED} from '../data/productStatus';
+import {IdManager} from './id-manager/IdManager';
 
 export class FirebaseStorage {
   static subscribe({entityIds, event, handler}) {
@@ -26,8 +27,8 @@ export class FirebaseStorage {
   }
 
   static updateListeners() {
-    const {phone} = FirebaseStorage.localSignInInfo;
-    if (phone) {
+    const {email} = FirebaseStorage.localSignInInfo;
+    if (email) {
       this.setListeners();
     } else {
       this.removeListeners();
@@ -47,15 +48,13 @@ export class FirebaseStorage {
   static setListeners() {
     this.removeListeners();
 
-    const {phone} = FirebaseStorage.localSignInInfo;
-
     const sendPath = FirebasePaths.getPath({
       pathType: FirebasePaths.paths.USER_SEND,
-      userId: phone,
+      userId: IdManager.getFirebaseId(FirebaseStorage.localSignInInfo),
     });
     const receivedPath = FirebasePaths.getPath({
       pathType: FirebasePaths.paths.USER_RECEIVED,
-      userId: phone,
+      userId: IdManager.getFirebaseId(FirebaseStorage.localSignInInfo),
     });
 
     const sendPathRef = database().ref(sendPath);
@@ -157,7 +156,7 @@ export class FirebaseStorage {
 
       const receivedPath = FirebasePaths.getPath({
         pathType: FirebasePaths.paths.USER_RECEIVED_DELIM,
-        userId: FirebaseStorage.localSignInInfo.phone,
+        userId: IdManager.getFirebaseId(FirebaseStorage.localSignInInfo),
       });
 
       database()
