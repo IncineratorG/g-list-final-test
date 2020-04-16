@@ -111,6 +111,7 @@ export const useShoppingListScreenModel = () => {
       editable,
       shared,
       currentPhone,
+      currentId,
       removeProductName,
       removeProductId,
       productRow,

@@ -1,7 +1,6 @@
 import {
   addProduct,
   removeProduct,
-  removeShoppingList,
   setProductStatus,
 } from '../../../store/actions/shoppingListActions';
 
@@ -27,7 +26,7 @@ export const useShoppingListScreenController = model => {
   const inputAreaSubmitValuesHandler = values => {
     model.dispatch(
       addProduct({
-        editor: model.data.currentPhone,
+        editor: model.data.currentId,
         shoppingListId: model.data.shoppingListId,
         name: values.productName,
         quantity: values.quantityValue,
@@ -41,7 +40,7 @@ export const useShoppingListScreenController = model => {
   const statusPressHandler = (productId, status) => {
     model.dispatch(
       setProductStatus({
-        editor: model.data.currentPhone,
+        editor: model.data.currentId,
         shoppingListId: model.data.shoppingListId,
         productId,
         status,
@@ -63,7 +62,7 @@ export const useShoppingListScreenController = model => {
   const removeConfirmationDialogRemoveHandler = () => {
     model.dispatch(
       removeProduct({
-        editor: model.data.currentPhone,
+        editor: model.data.currentId,
         shoppingListId: model.data.shoppingListId,
         productId: model.data.removeProductId,
       }),

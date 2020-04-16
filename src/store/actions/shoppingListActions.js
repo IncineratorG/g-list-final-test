@@ -112,7 +112,6 @@ export const removeShoppingList = id => {
       });
 
       if (listType === StorageIdResolver.listTypes.FIREBASE && canRemove) {
-        console.log('LIST_TYPE: FIREBASE && CAN_REMOVE');
         await Collaboration.removeSharedShoppingList({shoppingListId: id});
       }
 

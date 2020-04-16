@@ -29,8 +29,6 @@ export const useMainScreenModel = () => {
   const incomingLists = [];
 
   shoppingLists.forEach(list => {
-    console.log(list.creator + ' - ' + currentId);
-
     list.editable = list.creator.length <= 0 || list.creator === currentId;
     list.outgoing = list.shared && list.editable;
     list.incoming = list.shared && !list.editable;
