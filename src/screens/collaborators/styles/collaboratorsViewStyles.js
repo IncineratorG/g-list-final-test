@@ -30,7 +30,7 @@ export const collaboratorsViewStyles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 8,
     marginRight: 8,
-    // backgroundColor: 'green',
+    backgroundColor: 'green',
   },
   errorText: {
     alignSelf: 'flex-start',
