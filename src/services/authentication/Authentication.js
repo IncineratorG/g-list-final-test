@@ -13,9 +13,9 @@ export class Authentication {
     }
   }
 
-  static async signIn({phone, password}) {
+  static async signIn({phone, email, password}) {
     try {
-      return await FirebaseAuthentication.signIn({phone, password});
+      return await FirebaseAuthentication.signIn({phone, email, password});
     } catch (e) {
       throw new Error(e);
     }

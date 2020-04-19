@@ -16,9 +16,7 @@ export const useMainScreenModel = () => {
   const [removeItemId, setRemoveItemId] = useState(-1);
   const [listItemRow, setListItemRow] = useState(null);
 
-  const currentPhone = useSelector(
-    state => state.authentication.currentUser.phone,
-  );
+  const currentId = useSelector(state => state.authentication.currentUser.id);
   const shoppingListsLoading = useSelector(
     state => state.shoppingList.allShoppingLists.loading,
   );
@@ -31,7 +29,7 @@ export const useMainScreenModel = () => {
   const incomingLists = [];
 
   shoppingLists.forEach(list => {
-    list.editable = list.creator.length <= 0 || list.creator === currentPhone;
+    list.editable = list.creator.length <= 0 || list.creator === currentId;
     list.outgoing = list.shared && list.editable;
     list.incoming = list.shared && !list.editable;
     list.local = !list.shared;

@@ -16,6 +16,7 @@ const DrawerMenu = props => {
     state => state.authentication.currentUser.signedIn,
   );
   const phone = useSelector(state => state.authentication.currentUser.phone);
+  const email = useSelector(state => state.authentication.currentUser.email);
 
   const signInPressHandler = () => {
     navigation.navigate('Authentication', {
@@ -33,7 +34,9 @@ const DrawerMenu = props => {
     <SignButton title={'Войти'} onPress={signInPressHandler} />
   );
 
-  const signInfo = signedIn ? <SignInfoComponent phone={phone} /> : null;
+  const signInfo = signedIn ? (
+    <SignInfoComponent phone={phone} email={email} />
+  ) : null;
 
   return (
     <ScrollView>

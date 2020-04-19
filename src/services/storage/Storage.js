@@ -4,7 +4,6 @@ import {FirebaseStorage} from './firebase-storage/FirebaseStorage';
 import {StorageNotifier} from './storage-notifier/StorageNotifier';
 import {StorageDataExtractor} from './StorageDataExtractor';
 import {StorageIdResolver} from './StorageIdResolver';
-import {shareShoppingList} from '../../store/actions/collaborationActions';
 
 export class Storage {
   static async subscribe({

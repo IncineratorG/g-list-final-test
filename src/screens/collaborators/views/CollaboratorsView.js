@@ -5,14 +5,14 @@ import {ContactsList} from '../../../components/collaborators/ContactsList';
 
 const CollaboratorsView = ({styles, model, controller}) => {
   const {
-    enteredPhone,
+    enteredEmail,
     collaboratorChecking,
     collaboratorCheckError,
     collaboratorCheckErrorDescription,
     collaboratorExist,
   } = model;
 
-  const {enterPhoneInputHandler, enterPhoneButtonHandler} = controller;
+  const {emailInputHandler, emailButtonHandler} = controller;
 
   const checkCollaboratorDialog = (
     <ProgressDialog
@@ -41,20 +41,19 @@ const CollaboratorsView = ({styles, model, controller}) => {
   return (
     <View style={styles.mainContainer}>
       {checkCollaboratorDialog}
-      <View style={styles.phoneInputOuterContainer}>
-        <View style={styles.phoneInputInnerContainer}>
+      <View style={styles.emailInputOuterContainer}>
+        <View style={styles.emailInputInnerContainer}>
           <TextInput
-            style={styles.phoneInput}
-            placeholder={'телефон'}
+            style={styles.emailInput}
+            placeholder={'email'}
             spellCheck={false}
             autoCapitalize={'none'}
-            value={enteredPhone}
-            onChangeText={enterPhoneInputHandler}
-            keyboardType={'numeric'}
+            value={enteredEmail}
+            onChangeText={emailInputHandler}
           />
         </View>
-        <View style={styles.phoneInputButtonContainer}>
-          <Button title={'Bt'} onPress={enterPhoneButtonHandler} />
+        <View style={styles.emailInputButtonContainer}>
+          <Button title={'Bt'} onPress={emailButtonHandler} />
         </View>
       </View>
       {errorComponent}

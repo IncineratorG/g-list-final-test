@@ -1,16 +1,17 @@
 import React from 'react';
-import CollaboratorsView from './views/CollaboratorsView';
+import CollaboratorsView_V2 from './views/CollaboratorsView_V2';
 import {collaboratorsViewStyles} from './styles/collaboratorsViewStyles';
 import {useCollaboratorsScreenModel} from './models/collaboratorsViewModel';
 import {useCollaboratorsScreenController} from './controllers/collaboratorsViewController';
+import {collaboratorsViewStyles_V2} from './styles/collaboratorsViewStyles_V2';
 
 const Collaborators = () => {
-  const styles = collaboratorsViewStyles;
+  const styles = collaboratorsViewStyles_V2;
   const model = useCollaboratorsScreenModel();
   const controller = useCollaboratorsScreenController(model);
 
   return (
-    <CollaboratorsView
+    <CollaboratorsView_V2
       styles={styles}
       model={model.data}
       controller={controller}
