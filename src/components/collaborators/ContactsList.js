@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, StyleSheet, Text, FlatList} from 'react-native';
-import {Contact} from './Contact';
 import ContactListItemsFactory from './contact-list-item/ContactListItemsFactory';
 
 export const ContactsList = () => {
@@ -32,6 +31,7 @@ export const ContactsList = () => {
       <FlatList
         stlye={styles.contactsList}
         data={contacts}
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id.toString()}
         renderItem={({item, index}) => {
           return ContactListItemsFactory.get(
@@ -39,8 +39,6 @@ export const ContactsList = () => {
             index,
             onSelectButtonPressHandler,
           );
-
-          // return <Contact contact={item} />;
         }}
       />
     </View>

@@ -5,9 +5,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import {AddButton} from '../../../components/common/AddButton';
 
 const CollaboratorsView_V2 = ({styles, model, controller}) => {
-  const addButtonPressHandler = () => {
-    console.log('addButtonPressHandler()');
-  };
+  const {collaboratorInputAreaVisible} = model;
+
+  const {addCollaboratorButtonHandler} = controller;
 
   const contactsListComponent = (
     <View style={styles.contactsListContainer}>
@@ -18,7 +18,7 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
   const addContactButtonComponent = (
     <AddButton
       style={[styles.addContactButton, {zIndex: 20}]}
-      onClick={addButtonPressHandler}
+      onClick={addCollaboratorButtonHandler}
     />
   );
 

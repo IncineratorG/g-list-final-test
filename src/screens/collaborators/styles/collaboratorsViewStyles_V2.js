@@ -15,9 +15,6 @@ export const collaboratorsViewStyles_V2 = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 8,
     marginRight: 8,
-
-    // flex: 1,
-    // margin: 4,
   },
   bottomGradient: {
     bottom: 0,

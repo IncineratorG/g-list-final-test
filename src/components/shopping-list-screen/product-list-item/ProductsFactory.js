@@ -2,6 +2,7 @@ import React from 'react';
 import {View} from 'react-native';
 import {productStylesCompleted} from './completed/styles/productStylesCompleted';
 import {productStylesNotCompleted} from './not-completed/styles/productStylesNotCompleted';
+import {productStylesExtra} from './extra/styles/productStylesExtra';
 import {ProductCompleted} from './completed/ProductCompleted';
 import {ProductNotCompleted} from './not-completed/ProductNotCompleted';
 import {ProductExtra} from './extra/ProductExtra';
@@ -9,7 +10,6 @@ import {
   PRODUCT_COMPLETED,
   PRODUCT_NOT_COMPLETED,
 } from '../../../services/storage/data/productStatus';
-import {productStylesExtra} from './extra/styles/productStylesExtra';
 
 export default class ProductsFactory {
   static get(listItem, index, onStatusPress) {
