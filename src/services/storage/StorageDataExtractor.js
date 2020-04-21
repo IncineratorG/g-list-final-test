@@ -24,8 +24,4 @@ export class StorageDataExtractor {
       return undefined;
     }
   }
-
-  static async getLocalSignInInfo() {
-    return await SqliteStorage.getLocalSignInInfo();
-  }
 }

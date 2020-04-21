@@ -1,7 +1,7 @@
 import {SqliteStorage} from './sqlite-storage/SqliteStorage';
 import {SqliteStorageHelper} from './sqlite-storage/SqliteStorageHelper';
 import {FirebaseStorage} from './firebase-storage/FirebaseStorage';
-import {StorageNotifier} from './storage-notifier/StorageNotifier';
+import {StorageNotifier} from '../common-data/storage-notifier/StorageNotifier';
 import {StorageDataExtractor} from './StorageDataExtractor';
 import {StorageIdResolver} from './StorageIdResolver';
 
@@ -26,8 +26,6 @@ export class Storage {
       data = await StorageDataExtractor.getShoppingLists();
     } else if (event === Storage.events.SHOPPING_LIST_CHANGED) {
       data = await StorageDataExtractor.getShoppingList(shoppingListId, once);
-    } else if (event === Storage.events.SIGN_IN_INFO_CHANGED) {
-      data = await StorageDataExtractor.getLocalSignInInfo();
     }
 
     return {unsubscribe, data};
@@ -43,8 +41,7 @@ export class Storage {
       await SqliteStorageHelper.insertInitialClasses();
     }
 
-    const localSignInInfo = await SqliteStorage.getLocalSignInInfo();
-    await FirebaseStorage.init(localSignInInfo);
+    await FirebaseStorage.init();
   }
 
   static async createShoppingList({listName, creator}) {
@@ -130,14 +127,6 @@ export class Storage {
     }
 
     return {listType, firebaseUpdateData};
-  }
-
-  static async updateSignInInfo({phone, email, password}) {
-    await SqliteStorage.updateLocalSignInInfo({phone, email, password});
-  }
-
-  static async removeSignInInfo() {
-    await SqliteStorage.removeLocalSignInInfo();
   }
 
   static async getUnits({shoppingListId}) {
@@ -229,30 +218,6 @@ export class Storage {
     );
 
     Storage.localSubscriptions.push(
-      SqliteStorage.subscribe({
-        event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_UPDATED,
-        handler: ({localSignInInfo}) => {
-          Storage.notifier.notify({
-            event: Storage.events.SIGN_IN_INFO_CHANGED,
-            data: localSignInInfo,
-          });
-        },
-      }),
-    );
-
-    Storage.localSubscriptions.push(
-      SqliteStorage.subscribe({
-        event: SqliteStorage.events.LOCAL_SIGN_IN_INFO_REMOVED,
-        handler: ({localSignInInfo}) => {
-          Storage.notifier.notify({
-            event: Storage.events.SIGN_IN_INFO_CHANGED,
-            data: localSignInInfo,
-          });
-        },
-      }),
-    );
-
-    Storage.localSubscriptions.push(
       FirebaseStorage.subscribe({
         event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
         handler: async () => {
@@ -335,7 +300,6 @@ export class Storage {
 Storage.events = {
   LIST_OF_SHOPPING_LISTS_CHANGED: 'LIST_OF_SHOPPING_LISTS_CHANGED',
   SHOPPING_LIST_CHANGED: 'SHOPPING_LIST_CHANGED',
-  SIGN_IN_INFO_CHANGED: 'SIGN_IN_INFO_CHANGED',
 };
 Storage.notifier = new StorageNotifier({});
 Storage.localSubscriptions = [];

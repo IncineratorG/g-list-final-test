@@ -1,14 +1,28 @@
-import {
-  AUTHENTICATION_TABLE,
-  AUTHENTICATION_TABLE_EMAIL,
-  AUTHENTICATION_TABLE_ID,
-  AUTHENTICATION_TABLE_PASSWORD,
-  AUTHENTICATION_TABLE_PHONE,
-} from '../tables-description/authenticationTableDescription';
+import {AuthenticationStorageTable} from '../tables-description/AuthenticationStorageTable';
 
-export class AuthenticationTableOperations {
+export class AuthenticationStorageOperations {
+  static isInitialized(db) {
+    const isInitializedStatement =
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE +
+      "'";
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          isInitializedStatement,
+          [],
+          (_, result) => resolve(result.rows),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
   static getSignInInfo(db) {
-    const getSignInInfoStatement = 'SELECT * FROM ' + AUTHENTICATION_TABLE;
+    const getSignInInfoStatement =
+      'SELECT * FROM ' +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE;
 
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
@@ -25,13 +39,13 @@ export class AuthenticationTableOperations {
   static createSignInInfo(db, phone, email, password) {
     const createSignInInfoStatement =
       'INSERT INTO ' +
-      AUTHENTICATION_TABLE +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE +
       ' (' +
-      AUTHENTICATION_TABLE_PHONE +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE_PHONE +
       ', ' +
-      AUTHENTICATION_TABLE_EMAIL +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE_EMAIL +
       ', ' +
-      AUTHENTICATION_TABLE_PASSWORD +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE_PASSWORD +
       ') VALUES (?, ?, ?)';
 
     return new Promise((resolve, reject) => {
@@ -49,9 +63,9 @@ export class AuthenticationTableOperations {
   static removeSignInInfo(db) {
     const deleteSignInInfoStatement =
       'DELETE FROM ' +
-      AUTHENTICATION_TABLE +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE +
       ' WHERE ' +
-      AUTHENTICATION_TABLE_ID +
+      AuthenticationStorageTable.description.AUTHENTICATION_TABLE_ID +
       ' > 0';
 
     return new Promise((resolve, reject) => {
