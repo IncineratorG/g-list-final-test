@@ -5,19 +5,17 @@ import {
   sharedListChangedHandler,
 } from './firebaseHandlers';
 import {FirebasePaths} from './FirebasePaths';
-import {Storage} from '../Storage';
-import {StorageNotifier} from '../storage-notifier/StorageNotifier';
+import {StorageNotifier} from '../../common-data/storage-notifier/StorageNotifier';
 import {PRODUCT_COMPLETED, PRODUCT_NOT_COMPLETED} from '../data/productStatus';
 import {IdManager} from './id-manager/IdManager';
+import {Authentication} from '../../authentication/Authentication';
 
 export class FirebaseStorage {
   static subscribe({entityIds, event, handler}) {
     return FirebaseStorage.notifier.subscribe({entityIds, event, handler});
   }
 
-  static async init(localSignInInfo) {
-    FirebaseStorage.localSignInInfo = localSignInInfo;
-
+  static async init() {
     FirebaseStorage.handlers.set('sendPath', sendPathHandler);
     FirebaseStorage.handlers.set('receivedPath', receivedPathHandler);
     FirebaseStorage.handlers.set('sharedListChanged', sharedListChangedHandler);
@@ -381,14 +379,16 @@ export class FirebaseStorage {
   }
 
   static async setSubscriptions() {
-    const subscriptionData = await Storage.subscribe({
-      event: Storage.events.SIGN_IN_INFO_CHANGED,
+    const subscriptionData = await Authentication.subscribe({
+      event: Authentication.events.SIGN_IN_INFO_CHANGED,
       handler: signInInfo => {
         FirebaseStorage.localSignInInfo = signInInfo;
         this.updateListeners();
       },
     });
+
     FirebaseStorage.localSubscrtiptions.push(subscriptionData.unsubscribe);
+    FirebaseStorage.localSignInInfo = subscriptionData.data;
   }
 
   static removeSubscriptions() {

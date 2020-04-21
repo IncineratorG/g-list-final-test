@@ -4,6 +4,7 @@ import {Provider} from 'react-redux';
 import store from './src/store';
 import AppLoader from './src/components/loader/AppLoader';
 import {Storage} from './src/services/storage/Storage';
+import {Authentication} from './src/services/authentication/Authentication';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -11,10 +12,12 @@ export default function App() {
   useEffect(() => {
     const appStateHandler = async nextAppState => {
       if (nextAppState === 'active') {
+        await Authentication.init();
         await Storage.init();
         setIsReady(true);
       } else if (nextAppState === 'background') {
         Storage.off();
+        Authentication.off();
       }
     };
 

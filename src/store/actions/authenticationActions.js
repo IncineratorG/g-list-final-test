@@ -1,7 +1,4 @@
 import {
-  // LOAD_LOCAL_SIGN_IN_INFO_BEGIN,
-  // LOAD_LOCAL_SIGN_IN_INFO_ERROR,
-  // LOAD_LOCAL_SIGN_IN_INFO_FINISHED,
   RESET_SIGN_ERRORS,
   SIGN_IN_BEGIN,
   SIGN_IN_ERROR,
@@ -18,7 +15,6 @@ import {
   UPDATE_LOCAL_SIGN_IN_INFO,
 } from '../types/authenticationTypes';
 import {Authentication} from '../../services/authentication/Authentication';
-import {Storage} from '../../services/storage/Storage';
 
 export const subscribeToLocalSignInInfo = () => {
   return async dispatch => {
@@ -29,8 +25,8 @@ export const subscribeToLocalSignInInfo = () => {
         dispatch({type: UPDATE_LOCAL_SIGN_IN_INFO, payload: signInInfo});
       };
 
-      const subscription = await Storage.subscribe({
-        event: Storage.events.SIGN_IN_INFO_CHANGED,
+      const subscription = await Authentication.subscribe({
+        event: Authentication.events.SIGN_IN_INFO_CHANGED,
         handler: localSignInInfoChangedHandler,
       });
 
@@ -47,19 +43,6 @@ export const subscribeToLocalSignInInfo = () => {
   };
 };
 
-// export const loadLocalSignInInfo = () => {
-//   return async dispatch => {
-//     dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_BEGIN});
-//
-//     try {
-//       const signInInfo = await Storage.getSignInInfo();
-//       dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_FINISHED, payload: signInInfo});
-//     } catch (e) {
-//       dispatch({type: LOAD_LOCAL_SIGN_IN_INFO_ERROR, payload: {}});
-//     }
-//   };
-// };
-
 export const signUp = ({phone, email, password}) => {
   return async dispatch => {
     dispatch({type: SIGN_UP_BEGIN});
@@ -67,7 +50,7 @@ export const signUp = ({phone, email, password}) => {
     try {
       const result = await Authentication.signUp({phone, email, password});
       if (result.status === 'SUCCESS') {
-        await Storage.updateSignInInfo({phone, email, password});
+        await Authentication.updateSignInInfo({phone, email, password});
 
         dispatch({type: SIGN_UP_FINISHED});
       } else {
@@ -89,7 +72,7 @@ export const signIn = ({phone, email, password}) => {
     try {
       const result = await Authentication.signIn({phone, email, password});
       if (result.status === 'SUCCESS') {
-        await Storage.updateSignInInfo({phone, email, password});
+        await Authentication.updateSignInInfo({phone, email, password});
 
         dispatch({type: SIGN_IN_FINISHED});
       } else {
@@ -109,7 +92,7 @@ export const signOut = () => {
     dispatch({type: SIGN_OUT_BEGIN});
 
     try {
-      await Storage.removeSignInInfo();
+      await Authentication.removeSignInInfo();
       dispatch({type: SIGN_OUT_FINISHED});
     } catch (e) {
       dispatch({type: SIGN_OUT_ERROR});
