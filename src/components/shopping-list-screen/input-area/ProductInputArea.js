@@ -25,7 +25,7 @@ import {
 } from './store/inputAreaActions';
 import {INPUT_NOTE, INPUT_PRODUCT_NAME} from './store/inputAreaTypes';
 
-const InputArea = ({onInputAreaHide, onSubmitValues, units}) => {
+const ProductInputArea = ({onInputAreaHide, onSubmitValues, units}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const productNameButtonHandler = () => dispatch({type: SELECT_PRODUCT_NAME});
@@ -247,4 +247,4 @@ const styles = StyleSheet.create({
   noteOptionButtonContainer: {},
 });
 
-export default InputArea;
+export default ProductInputArea;

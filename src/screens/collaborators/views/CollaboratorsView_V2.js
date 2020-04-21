@@ -1,13 +1,19 @@
 import React from 'react';
-import {View, Text, TextInput, Button} from 'react-native';
+import {View, TouchableWithoutFeedback} from 'react-native';
 import {ContactsList} from '../../../components/collaborators/ContactsList';
 import LinearGradient from 'react-native-linear-gradient';
 import {AddButton} from '../../../components/common/AddButton';
+import CollaboratorInputArea from '../../../components/collaborators/collaborator-input-area/CollaboratorInputArea';
 
 const CollaboratorsView_V2 = ({styles, model, controller}) => {
-  const addButtonPressHandler = () => {
-    console.log('addButtonPressHandler()');
-  };
+  const {collaboratorInputAreaVisible} = model;
+
+  const {
+    addCollaboratorButtonHandler,
+    shadedBackgroundPressHandler,
+    collaboratorInputAreaHideHandler,
+    collaboratorInputSubmitEmailHandler,
+  } = controller;
 
   const contactsListComponent = (
     <View style={styles.contactsListContainer}>
@@ -15,14 +21,29 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
     </View>
   );
 
-  const addContactButtonComponent = (
+  const shadedBackgroundComponent = collaboratorInputAreaVisible ? (
+    <TouchableWithoutFeedback onPress={shadedBackgroundPressHandler}>
+      <View style={styles.shadedBackground} />
+    </TouchableWithoutFeedback>
+  ) : null;
+
+  const collaboratorInputAreaComponent = collaboratorInputAreaVisible ? (
+    <View style={styles.collaboratorInputAreaContainer}>
+      <CollaboratorInputArea
+        onInputAreaHide={collaboratorInputAreaHideHandler}
+        onSubmitValues={collaboratorInputSubmitEmailHandler}
+      />
+    </View>
+  ) : null;
+
+  const addContactButtonComponent = !collaboratorInputAreaVisible ? (
     <AddButton
       style={[styles.addContactButton, {zIndex: 20}]}
-      onClick={addButtonPressHandler}
+      onClick={addCollaboratorButtonHandler}
     />
-  );
+  ) : null;
 
-  const bottomGradientComponent = (
+  const bottomGradientComponent = !collaboratorInputAreaVisible ? (
     <LinearGradient
       style={styles.bottomGradient}
       colors={[
@@ -31,7 +52,7 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
         'rgba(255, 255, 255, 1.0)',
       ]}
     />
-  );
+  ) : null;
 
   return (
     <View style={styles.mainContainer}>
@@ -39,6 +60,8 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
       <View style={styles.addContactButtonContainer}>
         {addContactButtonComponent}
       </View>
+      {collaboratorInputAreaComponent}
+      {shadedBackgroundComponent}
       {bottomGradientComponent}
     </View>
   );

@@ -79,8 +79,8 @@ export const useShoppingListScreenController = model => {
 
   return {
     addProductButtonHandler,
-    inputAreaHideHandler,
     inputAreaSubmitValuesHandler,
+    inputAreaHideHandler,
     statusPressHandler,
     navigationButtonHandler,
     productRemoveHandler,

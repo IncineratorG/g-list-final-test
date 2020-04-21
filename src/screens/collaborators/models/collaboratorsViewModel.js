@@ -8,41 +8,18 @@ export const useCollaboratorsScreenModel = () => {
 
   const dispatch = useDispatch();
 
-  const [enteredPhone, setEnteredPhone] = useState('');
   const [enteredEmail, setEnteredEmail] = useState('');
+  const [
+    collaboratorInputAreaVisible,
+    setCollaboratorInputAreaVisible,
+  ] = useState(false);
 
   const currentShoppingListId = useSelector(
     state => state.shoppingList.currentShoppingList.id,
   );
-  const collaboratorChecking = useSelector(
-    state => state.collaboration.potentialCollaborator.checking,
-  );
-  const collaboratorPhone = useSelector(
-    state => state.collaboration.potentialCollaborator.phone,
-  );
-  const collaboratorExist = useSelector(
-    state => state.collaboration.potentialCollaborator.exist,
-  );
-  const collaboratorCheckError = useSelector(
-    state => state.collaboration.potentialCollaborator.error.hasError,
-  );
-  const collaboratorCheckErrorDescription = useSelector(
-    state => state.collaboration.potentialCollaborator.error.description,
-  );
-  const currentPhone = useSelector(
-    state => state.authentication.currentUser.phone,
-  );
   const currentEmail = useSelector(
     state => state.authentication.currentUser.email,
   );
-
-  // if (collaboratorPhone.length > 0) {
-  //   if (collaboratorExist) {
-  //     console.log(collaboratorPhone + ' EXIST');
-  //   } else {
-  //     console.log(collaboratorPhone + ' NOT_EXIST');
-  //   }
-  // }
 
   useFocusEffect(
     useCallback(() => {
@@ -53,18 +30,13 @@ export const useCollaboratorsScreenModel = () => {
   return {
     data: {
       currentShoppingListId,
-      enteredPhone,
-      enteredEmail,
-      collaboratorChecking,
-      collaboratorExist,
-      collaboratorCheckError,
-      collaboratorCheckErrorDescription,
-      currentPhone,
       currentEmail,
+      enteredEmail,
+      collaboratorInputAreaVisible,
     },
     setters: {
-      setEnteredPhone,
       setEnteredEmail,
+      setCollaboratorInputAreaVisible,
     },
     navigation,
     dispatch,

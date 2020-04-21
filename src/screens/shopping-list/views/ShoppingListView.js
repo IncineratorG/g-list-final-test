@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {EmptyShoppingListScreen} from '../../../components/shopping-list-screen/EmptyShoppingListScreen';
 import {ProductsList} from '../../../components/shopping-list-screen/ProductsList';
-import InputArea from '../../../components/shopping-list-screen/input-area/InputArea';
+import ProductInputArea from '../../../components/shopping-list-screen/input-area/ProductInputArea';
 import {AddButton} from '../../../components/common/AddButton';
 import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
 
@@ -20,8 +20,8 @@ const ShoppingListView = ({styles, model, controller}) => {
 
   const {
     addProductButtonHandler,
-    inputAreaHideHandler,
     inputAreaSubmitValuesHandler,
+    inputAreaHideHandler,
     statusPressHandler,
     productRemoveHandler,
     removeConfirmationDialogTouchOutsideHandler,
@@ -86,7 +86,7 @@ const ShoppingListView = ({styles, model, controller}) => {
 
   const inputAreaComponent = inputAreaVisible ? (
     <View style={styles.inputAreaContainer}>
-      <InputArea
+      <ProductInputArea
         onInputAreaHide={inputAreaHideHandler}
         onSubmitValues={inputAreaSubmitValuesHandler}
         units={units}
