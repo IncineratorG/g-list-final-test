@@ -11,6 +11,7 @@ const icons = {
   trash: require('./trash.png'),
   sync: require('./sync.png'),
   email: require('./email2.png'),
+  find_email: require('./find-email_v2.png'),
   password: require('./password2.png'),
   verify_password: require('./verify_password.png'),
   phone: require('./phone2.png'),

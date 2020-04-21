@@ -5,7 +5,20 @@ import {
 
 export const useCollaboratorsScreenController = model => {
   const addCollaboratorButtonHandler = () => {
-    console.log('addCollaboratorButtonHandler()');
+    model.setters.setCollaboratorInputAreaVisible(
+      !model.data.collaboratorInputAreaVisible,
+    );
+  };
+
+  const collaboratorInputAreaHideHandler = () => {
+    model.setters.setCollaboratorInputAreaVisible(false);
+  };
+
+  const collaboratorInputSubmitEmailHandler = email => {
+    console.log('EMAIL: ' + email);
+  };
+
+  const shadedBackgroundPressHandler = () => {
     model.setters.setCollaboratorInputAreaVisible(
       !model.data.collaboratorInputAreaVisible,
     );
@@ -18,8 +31,10 @@ export const useCollaboratorsScreenController = model => {
 
   return {
     addCollaboratorButtonHandler,
+    collaboratorInputAreaHideHandler,
+    collaboratorInputSubmitEmailHandler,
+    shadedBackgroundPressHandler,
     emailInputHandler,
-    // emailButtonHandler,
   };
 };
 
