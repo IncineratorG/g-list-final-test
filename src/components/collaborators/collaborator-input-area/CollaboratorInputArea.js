@@ -26,6 +26,8 @@ const CollaboratorInputArea = ({onInputAreaHide, onSubmitValues}) => {
     if (onSubmitValues) {
       onSubmitValues(email);
     }
+
+    setEmail('');
   };
 
   const acceptEmailHandler = () => submitEmail();
@@ -67,6 +69,7 @@ const CollaboratorInputArea = ({onInputAreaHide, onSubmitValues}) => {
           autoCapitalize={'none'}
           onChangeText={changeEmailInputHandler}
           onSubmitEditing={submitEmailHandler}
+          blurOnSubmit={false}
         />
         <TouchableHighlight
           style={styles.acceptEmailTouchable}

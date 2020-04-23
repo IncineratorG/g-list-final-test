@@ -1,8 +1,6 @@
 export class FirebaseCollaboration {
-  static async checkUserExistence({phone}) {
-    const checkData = {
-      phone,
-    };
+  static async checkUserExistence({email}) {
+    const checkData = {email};
     const serializedCheckData = JSON.stringify(checkData);
 
     try {

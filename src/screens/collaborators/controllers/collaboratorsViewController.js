@@ -1,7 +1,4 @@
-import {
-  clearPotentialCollaboratorData,
-  shareShoppingList,
-} from '../../../store/actions/collaborationActions';
+import {addCollaborator} from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenController = model => {
   const addCollaboratorButtonHandler = () => {
@@ -15,7 +12,15 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const collaboratorInputSubmitEmailHandler = email => {
-    console.log('EMAIL: ' + email);
+    const currentMillis = Date.now();
+    const contact = {id: currentMillis, email};
+
+    const contacts = model.data.contacts;
+    contacts.push(contact);
+
+    model.setters.setContacts(contacts);
+
+    model.dispatch(addCollaborator({email}));
   };
 
   const shadedBackgroundPressHandler = () => {
@@ -24,17 +29,11 @@ export const useCollaboratorsScreenController = model => {
     );
   };
 
-  const emailInputHandler = text => {
-    model.dispatch(clearPotentialCollaboratorData());
-    model.setters.setEnteredEmail(text);
-  };
-
   return {
     addCollaboratorButtonHandler,
     collaboratorInputAreaHideHandler,
     collaboratorInputSubmitEmailHandler,
     shadedBackgroundPressHandler,
-    emailInputHandler,
   };
 };
 

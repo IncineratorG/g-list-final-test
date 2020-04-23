@@ -40,6 +40,15 @@ export const collaboratorsViewStyles_V2 = StyleSheet.create({
     right: 0,
     zIndex: 10,
   },
+  emptyCollaboratorsScreenContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 83,
+  },
   shadedBackground: {
     backgroundColor: 'black',
     opacity: 0.5,

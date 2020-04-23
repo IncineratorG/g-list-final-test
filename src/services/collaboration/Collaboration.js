@@ -1,9 +1,9 @@
 import {FirebaseCollaboration} from './firabase/FirebaseCollaboration';
 
 export class Collaboration {
-  static async userExist({phone}) {
+  static async userExist({email}) {
     try {
-      const result = await FirebaseCollaboration.checkUserExistence({phone});
+      const result = await FirebaseCollaboration.checkUserExistence({email});
       return result === 'EXIST';
     } catch (e) {
       throw new Error(e);

@@ -16,6 +16,7 @@ const icons = {
   verify_password: require('./verify_password.png'),
   phone: require('./phone2.png'),
   menu: require('./menu.png'),
+  contacts: require('./contacts.png'),
 };
 
 export {icons};
