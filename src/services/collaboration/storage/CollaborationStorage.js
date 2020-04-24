@@ -1,6 +1,7 @@
 import {StorageNotifier} from '../../common-data/storage-notifier/StorageNotifier';
 import {CollaborationStorageTable} from './tables-description/CollaborationStorageTable';
 import {CollaborationStorageOperations} from './operations-implementation/CollaborationStorageOperations';
+import {Collaboration} from '../Collaboration';
 
 const DB_NAME = 'glist-collab.db';
 
@@ -24,6 +25,8 @@ export class CollaborationStorage {
       CollaborationStorageTable.description.ID +
       ' INTEGER PRIMARY KEY NOT NULL, ' +
       CollaborationStorageTable.description.EMAIL +
+      ' TEXT, ' +
+      CollaborationStorageTable.description.STATUS +
       ' TEXT)';
 
     return new Promise((resolve, reject) => {
@@ -37,15 +40,84 @@ export class CollaborationStorage {
     return await CollaborationStorageOperations.isInitialized(db);
   }
 
-  static addCollaborator({email}) {}
+  static async addCollaborator({email, status}) {
+    const hasCollaboratorResult = await CollaborationStorageOperations.hasCollaborator(
+      {db, email},
+    );
+    if (hasCollaboratorResult.length > 0) {
+      return undefined;
+    }
 
-  static removeCollaborator({id}) {}
+    const collaboratorId = await CollaborationStorageOperations.addCollaborator(
+      {db, email, status},
+    );
 
-  static getCollaborators() {}
+    const newCollaborator = {
+      id: collaboratorId,
+      email,
+      status,
+    };
+
+    CollaborationStorage.notifier.notify({
+      event: CollaborationStorage.events.COLLABORATOR_ADDED,
+      data: {collaborator: newCollaborator},
+    });
+
+    return newCollaborator;
+  }
+
+  static async removeCollaborator({id}) {
+    console.log('removeCollaborator(): ' + id);
+
+    await CollaborationStorageOperations.removeCollaborator({db, id});
+
+    CollaborationStorage.notifier.notify({
+      event: CollaborationStorage.events.COLLABORATOR_REMOVED,
+      data: {id},
+    });
+  }
+
+  static async setCollaboratorStatus({id, status}) {
+    await CollaborationStorageOperations.setCollaboratorStatus({
+      db,
+      id,
+      status,
+    });
+
+    CollaborationStorage.notifier.notify({
+      event: CollaborationStorage.events.COLLABORATOR_STATUS_CHANGED,
+      data: {id, status},
+    });
+  }
+
+  static async getCollaborators() {
+    const collaboratorsData = await CollaborationStorageOperations.getCollaborators(
+      db,
+    );
+
+    const collaborators = [];
+    for (let i = 0; i < collaboratorsData.length; ++i) {
+      if (
+        collaboratorsData.item(i).status ===
+        Collaboration.collaboratorStatus.UNKNOWN
+      ) {
+        await CollaborationStorageOperations.removeCollaborator({
+          db,
+          id: collaboratorsData.item(i).id,
+        });
+        continue;
+      }
+
+      collaborators.push(collaboratorsData.item(i));
+    }
+
+    return collaborators;
+  }
 }
 
 CollaborationStorage.events = {
   COLLABORATOR_ADDED: 'COLLABORATOR_ADDED',
   COLLABORATOR_REMOVED: 'COLLABORATOR_REMOVED',
+  COLLABORATOR_STATUS_CHANGED: 'COLLABORATOR_STATUS_CHANGED',
 };
 CollaborationStorage.notifier = new StorageNotifier({});

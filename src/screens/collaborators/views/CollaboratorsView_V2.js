@@ -14,11 +14,15 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
     shadedBackgroundPressHandler,
     collaboratorInputAreaHideHandler,
     collaboratorInputSubmitEmailHandler,
+    selectContactButtonPressHandler,
   } = controller;
 
   const contactsListComponent = (
     <View style={styles.contactsListContainer}>
-      <ContactsList list={contacts} />
+      <ContactsList
+        list={contacts}
+        onSelectContactPress={selectContactButtonPressHandler}
+      />
     </View>
   );
 

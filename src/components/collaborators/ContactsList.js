@@ -2,10 +2,10 @@ import React from 'react';
 import {View, StyleSheet, Text, FlatList} from 'react-native';
 import ContactListItemsFactory from './contact-list-item/ContactListItemsFactory';
 
-export const ContactsList = ({list}) => {
-  const onSelectButtonPressHandler = () => {
-    console.log('onSelectButtonPressHandler()');
-  };
+export const ContactsList = ({list, onSelectContactPress}) => {
+  // const onSelectButtonPressHandler = () => {
+  //   console.log('onSelectButtonPressHandler()');
+  // };
 
   return (
     <View style={styles.mainContainer}>
@@ -15,11 +15,7 @@ export const ContactsList = ({list}) => {
         showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id.toString()}
         renderItem={({item, index}) => {
-          return ContactListItemsFactory.get(
-            item,
-            index,
-            onSelectButtonPressHandler,
-          );
+          return ContactListItemsFactory.get(item, index, onSelectContactPress);
         }}
       />
     </View>

@@ -12,13 +12,13 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const collaboratorInputSubmitEmailHandler = email => {
-    const currentMillis = Date.now();
-    const contact = {id: currentMillis, email};
-
-    const contacts = model.data.contacts;
-    contacts.push(contact);
-
-    model.setters.setContacts(contacts);
+    // const currentMillis = Date.now();
+    // const contact = {id: currentMillis, email};
+    //
+    // const contacts = model.data.contacts;
+    // contacts.push(contact);
+    //
+    // model.setters.setContacts(contacts);
 
     model.dispatch(addCollaborator({email}));
   };
@@ -29,11 +29,16 @@ export const useCollaboratorsScreenController = model => {
     );
   };
 
+  const selectContactButtonPressHandler = id => {
+    console.log('selectContactButtonPressHandler(): ' + id);
+  };
+
   return {
     addCollaboratorButtonHandler,
     collaboratorInputAreaHideHandler,
     collaboratorInputSubmitEmailHandler,
     shadedBackgroundPressHandler,
+    selectContactButtonPressHandler,
   };
 };
 

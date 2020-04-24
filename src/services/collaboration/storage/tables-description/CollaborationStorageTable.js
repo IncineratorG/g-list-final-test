@@ -4,4 +4,5 @@ CollaborationStorageTable.description = {
   TABLE: 'collaboration',
   ID: 'id',
   EMAIL: 'email',
+  STATUS: 'status',
 };

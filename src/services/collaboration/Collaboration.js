@@ -1,6 +1,85 @@
 import {FirebaseCollaboration} from './firabase/FirebaseCollaboration';
+import {StorageNotifier} from '../common-data/storage-notifier/StorageNotifier';
+import {CollaborationStorage} from './storage/CollaborationStorage';
 
 export class Collaboration {
+  static async subscribe({entityIds, event, handler, once = false}) {
+    const unsubscribe = once
+      ? () => {}
+      : Collaboration.notifier.subscribe({entityIds, event, handler});
+
+    let data;
+    if (event === Collaboration.events.COLLABORATOR_ADDED) {
+      data = await CollaborationStorage.getCollaborators();
+    } else if (event === Collaboration.events.COLLABORATOR_REMOVED) {
+      data = await CollaborationStorage.getCollaborators();
+    } else if (event === Collaboration.events.COLLABORATOR_STATUS_CHANGED) {
+      data = await CollaborationStorage.getCollaborators();
+    }
+
+    return {unsubscribe, data};
+  }
+
+  static async init() {
+    this.setSubscriptions();
+
+    const result = await CollaborationStorage.isInitialized();
+    if (result.length <= 0) {
+      console.log('1');
+      await CollaborationStorage.init();
+    }
+  }
+
+  static off() {
+    this.removeSubscriptions();
+  }
+
+  static setSubscriptions() {
+    Collaboration.localSubscriptions.push(
+      CollaborationStorage.subscribe({
+        event: CollaborationStorage.events.COLLABORATOR_ADDED,
+        handler: ({collaborator}) => {
+          Collaboration.notifier.notify({
+            event: Collaboration.events.COLLABORATOR_ADDED,
+            data: collaborator,
+          });
+        },
+      }),
+    );
+
+    Collaboration.localSubscriptions.push(
+      CollaborationStorage.subscribe({
+        event: CollaborationStorage.events.COLLABORATOR_REMOVED,
+        handler: ({id}) => {
+          Collaboration.notifier.notify({
+            event: Collaboration.events.COLLABORATOR_REMOVED,
+            data: id,
+          });
+        },
+      }),
+    );
+
+    Collaboration.localSubscriptions.push(
+      CollaborationStorage.subscribe({
+        event: CollaborationStorage.events.COLLABORATOR_STATUS_CHANGED,
+        handler: ({id, status}) => {
+          Collaboration.notifier.notify({
+            event: Collaboration.events.COLLABORATOR_STATUS_CHANGED,
+            data: {id, status},
+          });
+        },
+      }),
+    );
+  }
+
+  static removeSubscriptions() {
+    Collaboration.localSubscriptions.forEach(unsubscribeFunc => {
+      unsubscribeFunc();
+    });
+
+    Collaboration.localSubscriptions.length = 0;
+  }
+
   static async userExist({email}) {
     try {
       const result = await FirebaseCollaboration.checkUserExistence({email});
@@ -8,6 +87,27 @@ export class Collaboration {
     } catch (e) {
       throw new Error(e);
     }
+  }
+
+  static async addCollaborator({email, status}) {
+    const newCollaborator = await CollaborationStorage.addCollaborator({
+      email,
+      status,
+    });
+
+    return newCollaborator;
+  }
+
+  static async removeCollaborator({id}) {
+    await CollaborationStorage.removeCollaborator({id});
+  }
+
+  static async setCollaboratorStatus({id, status}) {
+    await CollaborationStorage.setCollaboratorStatus({id, status});
+  }
+
+  static async getCollaborators() {
+    return await CollaborationStorage.getCollaborators();
   }
 
   static async sendMessage({receiverPhone, senderPhone, messageText}) {
@@ -122,6 +222,19 @@ export class Collaboration {
     }
   }
 }
+
+Collaboration.collaboratorStatus = {
+  EXIST: 'EXIST',
+  NOT_EXIST: 'NOT_EXIST',
+  UNKNOWN: 'UNKNOWN',
+};
+Collaboration.events = {
+  COLLABORATOR_ADDED: 'COLLABORATOR_ADDED',
+  COLLABORATOR_REMOVED: 'COLLABORATOR_REMOVED',
+  COLLABORATOR_STATUS_CHANGED: 'COLLABORATOR_STATUS_CHANGED',
+};
+Collaboration.notifier = new StorageNotifier({});
+Collaboration.localSubscriptions = [];
 
 // const usedUnits = [];
 // const usedClasses = [];

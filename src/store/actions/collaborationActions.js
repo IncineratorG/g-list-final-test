@@ -1,12 +1,60 @@
 import {Collaboration} from '../../services/collaboration/Collaboration';
+import {
+  ADD_COLLABORATOR,
+  LOAD_COLLABORATORS,
+  SET_COLLABORATOR_EXIST_STATUS,
+} from '../types/collaborationTypes';
+
+export const loadCollaborators = () => {
+  return async dispatch => {
+    const collaborators = await Collaboration.getCollaborators();
+
+    dispatch({type: LOAD_COLLABORATORS, payload: collaborators});
+  };
+};
 
 export const addCollaborator = ({email}) => {
-  return async dispach => {
-    console.log('addCollaborator(): ' + email);
+  return async dispatch => {
+    const newCollaborator = await Collaboration.addCollaborator({
+      email,
+      status: Collaboration.collaboratorStatus.UNKNOWN,
+    });
+    if (!newCollaborator) {
+      return;
+    }
+
+    dispatch({type: ADD_COLLABORATOR, payload: newCollaborator});
 
     const userExist = await Collaboration.userExist({email});
+    if (userExist) {
+      await Collaboration.setCollaboratorStatus({
+        id: newCollaborator.id,
+        status: Collaboration.collaboratorStatus.EXIST,
+      });
+      dispatch({
+        type: SET_COLLABORATOR_EXIST_STATUS,
+        payload: {
+          id: newCollaborator.id,
+          status: Collaboration.collaboratorStatus.EXIST,
+        },
+      });
+    } else {
+      await Collaboration.removeCollaborator({id: newCollaborator.id});
+      dispatch({
+        type: SET_COLLABORATOR_EXIST_STATUS,
+        payload: {
+          id: newCollaborator.id,
+          status: Collaboration.collaboratorStatus.NOT_EXIST,
+        },
+      });
+    }
+  };
+};
 
-    console.log('EXIST: ' + userExist);
+export const removeCollaborator = ({id}) => {
+  return async dispatch => {
+    await Collaboration.removeCollaborator({id});
+    dispatch(loadCollaborators());
   };
 };
 

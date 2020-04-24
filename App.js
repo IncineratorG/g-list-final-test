@@ -5,6 +5,7 @@ import store from './src/store';
 import AppLoader from './src/components/loader/AppLoader';
 import {Storage} from './src/services/storage/Storage';
 import {Authentication} from './src/services/authentication/Authentication';
+import {Collaboration} from './src/services/collaboration/Collaboration';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -13,11 +14,13 @@ export default function App() {
     const appStateHandler = async nextAppState => {
       if (nextAppState === 'active') {
         await Authentication.init();
+        await Collaboration.init();
         await Storage.init();
         setIsReady(true);
       } else if (nextAppState === 'background') {
         Storage.off();
         Authentication.off();
+        Collaboration.off();
       }
     };
 
