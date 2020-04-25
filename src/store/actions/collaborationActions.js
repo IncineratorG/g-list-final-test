@@ -82,6 +82,11 @@ export const clearSelectedCollaborators = () => {
 
 export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
   return async dispatch => {
+    // const receivers = [receiver];
+    // const shoppingList = {id: shoppingListId};
+    //
+    // await Collaboration.testShare({receivers, sender, shoppingList});
+
     const shoppingListData = await Storage.subscribe({
       shoppingListId,
       event: Storage.events.SHOPPING_LIST_CHANGED,
@@ -105,7 +110,7 @@ export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
       creator: sender,
     };
 
-    await Collaboration.shareShoppingList({
+    await Collaboration.testShare({
       receivers: receivers,
       sender: sender,
       shoppingList,
@@ -115,6 +120,42 @@ export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
     });
   };
 };
+
+// export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
+//   return async dispatch => {
+//     const shoppingListData = await Storage.subscribe({
+//       shoppingListId,
+//       event: Storage.events.SHOPPING_LIST_CHANGED,
+//       once: true,
+//     });
+//
+//     const shoppingList = shoppingListData.data;
+//     shoppingList.creator = sender;
+//     const units = await Storage.getUnits({shoppingListId});
+//     const classes = await Storage.getClasses({shoppingListId});
+//
+//     const receivers = [];
+//     receivers.push(receiver);
+//
+//     const shoppingListCard = {
+//       name: shoppingList.name,
+//       totalItemsCount: shoppingList.totalItemsCount,
+//       completedItemsCount: shoppingList.completedItemsCount,
+//       createTimestamp: shoppingList.createTimestamp,
+//       updateTimestamp: shoppingList.updateTimestamp,
+//       creator: sender,
+//     };
+//
+//     await Collaboration.shareShoppingList({
+//       receivers: receivers,
+//       sender: sender,
+//       shoppingList,
+//       shoppingListCard,
+//       units,
+//       classes,
+//     });
+//   };
+// };
 
 // =========
 // ================

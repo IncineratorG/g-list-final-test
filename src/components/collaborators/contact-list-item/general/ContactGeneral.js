@@ -15,7 +15,8 @@ export const ContactGeneral = ({styles, listItem, onSelectPress}) => {
     }
 
     if (onSelectPress) {
-      onSelectPress(listItem.id, status);
+      // onSelectPress(listItem.id, status);
+      onSelectPress({id: listItem.id, email, status});
     }
   };
 

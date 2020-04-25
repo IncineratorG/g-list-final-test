@@ -1,6 +1,7 @@
 import {
   addCollaborator,
   selectCollaborator,
+  shareShoppingList,
   unselectCollaborator,
 } from '../../../store/actions/collaborationActions';
 
@@ -33,36 +34,31 @@ export const useCollaboratorsScreenController = model => {
     );
   };
 
-  const selectContactButtonPressHandler = (id, status) => {
-    const selectedContactData = model.data.contacts.filter(
-      contact => contact.id === id,
-    );
-    if (selectedContactData.length <= 0) {
-      console.log(
-        'collaboratorsViewController->selectContactButtonPressHandler(): BAD_SELECTED_DATA_LENGTH',
-      );
-      return;
-    }
+  const selectContactButtonPressHandler = ({id, email, status}) => {
+    // console.log('HERE: ' + id + ' - ' + email + ' - ' + status);
 
-    const contact = selectedContactData[0];
-    if (contact.selected) {
-      model.dispatch(unselectCollaborator({id}));
-    } else {
-      model.dispatch(selectCollaborator({id}));
-    }
+    const shoppingListId = model.data.currentShoppingListId;
+    const sender = model.data.currentEmail;
+    const receiver = email;
 
-    // console.log('selectContactButtonPressHandler(): ' + id + ' - ' + status);
+    model.dispatch(shareShoppingList({receiver, sender, shoppingListId}));
+
+    // const selectedContactData = model.data.contacts.filter(
+    //   contact => contact.id === id,
+    // );
+    // if (selectedContactData.length <= 0) {
+    //   console.log(
+    //     'collaboratorsViewController->selectContactButtonPressHandler(): BAD_SELECTED_DATA_LENGTH',
+    //   );
+    //   return;
+    // }
     //
-    // let contactsList = model.data.contacts.slice(0);
-    // contactsList = contactsList.map(contact => {
-    //   if (contact.id === id) {
-    //     contact.selected = !contact.selected;
-    //   }
-    //
-    //   return contact;
-    // });
-    //
-    // model.setters.setContacts(contactsList);
+    // const contact = selectedContactData[0];
+    // if (contact.selected) {
+    //   model.dispatch(unselectCollaborator({id}));
+    // } else {
+    //   model.dispatch(selectCollaborator({id}));
+    // }
   };
 
   return {

@@ -3,6 +3,23 @@ import {StorageNotifier} from '../common-data/storage-notifier/StorageNotifier';
 import {CollaborationStorage} from './storage/CollaborationStorage';
 
 export class Collaboration {
+  // ===
+  static async testShare({
+    receivers,
+    sender,
+    shoppingList,
+    shoppingListCard,
+    units,
+    classes,
+  }) {
+    console.log('testShare()->START')
+
+    setTimeout(() => {
+      console.log('testShare()->COMPLETE: ' + sender + ' - ' + shoppingList.id);
+    }, 1000);
+  }
+  // ===
+
   static async subscribe({entityIds, event, handler, once = false}) {
     const unsubscribe = once
       ? () => {}
