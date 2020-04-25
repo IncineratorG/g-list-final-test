@@ -1,9 +1,13 @@
 import {Collaboration} from '../../services/collaboration/Collaboration';
 import {
   ADD_COLLABORATOR,
+  CLEAR_SELECTED_COLLABORATORS,
   LOAD_COLLABORATORS,
+  SELECT_COLLABORATOR,
   SET_COLLABORATOR_EXIST_STATUS,
+  UNSELECT_COLLABORATOR,
 } from '../types/collaborationTypes';
+import {Storage} from '../../services/storage/Storage';
 
 export const loadCollaborators = () => {
   return async dispatch => {
@@ -55,6 +59,60 @@ export const removeCollaborator = ({id}) => {
   return async dispatch => {
     await Collaboration.removeCollaborator({id});
     dispatch(loadCollaborators());
+  };
+};
+
+export const selectCollaborator = ({id}) => {
+  return async dispatch => {
+    dispatch({type: SELECT_COLLABORATOR, payload: id});
+  };
+};
+
+export const unselectCollaborator = ({id}) => {
+  return async dispatch => {
+    dispatch({type: UNSELECT_COLLABORATOR, payload: id});
+  };
+};
+
+export const clearSelectedCollaborators = () => {
+  return async dispatch => {
+    dispatch({type: CLEAR_SELECTED_COLLABORATORS});
+  };
+};
+
+export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
+  return async dispatch => {
+    const shoppingListData = await Storage.subscribe({
+      shoppingListId,
+      event: Storage.events.SHOPPING_LIST_CHANGED,
+      once: true,
+    });
+
+    const shoppingList = shoppingListData.data;
+    shoppingList.creator = sender;
+    const units = await Storage.getUnits({shoppingListId});
+    const classes = await Storage.getClasses({shoppingListId});
+
+    const receivers = [];
+    receivers.push(receiver);
+
+    const shoppingListCard = {
+      name: shoppingList.name,
+      totalItemsCount: shoppingList.totalItemsCount,
+      completedItemsCount: shoppingList.completedItemsCount,
+      createTimestamp: shoppingList.createTimestamp,
+      updateTimestamp: shoppingList.updateTimestamp,
+      creator: sender,
+    };
+
+    await Collaboration.shareShoppingList({
+      receivers: receivers,
+      sender: sender,
+      shoppingList,
+      shoppingListCard,
+      units,
+      classes,
+    });
   };
 };
 

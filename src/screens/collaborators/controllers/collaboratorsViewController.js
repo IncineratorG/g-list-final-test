@@ -1,4 +1,8 @@
-import {addCollaborator} from '../../../store/actions/collaborationActions';
+import {
+  addCollaborator,
+  selectCollaborator,
+  unselectCollaborator,
+} from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenController = model => {
   const addCollaboratorButtonHandler = () => {
@@ -29,8 +33,36 @@ export const useCollaboratorsScreenController = model => {
     );
   };
 
-  const selectContactButtonPressHandler = id => {
-    console.log('selectContactButtonPressHandler(): ' + id);
+  const selectContactButtonPressHandler = (id, status) => {
+    const selectedContactData = model.data.contacts.filter(
+      contact => contact.id === id,
+    );
+    if (selectedContactData.length <= 0) {
+      console.log(
+        'collaboratorsViewController->selectContactButtonPressHandler(): BAD_SELECTED_DATA_LENGTH',
+      );
+      return;
+    }
+
+    const contact = selectedContactData[0];
+    if (contact.selected) {
+      model.dispatch(unselectCollaborator({id}));
+    } else {
+      model.dispatch(selectCollaborator({id}));
+    }
+
+    // console.log('selectContactButtonPressHandler(): ' + id + ' - ' + status);
+    //
+    // let contactsList = model.data.contacts.slice(0);
+    // contactsList = contactsList.map(contact => {
+    //   if (contact.id === id) {
+    //     contact.selected = !contact.selected;
+    //   }
+    //
+    //   return contact;
+    // });
+    //
+    // model.setters.setContacts(contactsList);
   };
 
   return {

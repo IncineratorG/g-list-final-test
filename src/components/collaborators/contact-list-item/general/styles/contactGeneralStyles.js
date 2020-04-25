@@ -54,7 +54,19 @@ export const contactGeneralStyles = StyleSheet.create({
     elevation: 6,
     borderRadius: 15,
   },
+  selectButtonSelected: {
+    height: 30,
+    width: 30,
+    backgroundColor: '#41D8B1',
+    elevation: 6,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   statusIcon: {
     transform: [{scale: 1.0}],
+  },
+  statusIconSelected: {
+    transform: [{scale: 0.7}],
   },
 });

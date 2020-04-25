@@ -1,12 +1,16 @@
 import {
   ADD_COLLABORATOR,
+  CLEAR_SELECTED_COLLABORATORS,
   LOAD_COLLABORATORS,
+  SELECT_COLLABORATOR,
   SET_COLLABORATOR_EXIST_STATUS,
+  UNSELECT_COLLABORATOR,
 } from '../types/collaborationTypes';
 import {Collaboration} from '../../services/collaboration/Collaboration';
 
 const initialState = {
   localCollaborators: [],
+  selectedCollaboratorsIds: [],
 };
 
 export const collaborationReducer = (state = initialState, action) => {
@@ -28,9 +32,9 @@ export const collaborationReducer = (state = initialState, action) => {
       const collaborators = state.localCollaborators.map(collaborator => {
         if (collaborator.id === collaboratorId) {
           collaborator.status = status;
-        }
-        if (status === Collaboration.collaboratorStatus.NOT_EXIST) {
-          collaborator.id = collaborator.id + Date.now().toString();
+          if (status === Collaboration.collaboratorStatus.NOT_EXIST) {
+            collaborator.id = collaborator.id + Date.now().toString();
+          }
         }
 
         return collaborator;
@@ -46,6 +50,34 @@ export const collaborationReducer = (state = initialState, action) => {
       return {
         ...state,
         localCollaborators: action.payload,
+      };
+    }
+
+    case CLEAR_SELECTED_COLLABORATORS: {
+      return {
+        ...state,
+        selectedCollaboratorsIds: [],
+      };
+    }
+
+    case SELECT_COLLABORATOR: {
+      const selectedCollaborators = state.selectedCollaboratorsIds.slice(0);
+      selectedCollaborators.push(action.payload);
+
+      return {
+        ...state,
+        selectedCollaboratorsIds: selectedCollaborators,
+      };
+    }
+
+    case UNSELECT_COLLABORATOR: {
+      const selectedCollaborators = state.selectedCollaboratorsIds.filter(
+        collaboratorId => collaboratorId !== action.payload,
+      );
+
+      return {
+        ...state,
+        selectedCollaboratorsIds: selectedCollaborators,
       };
     }
 

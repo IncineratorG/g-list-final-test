@@ -4,18 +4,30 @@ import {Collaboration} from '../../../../services/collaboration/Collaboration';
 import {icons} from '../../../../assets/icons';
 
 export const ContactGeneral = ({styles, listItem, onSelectPress}) => {
-  const {email, status} = listItem;
+  const {email, status, selected} = listItem;
+
+  // console.log(email + ' - ' + selected);
 
   const selectContactPressHandler = () => {
+    if (status === Collaboration.collaboratorStatus.NOT_EXIST) {
+      console.log('WARNING_MESSAGE');
+      return;
+    }
+
     if (onSelectPress) {
-      onSelectPress(listItem.id);
+      onSelectPress(listItem.id, status);
     }
   };
 
   let selectButtonStyle = styles.selectButton;
   let statusImageComponent = null;
 
-  if (status === Collaboration.collaboratorStatus.EXIST) {
+  if (selected) {
+    selectButtonStyle = styles.selectButtonSelected;
+    statusImageComponent = (
+      <Image style={styles.statusIconSelected} source={icons.checkmark} />
+    );
+  } else if (status === Collaboration.collaboratorStatus.EXIST) {
     selectButtonStyle = styles.selectButtonExist;
     statusImageComponent = null;
   } else if (status === Collaboration.collaboratorStatus.NOT_EXIST) {
