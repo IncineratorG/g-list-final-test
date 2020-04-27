@@ -9,14 +9,25 @@ import {ListOfShoppingListsItemOutgoing} from './outgoing/ListOfShoppingListItem
 import {listOfShoppingListsItemStylesOutgoing} from './outgoing/styles/listOfShoppingListItemStylesOutgoing';
 import {ListOfShoppingListsItemExtra} from './extra/ListOfShoppingListsItemExtra';
 import {listOfShoppingListsItemStylesExtra} from './extra/styles/listOfShoppingListsItemStylesExtra';
+import {listOfShoppingListsItemStylesGeneral} from './general/styles/listOfShoppingListItemStyleGeneral';
+import {ListOfShoppingListsItemGeneral} from './general/ListOfShoppingListItemGeneral';
 
 export default class ListOfShoppingListsItemsFactory {
   static get(listItem, onItemPress) {
+    const generalItemStyles = listOfShoppingListsItemStylesGeneral;
     const completedItemStyles = listOfShoppingListsItemStylesCompleted;
     const notCompletedItemStyles = listOfShoppingListsItemStylesNotCompleted;
     const incomingItemStyles = listOfShoppingListsItemStylesIncoming;
     const outgoingItemStyles = listOfShoppingListsItemStylesOutgoing;
     const extraItemStyles = listOfShoppingListsItemStylesExtra;
+
+    const generalItem = (
+      <ListOfShoppingListsItemGeneral
+        styles={generalItemStyles}
+        listItem={listItem}
+        onItemPress={onItemPress}
+      />
+    );
 
     const completedItem = (
       <View>
@@ -63,14 +74,20 @@ export default class ListOfShoppingListsItemsFactory {
 
     if (listItemExtra) {
       return extraItem;
-    } else if (listItemLocal) {
-      return listItemCompleted ? completedItem : notCompletedItem;
-    } else if (listItemOutgoing) {
-      return outgoingItem;
-    } else if (listItemIncoming) {
-      return incomingItem;
     } else {
-      return <View />;
+      return generalItem;
     }
+
+    // if (listItemExtra) {
+    //   return extraItem;
+    // } else if (listItemLocal) {
+    //   return listItemCompleted ? completedItem : notCompletedItem;
+    // } else if (listItemOutgoing) {
+    //   return outgoingItem;
+    // } else if (listItemIncoming) {
+    //   return incomingItem;
+    // } else {
+    //   return <View />;
+    // }
   }
 }

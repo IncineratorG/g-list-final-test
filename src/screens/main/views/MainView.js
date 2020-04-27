@@ -12,6 +12,7 @@ const MainView = ({styles, model, controller}) => {
     removeItemName,
     shoppingLists,
     sectionsShoppingLists,
+    sectionFreeShoppingList,
     shoppingListsLoading,
   } = model;
 
@@ -68,7 +69,7 @@ const MainView = ({styles, model, controller}) => {
   const listOfShoppingListsComponent = (
     <View style={styles.listOfShoppingListContainer}>
       <ListOfShoppingLists
-        list={shoppingLists}
+        list={sectionFreeShoppingList}
         sectionList={sectionsShoppingLists}
         onItemPress={listItemPressHandler}
         onRemovePress={listItemRemoveHandler}

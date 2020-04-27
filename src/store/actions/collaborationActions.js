@@ -110,7 +110,7 @@ export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
       creator: sender,
     };
 
-    await Collaboration.testShare({
+    await Collaboration.shareShoppingList({
       receivers: receivers,
       sender: sender,
       shoppingList,

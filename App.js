@@ -6,6 +6,7 @@ import AppLoader from './src/components/loader/AppLoader';
 import {Storage} from './src/services/storage/Storage';
 import {Authentication} from './src/services/authentication/Authentication';
 import {Collaboration} from './src/services/collaboration/Collaboration';
+import {MenuProvider} from 'react-native-popup-menu';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -35,12 +36,14 @@ export default function App() {
   }
 
   return (
-    <Provider store={store}>
-      <StatusBar
-        backgroundColor="white"
-        barStyle="dark-content" // Here is where you change the font-color
-      />
-      <AppLoader />
-    </Provider>
+    <MenuProvider>
+      <Provider store={store}>
+        <StatusBar
+          backgroundColor="white"
+          barStyle="dark-content" // Here is where you change the font-color
+        />
+        <AppLoader />
+      </Provider>
+    </MenuProvider>
   );
 }

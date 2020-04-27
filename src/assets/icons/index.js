@@ -19,6 +19,7 @@ const icons = {
   contacts: require('./contacts.png'),
   warning: require('./warning_2.png'),
   check_progress: require('./check_progress.png'),
+  menu_vertical: require('./menu_vertical.png'),
 };
 
 export {icons};
