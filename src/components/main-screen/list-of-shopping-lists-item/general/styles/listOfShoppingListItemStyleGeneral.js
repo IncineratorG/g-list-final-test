@@ -37,7 +37,7 @@ export const listOfShoppingListsItemStylesGeneral = StyleSheet.create({
   menuTouchable: {
     width: 50,
     height: 50,
-    borderRadius: 25,
+    // borderRadius: 25,
   },
   menuContainer: {
     width: 50,

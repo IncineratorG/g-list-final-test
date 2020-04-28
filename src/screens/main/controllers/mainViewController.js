@@ -9,10 +9,9 @@ export const useMainScreenController = model => {
     model.navigation.navigate('ShoppingList');
   };
 
-  const listItemRemoveHandler = (listItem, row) => {
+  const listItemRemoveHandler = listItem => {
     model.setters.setRemoveItemName(listItem.name);
     model.setters.setRemoveItemId(listItem.id);
-    model.setters.setListItemRow(row);
     model.setters.setRemoveConfirmationDialogVisible(true);
   };
 
@@ -27,13 +26,10 @@ export const useMainScreenController = model => {
   const removeConfirmationDialogRemoveHandler = () => {
     model.dispatch(removeShoppingList(model.data.removeItemId));
     model.setters.setRemoveConfirmationDialogVisible(false);
-    model.setters.setListItemRow(null);
   };
 
   const removeConfirmationDialogCancelRemoveHandler = () => {
     model.setters.setRemoveConfirmationDialogVisible(false);
-    model.data.listItemRow.closeRow();
-    model.setters.setListItemRow(null);
   };
 
   const menuButtonHandler = () => {

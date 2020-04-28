@@ -14,7 +14,6 @@ export const useMainScreenModel = () => {
   ] = useState(false);
   const [removeItemName, setRemoveItemName] = useState('');
   const [removeItemId, setRemoveItemId] = useState(-1);
-  const [listItemRow, setListItemRow] = useState(null);
 
   const currentId = useSelector(state => state.authentication.currentUser.id);
   const currentEmail = useSelector(
@@ -101,7 +100,6 @@ export const useMainScreenModel = () => {
       removeConfirmationDialogVisible,
       removeItemName,
       removeItemId,
-      listItemRow,
       shoppingLists,
       sectionsShoppingLists,
       sectionFreeShoppingList,
@@ -111,7 +109,6 @@ export const useMainScreenModel = () => {
       setRemoveConfirmationDialogVisible,
       setRemoveItemName,
       setRemoveItemId,
-      setListItemRow,
     },
     navigation,
     dispatch,

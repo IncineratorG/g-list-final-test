@@ -2,17 +2,8 @@
  * */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  Image,
-  TouchableHighlight,
-  Text,
-} from 'react-native';
-import {SwipeListView} from 'react-native-swipe-list-view';
+import {View, StyleSheet, FlatList} from 'react-native';
 import ListOfShoppingListsItemsFactory from './list-of-shopping-lists-item/ListOfShoppingListsItemsFactory';
-import {icons} from '../../assets/icons';
 
 export const ListOfShoppingLists = ({
   list,
@@ -20,11 +11,11 @@ export const ListOfShoppingLists = ({
   onItemPress,
   onRemovePress,
 }) => {
-  const removeOptionHandler = (listItem, row) => {
-    if (onRemovePress) {
-      onRemovePress(listItem, row);
-    }
-  };
+  // const removeOptionHandler = (listItem, row) => {
+  //   if (onRemovePress) {
+  //     onRemovePress(listItem, row);
+  //   }
+  // };
 
   return (
     <View style={styles.mainContainer}>
@@ -33,7 +24,11 @@ export const ListOfShoppingLists = ({
         data={list}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
-          return ListOfShoppingListsItemsFactory.get(item, onItemPress);
+          return ListOfShoppingListsItemsFactory.get({
+            listItem: item,
+            onItemPress,
+            onRemovePress,
+          });
         }}
         keyExtractor={item => item.id.toString()}
       />
