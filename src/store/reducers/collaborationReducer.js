@@ -1,108 +1,84 @@
 import {
-  CHECK_USER_EXISTENCE_BEGIN,
-  CHECK_USER_EXISTENCE_ERROR,
-  CHECK_USER_EXISTENCE_FINISH,
-  CLEAR_POTENTIAL_COLLABORATOR_DATA,
-  SEND_TEXT_MESSAGE_BEGIN,
-  SEND_TEXT_MESSAGE_ERROR,
-  SEND_TEXT_MESSAGE_FINISH,
+  ADD_COLLABORATOR,
+  CLEAR_SELECTED_COLLABORATORS,
+  LOAD_COLLABORATORS,
+  SELECT_COLLABORATOR,
+  SET_COLLABORATOR_EXIST_STATUS,
+  UNSELECT_COLLABORATOR,
 } from '../types/collaborationTypes';
+import {Collaboration} from '../../services/collaboration/Collaboration';
 
 const initialState = {
-  potentialCollaborator: {
-    phone: '',
-    email: '',
-    checking: false,
-    exist: false,
-    error: {
-      hasError: false,
-      description: '',
-    },
-  },
+  localCollaborators: [],
+  selectedCollaboratorsIds: [],
 };
 
 export const collaborationReducer = (state = initialState, action) => {
   switch (action.type) {
-    case CLEAR_POTENTIAL_COLLABORATOR_DATA: {
+    case ADD_COLLABORATOR: {
+      const collaborators = state.localCollaborators.slice(0);
+      collaborators.push(action.payload);
+
       return {
         ...state,
-        potentialCollaborator: {
-          phone: '',
-          email: '',
-          checking: false,
-          exist: false,
-          error: {
-            hasError: false,
-            description: '',
-          },
-        },
+        localCollaborators: collaborators,
       };
     }
 
-    case CHECK_USER_EXISTENCE_BEGIN: {
+    case SET_COLLABORATOR_EXIST_STATUS: {
+      const collaboratorId = action.payload.id;
+      const status = action.payload.status;
+
+      const collaborators = state.localCollaborators.map(collaborator => {
+        if (collaborator.id === collaboratorId) {
+          collaborator.status = status;
+          if (status === Collaboration.collaboratorStatus.NOT_EXIST) {
+            collaborator.id = collaborator.id + Date.now().toString();
+          }
+        }
+
+        return collaborator;
+      });
+
       return {
         ...state,
-        potentialCollaborator: {
-          ...state.potentialCollaborator,
-          phone: '',
-          email: '',
-          checking: true,
-          exist: false,
-          error: {
-            ...state.potentialCollaborator.error,
-            hasError: false,
-            description: '',
-          },
-        },
+        localCollaborators: collaborators,
       };
     }
 
-    case CHECK_USER_EXISTENCE_FINISH: {
+    case LOAD_COLLABORATORS: {
       return {
         ...state,
-        potentialCollaborator: {
-          phone: action.payload.phone,
-          email: action.payload.email,
-          checking: false,
-          exist: action.payload.exist,
-          error: {
-            ...state.potentialCollaborator.error,
-            hasError: false,
-            description: '',
-          },
-        },
+        localCollaborators: action.payload,
       };
     }
 
-    case CHECK_USER_EXISTENCE_ERROR: {
+    case CLEAR_SELECTED_COLLABORATORS: {
       return {
         ...state,
-        potentialCollaborator: {
-          phone: '',
-          email: '',
-          checking: false,
-          exist: false,
-          error: {
-            ...state.potentialCollaborator.error,
-            hasError: true,
-            description: action.payload.description
-              ? action.payload.description
-              : '',
-          },
-        },
+        selectedCollaboratorsIds: [],
       };
     }
 
-    case SEND_TEXT_MESSAGE_BEGIN: {
-      return {...state};
+    case SELECT_COLLABORATOR: {
+      const selectedCollaborators = state.selectedCollaboratorsIds.slice(0);
+      selectedCollaborators.push(action.payload);
+
+      return {
+        ...state,
+        selectedCollaboratorsIds: selectedCollaborators,
+      };
     }
 
-    case SEND_TEXT_MESSAGE_FINISH: {
-      return {...state};
-    }
+    case UNSELECT_COLLABORATOR: {
+      const selectedCollaborators = state.selectedCollaboratorsIds.filter(
+        collaboratorId => collaboratorId !== action.payload,
+      );
 
-    case SEND_TEXT_MESSAGE_ERROR: {
-      return {...state};
+      return {
+        ...state,
+        selectedCollaboratorsIds: selectedCollaborators,
+      };
     }
 
     default: {

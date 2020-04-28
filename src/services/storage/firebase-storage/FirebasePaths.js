@@ -410,5 +410,7 @@ FirebasePaths.folderNames = {
   UPDATE_TIMESTAMP: 'updateTimestamp',
   CLASSES: 'classes',
   UNITS: 'units',
+  SHOPPING_LIST_SENDER: 'sender',
+  SHOPPING_LIST_RECEIVERS: 'receivers',
 };
 FirebasePaths.d = '/';

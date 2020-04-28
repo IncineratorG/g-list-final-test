@@ -28,8 +28,8 @@ export const mainViewStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    marginLeft: 8,
-    marginRight: 8,
+    // marginLeft: 8,
+    // marginRight: 8,
   },
   bottomGradient: {
     bottom: 0,

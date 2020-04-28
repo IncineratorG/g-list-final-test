@@ -5,7 +5,13 @@ export class IdManager {
     }
 
     const email = signInInfo.email;
-    return email.replace(atSign, atReplacer).replace(dotSign, dotReplacer);
+    return email
+      .replace(atSign, atReplacer)
+      .replace(dotSignGlobal, dotReplacer)
+      .replace(shiftSignGlobal, shiftReplacer)
+      .replace(dollarSignGlobal, dollarReplacer)
+      .replace(openBracketSignGlobal, openBracketReplacer)
+      .replace(closeBracketSignGlobal, closeBracketReplacer);
   }
 
   static getLocalId(signInInfo) {
@@ -18,6 +24,29 @@ export class IdManager {
 }
 
 const atSign = '@';
+const atReplacer = '@';
+
 const dotSign = '.';
-const atReplacer = ',';
-const dotReplacer = ',,';
+const dotSignGlobal = /\./g;
+const dotReplacer = '%';
+const dotReplacerGlobal = /%/g;
+
+const shiftSign = '#';
+const shiftSignGlobal = /#/g;
+const shiftReplacer = '*';
+const shiftReplacerGlobal = /\*/g;
+
+const dollarSign = '$';
+const dollarSignGlobal = /\$/g;
+const dollarReplacer = '^';
+const dollarReplacerGlobal = /\^/g;
+
+const openBracketSign = '[';
+const openBracketSignGlobal = /\[/g;
+const openBracketReplacer = '+';
+const openBracketReplacerGlobal = /\+/g;
+
+const closeBracketSign = ']';
+const closeBracketSignGlobal = /]/g;
+const closeBracketReplacer = '-';
+const closeBracketReplacerGlobal = /-/g;

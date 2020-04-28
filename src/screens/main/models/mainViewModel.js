@@ -14,9 +14,11 @@ export const useMainScreenModel = () => {
   ] = useState(false);
   const [removeItemName, setRemoveItemName] = useState('');
   const [removeItemId, setRemoveItemId] = useState(-1);
-  const [listItemRow, setListItemRow] = useState(null);
 
   const currentId = useSelector(state => state.authentication.currentUser.id);
+  const currentEmail = useSelector(
+    state => state.authentication.currentUser.email,
+  );
   const shoppingListsLoading = useSelector(
     state => state.shoppingList.allShoppingLists.loading,
   );
@@ -64,6 +66,31 @@ export const useMainScreenModel = () => {
     });
   }
 
+  // ===
+  const sectionFreeShoppingList = [];
+  sectionsShoppingLists.forEach(section =>
+    sectionFreeShoppingList.push(...section.data),
+  );
+
+  sectionFreeShoppingList.forEach(list => {
+    const {creator, receivers} = list;
+
+    let listCollaborators = [];
+    if (creator && receivers) {
+      if (creator !== currentEmail) {
+        listCollaborators.push(creator);
+      }
+      receivers.forEach(receiver => {
+        if (receiver !== currentEmail) {
+          listCollaborators.push(receiver);
+        }
+      });
+    }
+
+    list.collaborators = listCollaborators;
+  });
+  // ===
+
   useEffect(() => {
     dispatch(subscribeToListOfShoppingLists());
   }, [dispatch]);
@@ -73,16 +100,15 @@ export const useMainScreenModel = () => {
       removeConfirmationDialogVisible,
       removeItemName,
       removeItemId,
-      listItemRow,
       shoppingLists,
       sectionsShoppingLists,
+      sectionFreeShoppingList,
       shoppingListsLoading,
     },
     setters: {
       setRemoveConfirmationDialogVisible,
       setRemoveItemName,
       setRemoveItemId,
-      setListItemRow,
     },
     navigation,
     dispatch,

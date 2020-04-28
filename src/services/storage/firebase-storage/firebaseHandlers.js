@@ -26,10 +26,19 @@ export const sharedListChangedHandler = async snapshot => {
     return;
   }
 
-  const shoppingListCard = FirebaseConverter.cardFromFirebase(
-    snapshot.val().id,
-    snapshot,
+  const receiversPath = database().ref(
+    FirebasePaths.getPath({
+      pathType: FirebasePaths.paths.SHOPPING_LIST_RECEIVERS,
+      shoppingListId: snapshot.val().id,
+    }),
   );
+  const receiversSnapshot = await receiversPath.once('value');
+
+  const shoppingListCard = FirebaseConverter.cardFromFirebase({
+    shoppingListId: snapshot.val().id,
+    shoppingListCardSnapshot: snapshot,
+    receiversSnapshot,
+  });
 
   const productsListSnapshot = snapshot.child('productsList');
 
@@ -46,6 +55,7 @@ export const sharedListChangedHandler = async snapshot => {
     createTimestamp: shoppingListCard.createTimestamp,
     updateTimestamp: shoppingListCard.updateTimestamp,
     creator: shoppingListCard.creator,
+    receivers: shoppingListCard.receivers,
     shared: true,
     productsList,
   };
@@ -114,15 +124,23 @@ const processSharedPathSnapshot = async ({
           shoppingListId: id,
         }),
       );
+      const receiversPath = database().ref(
+        FirebasePaths.getPath({
+          pathType: FirebasePaths.paths.SHOPPING_LIST_RECEIVERS,
+          shoppingListId: id,
+        }),
+      );
 
       const sharedShoppingListCardSnapshot = await sharedShoppingListCardPath.once(
         'value',
       );
+      const receiversSnapshot = await receiversPath.once('value');
 
-      const sharedListCard = FirebaseConverter.cardFromFirebase(
-        id,
-        sharedShoppingListCardSnapshot,
-      );
+      const sharedListCard = FirebaseConverter.cardFromFirebase({
+        shoppingListId: id,
+        shoppingListCardSnapshot: sharedShoppingListCardSnapshot,
+        receiversSnapshot,
+      });
 
       return {sharedListCard, touched, updateTimestamp};
     }),
@@ -161,19 +179,6 @@ const processSharedPathSnapshot = async ({
       });
     }
   });
-  // newSharedListsCardsData.forEach(sharedListCardData => {
-  //   if (sharedListCardData) {
-  //     const {sharedListCard, touched, updateTimestamp} = sharedListCardData;
-  //     sharedListCard.productsList = [];
-  //
-  //     localSharedListMap.set(sharedListCard.id, {
-  //       shoppingListCard: sharedListCard,
-  //       shoppingList: sharedListCard,
-  //       touched,
-  //       updateTimestamp,
-  //     });
-  //   }
-  // });
 
   FirebaseStorage.notifier.notify({
     event: changeEvent,

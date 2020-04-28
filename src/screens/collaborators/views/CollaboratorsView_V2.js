@@ -4,25 +4,38 @@ import {ContactsList} from '../../../components/collaborators/ContactsList';
 import LinearGradient from 'react-native-linear-gradient';
 import {AddButton} from '../../../components/common/AddButton';
 import CollaboratorInputArea from '../../../components/collaborators/collaborator-input-area/CollaboratorInputArea';
+import {EmptyCollaboratorsScreen} from '../../../components/collaborators/EmptyCollaboratorsScreen';
 
 const CollaboratorsView_V2 = ({styles, model, controller}) => {
-  const {collaboratorInputAreaVisible} = model;
+  const {collaboratorInputAreaVisible, contacts} = model;
 
   const {
     addCollaboratorButtonHandler,
     shadedBackgroundPressHandler,
     collaboratorInputAreaHideHandler,
     collaboratorInputSubmitEmailHandler,
+    selectContactButtonPressHandler,
   } = controller;
 
   const contactsListComponent = (
     <View style={styles.contactsListContainer}>
-      <ContactsList />
+      <ContactsList
+        list={contacts}
+        onSelectContactPress={selectContactButtonPressHandler}
+      />
+    </View>
+  );
+
+  const emptyCollaboratorsScreenComponent = (
+    <View style={styles.emptyCollaboratorsScreenContent}>
+      <EmptyCollaboratorsScreen />
     </View>
   );
 
   const shadedBackgroundComponent = collaboratorInputAreaVisible ? (
-    <TouchableWithoutFeedback onPress={shadedBackgroundPressHandler}>
+    <TouchableWithoutFeedback
+      onPress={shadedBackgroundPressHandler}
+      behavior={'position'}>
       <View style={styles.shadedBackground} />
     </TouchableWithoutFeedback>
   ) : null;
@@ -54,9 +67,14 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
     />
   ) : null;
 
+  const collaboratorsScreenContent =
+    contacts.length > 0
+      ? contactsListComponent
+      : emptyCollaboratorsScreenComponent;
+
   return (
     <View style={styles.mainContainer}>
-      {contactsListComponent}
+      {collaboratorsScreenContent}
       <View style={styles.addContactButtonContainer}>
         {addContactButtonComponent}
       </View>

@@ -37,8 +37,8 @@ export class AuthenticationStorage {
     });
   }
 
-  static isInitialized() {
-    return AuthenticationStorageOperations.isInitialized(db);
+  static async isInitialized() {
+    return await AuthenticationStorageOperations.isInitialized(db);
   }
 
   static async getLocalSignInInfo() {

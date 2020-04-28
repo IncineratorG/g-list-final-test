@@ -1,6 +1,8 @@
 import {
-  clearPotentialCollaboratorData,
+  addCollaborator,
+  selectCollaborator,
   shareShoppingList,
+  unselectCollaborator,
 } from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenController = model => {
@@ -15,7 +17,15 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const collaboratorInputSubmitEmailHandler = email => {
-    console.log('EMAIL: ' + email);
+    // const currentMillis = Date.now();
+    // const contact = {id: currentMillis, email};
+    //
+    // const contacts = model.data.contacts;
+    // contacts.push(contact);
+    //
+    // model.setters.setContacts(contacts);
+
+    model.dispatch(addCollaborator({email}));
   };
 
   const shadedBackgroundPressHandler = () => {
@@ -24,9 +34,31 @@ export const useCollaboratorsScreenController = model => {
     );
   };
 
-  const emailInputHandler = text => {
-    model.dispatch(clearPotentialCollaboratorData());
-    model.setters.setEnteredEmail(text);
+  const selectContactButtonPressHandler = ({id, email, status}) => {
+    // console.log('HERE: ' + id + ' - ' + email + ' - ' + status);
+
+    const shoppingListId = model.data.currentShoppingListId;
+    const sender = model.data.currentEmail;
+    const receiver = email;
+
+    model.dispatch(shareShoppingList({receiver, sender, shoppingListId}));
+
+    // const selectedContactData = model.data.contacts.filter(
+    //   contact => contact.id === id,
+    // );
+    // if (selectedContactData.length <= 0) {
+    //   console.log(
+    //     'collaboratorsViewController->selectContactButtonPressHandler(): BAD_SELECTED_DATA_LENGTH',
+    //   );
+    //   return;
+    // }
+    //
+    // const contact = selectedContactData[0];
+    // if (contact.selected) {
+    //   model.dispatch(unselectCollaborator({id}));
+    // } else {
+    //   model.dispatch(selectCollaborator({id}));
+    // }
   };
 
   return {
@@ -34,7 +66,7 @@ export const useCollaboratorsScreenController = model => {
     collaboratorInputAreaHideHandler,
     collaboratorInputSubmitEmailHandler,
     shadedBackgroundPressHandler,
-    emailInputHandler,
+    selectContactButtonPressHandler,
   };
 };
 
