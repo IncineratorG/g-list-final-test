@@ -105,6 +105,64 @@ export class FirebaseCollaboration {
     }
   }
 
+  static async addSharedListCollaborator({shoppingListId, collaborator}) {
+    const data = {shoppingListId, collaborator};
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/addCollaborator',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status} = responseData;
+
+      console.log('addSharedListCollaborator()->RESPONSE_STATUS: ' + status);
+
+      return status;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  static async removeSharedListCollaborator({shoppingListId, collaborator}) {
+    const data = {shoppingListId, collaborator};
+    const serializedData = JSON.stringify(data);
+
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/removeCollaborator',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status} = responseData;
+
+      console.log('removeSharedListCollaborator()->RESPONSE_STATUS: ' + status);
+
+      return status;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
   static async removeSharedShoppingList({shoppingListId}) {
     const data = {shoppingListId};
     const serializedData = JSON.stringify(data);
@@ -241,7 +299,7 @@ export class FirebaseCollaboration {
 
       console.log('RESPONSE_STATUS: ' + status);
 
-      return 'SUCCESS';
+      return status;
     } catch (e) {
       throw new Error(e);
     }

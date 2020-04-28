@@ -1,16 +1,17 @@
 import {
   ADD_COLLABORATOR,
-  CLEAR_SELECTED_COLLABORATORS,
   LOAD_COLLABORATORS,
-  SELECT_COLLABORATOR,
+  SET_COLLABORATOR_ERROR,
   SET_COLLABORATOR_EXIST_STATUS,
-  UNSELECT_COLLABORATOR,
+  SET_COLLABORATOR_PENDING,
+  SET_COLLABORATOR_SELECTED,
+  SET_COLLABORATOR_UNSELECTED,
 } from '../types/collaborationTypes';
 import {Collaboration} from '../../services/collaboration/Collaboration';
 
 const initialState = {
   localCollaborators: [],
-  selectedCollaboratorsIds: [],
+  // selectedCollaboratorsIds: [],
 };
 
 export const collaborationReducer = (state = initialState, action) => {
@@ -53,31 +54,107 @@ export const collaborationReducer = (state = initialState, action) => {
       };
     }
 
-    case CLEAR_SELECTED_COLLABORATORS: {
+    // case CLEAR_SELECTED_COLLABORATORS: {
+    //   return {
+    //     ...state,
+    //     // selectedCollaboratorsIds: [],
+    //   };
+    // }
+
+    // case SELECT_COLLABORATOR: {
+    //   const selectedCollaborators = state.selectedCollaboratorsIds.slice(0);
+    //   selectedCollaborators.push(action.payload);
+    //
+    //   return {
+    //     ...state,
+    //     // selectedCollaboratorsIds: selectedCollaborators,
+    //   };
+    // }
+
+    // case UNSELECT_COLLABORATOR: {
+    //   const selectedCollaborators = state.selectedCollaboratorsIds.filter(
+    //     collaboratorId => collaboratorId !== action.payload,
+    //   );
+    //
+    //   return {
+    //     ...state,
+    //     // selectedCollaboratorsIds: selectedCollaborators,
+    //   };
+    // }
+
+    case SET_COLLABORATOR_PENDING: {
+      const collaboratorId = action.payload;
+
+      const collaborators = state.localCollaborators.map(collaborator => {
+        if (collaborator.id === collaboratorId) {
+          collaborator.pending = true;
+          collaborator.selected = false;
+          collaborator.error = false;
+        }
+
+        return collaborator;
+      });
+
       return {
         ...state,
-        selectedCollaboratorsIds: [],
+        localCollaborators: collaborators,
       };
     }
 
-    case SELECT_COLLABORATOR: {
-      const selectedCollaborators = state.selectedCollaboratorsIds.slice(0);
-      selectedCollaborators.push(action.payload);
+    case SET_COLLABORATOR_SELECTED: {
+      const collaboratorId = action.payload;
+
+      const collaborators = state.localCollaborators.map(collaborator => {
+        if (collaborator.id === collaboratorId) {
+          collaborator.pending = false;
+          collaborator.selected = true;
+          collaborator.error = false;
+        }
+
+        return collaborator;
+      });
 
       return {
         ...state,
-        selectedCollaboratorsIds: selectedCollaborators,
+        localCollaborators: collaborators,
       };
     }
 
-    case UNSELECT_COLLABORATOR: {
-      const selectedCollaborators = state.selectedCollaboratorsIds.filter(
-        collaboratorId => collaboratorId !== action.payload,
-      );
+    case SET_COLLABORATOR_UNSELECTED: {
+      const collaboratorId = action.payload;
+
+      const collaborators = state.localCollaborators.map(collaborator => {
+        if (collaborator.id === collaboratorId) {
+          collaborator.pending = false;
+          collaborator.selected = false;
+          collaborator.error = false;
+        }
+
+        return collaborator;
+      });
 
       return {
         ...state,
-        selectedCollaboratorsIds: selectedCollaborators,
+        localCollaborators: collaborators,
+      };
+    }
+
+    case SET_COLLABORATOR_ERROR: {
+      const collaboratorId = action.payload;
+
+      const collaborators = state.localCollaborators.map(collaborator => {
+        if (collaborator.id === collaboratorId) {
+          collaborator.pending = false;
+          collaborator.selected = false;
+          collaborator.error = true;
+        }
+
+        return collaborator;
+      });
+
+      return {
+        ...state,
+        localCollaborators: collaborators,
       };
     }
 

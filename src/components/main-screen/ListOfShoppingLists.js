@@ -11,12 +11,6 @@ export const ListOfShoppingLists = ({
   onItemPress,
   onRemovePress,
 }) => {
-  // const removeOptionHandler = (listItem, row) => {
-  //   if (onRemovePress) {
-  //     onRemovePress(listItem, row);
-  //   }
-  // };
-
   return (
     <View style={styles.mainContainer}>
       <FlatList

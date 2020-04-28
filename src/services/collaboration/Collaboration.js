@@ -107,12 +107,10 @@ export class Collaboration {
   }
 
   static async addCollaborator({email, status}) {
-    const newCollaborator = await CollaborationStorage.addCollaborator({
+    return await CollaborationStorage.addCollaborator({
       email,
       status,
     });
-
-    return newCollaborator;
   }
 
   static async removeCollaborator({id}) {
@@ -147,18 +145,44 @@ export class Collaboration {
     units,
     classes,
   }) {
-    try {
-      await FirebaseCollaboration.shareShoppingList({
-        receivers,
-        sender,
-        shoppingList,
-        shoppingListCard,
-        units,
-        classes,
-      });
-    } catch (e) {
-      throw new Error(e);
-    }
+    console.log('Collaboration.shareShoppingList()');
+    await this.testShareTimeout();
+    return true;
+
+    // try {
+    //   await FirebaseCollaboration.shareShoppingList({
+    //     receivers,
+    //     sender,
+    //     shoppingList,
+    //     shoppingListCard,
+    //     units,
+    //     classes,
+    //   });
+    // } catch (e) {
+    //   throw new Error(e);
+    // }
+  }
+
+  static async addSharedListCollaborator({shoppingListId, collaborator}) {
+    const result = await FirebaseCollaboration.addSharedListCollaborator({
+      shoppingListId,
+      collaborator,
+    });
+
+    return result === 'SUCCESS';
+  }
+
+  static async removeSharedListCollaborator({shoppingListId, collaborator}) {
+    const result = await FirebaseCollaboration.removeSharedListCollaborator({
+      shoppingListId,
+      collaborator,
+    });
+
+    return result === 'SUCCESS';
+  }
+
+  static testShareTimeout() {
+    return new Promise(resolve => setTimeout(resolve, 1000));
   }
 
   static async removeSharedShoppingList({shoppingListId}) {
@@ -207,13 +231,15 @@ export class Collaboration {
     totalItemsCount,
   }) {
     try {
-      await FirebaseCollaboration.addProduct({
+      const status = await FirebaseCollaboration.addProduct({
         editor,
         shoppingListId,
         product,
         completedItemsCount,
         totalItemsCount,
       });
+
+      return status === 'SUCCESS';
     } catch (e) {
       throw new Error(e);
     }

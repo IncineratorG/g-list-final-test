@@ -180,13 +180,19 @@ export const addProduct = ({
           product,
         } = firebaseUpdateData;
 
-        Collaboration.addProduct({
+        const successful = await Collaboration.addProduct({
           editor,
           shoppingListId,
           product,
           completedItemsCount,
           totalItemsCount,
         });
+
+        if (!successful) {
+          dispatch(
+            removeProduct({editor, shoppingListId, productId: product.id}),
+          );
+        }
       }
     } catch (e) {
       console.log('shoppingListActions->addProduct() ERROR: ' + e);
@@ -213,7 +219,7 @@ export const setProductStatus = ({
       if (listType === StorageIdResolver.listTypes.FIREBASE) {
         const {completedItemsCount, totalItemsCount} = firebaseUpdateData;
 
-        Collaboration.setProductStatus({
+        await Collaboration.setProductStatus({
           editor,
           shoppingListId,
           productId,
@@ -243,7 +249,7 @@ export const removeProduct = ({editor, shoppingListId, productId}) => {
       if (listType === StorageIdResolver.listTypes.FIREBASE) {
         const {completedItemsCount, totalItemsCount} = firebaseUpdateData;
 
-        Collaboration.removeProduct({
+        await Collaboration.removeProduct({
           editor,
           shoppingListId,
           productId,

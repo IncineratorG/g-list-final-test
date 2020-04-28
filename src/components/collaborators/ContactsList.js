@@ -1,12 +1,8 @@
 import React from 'react';
-import {View, StyleSheet, Text, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList} from 'react-native';
 import ContactListItemsFactory from './contact-list-item/ContactListItemsFactory';
 
 export const ContactsList = ({list, onSelectContactPress}) => {
-  // const onSelectButtonPressHandler = () => {
-  //   console.log('onSelectButtonPressHandler()');
-  // };
-
   return (
     <View style={styles.mainContainer}>
       <FlatList

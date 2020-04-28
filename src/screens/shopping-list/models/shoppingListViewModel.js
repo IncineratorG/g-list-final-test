@@ -32,6 +32,9 @@ export const useShoppingListScreenModel = () => {
   const productsList = useSelector(
     state => state.shoppingList.currentShoppingList.products,
   );
+  // const rejectedProductsList = useSelector(
+  //   state => state.shoppingList.currentShoppingList.rejectedProducts,
+  // );
   const listLoading = useSelector(
     state => state.shoppingList.currentShoppingList.loading,
   );
@@ -59,7 +62,11 @@ export const useShoppingListScreenModel = () => {
     return filteredClasses.length ? filteredClasses[0].name : '';
   };
 
-  const products = productsList
+  // ===
+  // =====
+  let products = [];
+  products = products.concat(productsList);
+  products = products
     .map(product => {
       return {
         id: product.id,
@@ -70,15 +77,39 @@ export const useShoppingListScreenModel = () => {
         note: product.note,
         category: getCategoryName(product.classId),
         completionStatus: product.completionStatus,
+        rejected: product.rejected ? true : false,
       };
     })
     .sort((p1, p2) => p1.id < p2.id);
-  if (products.length > 0) {
-    products.push({
-      id: 'MAX_VALUE',
-      extra: true,
-    });
-  }
+  // =====
+  // ===
+
+  // const products = productsList
+  //   .map(product => {
+  //     return {
+  //       id: product.id,
+  //       listId: product.parentId,
+  //       name: product.name,
+  //       quantity: product.quantity,
+  //       unit: getUnitName(product.unitId),
+  //       note: product.note,
+  //       category: getCategoryName(product.classId),
+  //       completionStatus: product.completionStatus,
+  //     };
+  //   })
+  //   .sort((p1, p2) => p1.id < p2.id);
+  // if (products.length > 0) {
+  //   products.push({
+  //     id: 'MAX_VALUE',
+  //     extra: true,
+  //   });
+  // }
+  //
+  // // ===
+  // rejectedProductsList.forEach(product =>
+  //   console.log(product.id + ' - ' + product.rejected),
+  // );
+  // // ===
 
   useEffect(() => {
     dispatch(loadUnits({shoppingListId}));
