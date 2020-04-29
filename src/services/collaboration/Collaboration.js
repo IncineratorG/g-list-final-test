@@ -3,23 +3,6 @@ import {StorageNotifier} from '../common-data/storage-notifier/StorageNotifier';
 import {CollaborationStorage} from './storage/CollaborationStorage';
 
 export class Collaboration {
-  // ===
-  // static async testShare({
-  //   receivers,
-  //   sender,
-  //   shoppingList,
-  //   shoppingListCard,
-  //   units,
-  //   classes,
-  // }) {
-  //   console.log('testShare()->START')
-  //
-  //   setTimeout(() => {
-  //     console.log('testShare()->COMPLETE: ' + sender + ' - ' + shoppingList.id);
-  //   }, 1000);
-  // }
-  // ===
-
   static async subscribe({entityIds, event, handler, once = false}) {
     const unsubscribe = once
       ? () => {}
@@ -145,9 +128,43 @@ export class Collaboration {
     units,
     classes,
   }) {
-    console.log('Collaboration.shareShoppingList()');
-    await this.testShareTimeout();
-    return true;
+    console.log('Collaboration.shareShoppingList(): ' + receivers[0]);
+
+    if (Collaboration.pendingIdsMap.has(shoppingList.id)) {
+      return await this.addSharedListCollaboratorPended({
+        shoppingList,
+        collaborator: receivers[0],
+      });
+    }
+
+    Collaboration.pendingIdsMap.clear();
+    Collaboration.pendingIdsMap.set(shoppingList.id, undefined);
+
+    const {
+      status,
+      sharedListKey,
+    } = await FirebaseCollaboration.shareShoppingList({
+      receivers,
+      sender,
+      shoppingList,
+      shoppingListCard,
+      units,
+      classes,
+    });
+
+    Collaboration.pendingIdsMap.set(shoppingList.id, {status, sharedListKey});
+
+    return {
+      success: status === FirebaseCollaboration.status.SUCCESS,
+      action: Collaboration.actions.SHARE_SHOPPING_LIST,
+    };
+
+    // ===============================
+    // ===============================
+
+    // console.log('Collaboration.shareShoppingList()');
+    // await this.testShareTimeout();
+    // return true;
 
     // try {
     //   await FirebaseCollaboration.shareShoppingList({
@@ -164,12 +181,20 @@ export class Collaboration {
   }
 
   static async addSharedListCollaborator({shoppingListId, collaborator}) {
-    const result = await FirebaseCollaboration.addSharedListCollaborator({
-      shoppingListId,
-      collaborator,
-    });
+    console.log(
+      'addSharedListCollaborator(): ' + shoppingListId + ' - ' + collaborator,
+    );
 
-    return result === 'SUCCESS';
+    await this.testShareTimeout();
+
+    return true;
+
+    // const result = await FirebaseCollaboration.addSharedListCollaborator({
+    //   shoppingListId,
+    //   collaborator,
+    // });
+    //
+    // return result === 'SUCCESS';
   }
 
   static async removeSharedListCollaborator({shoppingListId, collaborator}) {
@@ -182,7 +207,14 @@ export class Collaboration {
   }
 
   static testShareTimeout() {
-    return new Promise(resolve => setTimeout(resolve, 1000));
+    return new Promise(resolve =>
+      setTimeout(() => {
+        const id = Date.now();
+        const result = 'SUCCESS';
+
+        resolve({id, result});
+      }, 2000),
+    );
   }
 
   static async removeSharedShoppingList({shoppingListId}) {
@@ -264,6 +296,49 @@ export class Collaboration {
       throw new Error(e);
     }
   }
+
+  static wait(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+  }
+
+  static async addSharedListCollaboratorPended({shoppingList, collaborator}) {
+    const addSharedListCollaboratorPended = async sharedListData => {
+      let result = false;
+      const {status, sharedListKey} = sharedListData;
+      if (status === FirebaseCollaboration.status.SUCCESS) {
+        result = await this.addSharedListCollaborator({
+          shoppingListId: sharedListKey,
+          collaborator,
+        });
+      }
+      return {
+        success: result,
+        action: Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR,
+      };
+    };
+
+    let sharedListData = Collaboration.pendingIdsMap.get(shoppingList.id);
+    if (sharedListData) {
+      return await addSharedListCollaboratorPended(sharedListData);
+    }
+
+    let counter = 1000;
+    while (counter > 0) {
+      await this.wait(20);
+
+      sharedListData = Collaboration.pendingIdsMap.get(shoppingList.id);
+      if (sharedListData) {
+        return await addSharedListCollaboratorPended(sharedListData);
+      }
+
+      --counter;
+    }
+
+    return {
+      success: false,
+      action: Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR,
+    };
+  }
 }
 
 Collaboration.collaboratorStatus = {
@@ -276,8 +351,13 @@ Collaboration.events = {
   COLLABORATOR_REMOVED: 'COLLABORATOR_REMOVED',
   COLLABORATOR_STATUS_CHANGED: 'COLLABORATOR_STATUS_CHANGED',
 };
+Collaboration.actions = {
+  SHARE_SHOPPING_LIST: 'SHARE_SHOPPING_LIST',
+  ADD_SHARED_LIST_COLLABORATOR: 'ADD_SHARED_LIST_COLLABORATOR',
+};
 Collaboration.notifier = new StorageNotifier({});
 Collaboration.localSubscriptions = [];
+Collaboration.pendingIdsMap = new Map();
 
 // const usedUnits = [];
 // const usedClasses = [];

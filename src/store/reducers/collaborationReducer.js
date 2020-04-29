@@ -109,6 +109,8 @@ export const collaborationReducer = (state = initialState, action) => {
           collaborator.pending = false;
           collaborator.selected = true;
           collaborator.error = false;
+          collaborator.forceSelected = true;
+          collaborator.forceUnselected = false;
         }
 
         return collaborator;
@@ -128,6 +130,8 @@ export const collaborationReducer = (state = initialState, action) => {
           collaborator.pending = false;
           collaborator.selected = false;
           collaborator.error = false;
+          collaborator.forceSelected = false;
+          collaborator.forceUnselected = true;
         }
 
         return collaborator;
@@ -147,6 +151,8 @@ export const collaborationReducer = (state = initialState, action) => {
           collaborator.pending = false;
           collaborator.selected = false;
           collaborator.error = true;
+          collaborator.forceSelected = false;
+          collaborator.forceUnselected = false;
         }
 
         return collaborator;

@@ -6,7 +6,10 @@ import {
   SET_COLLABORATOR_EXIST_STATUS,
   SET_COLLABORATOR_PENDING,
   SET_COLLABORATOR_SELECTED,
+  SET_COLLABORATOR_UNSELECTED,
 } from '../types/collaborationTypes';
+import {Storage} from '../../services/storage/Storage';
+import {FirebaseCollaboration} from '../../services/collaboration/firabase/FirebaseCollaboration';
 
 export const loadCollaborators = () => {
   return async dispatch => {
@@ -61,57 +64,27 @@ export const removeCollaborator = ({id}) => {
   };
 };
 
-// export const selectCollaborator = ({id}) => {
-//   return async dispatch => {
-//     dispatch({type: SELECT_COLLABORATOR, payload: id});
-//   };
-// };
-//
-// export const unselectCollaborator = ({id}) => {
-//   return async dispatch => {
-//     dispatch({type: UNSELECT_COLLABORATOR, payload: id});
-//   };
-// };
-
-// export const clearSelectedCollaborators = () => {
-//   return async dispatch => {
-//     dispatch({type: CLEAR_SELECTED_COLLABORATORS});
-//   };
-// };
-
 export const shareShoppingListWithUser = ({
   sender,
   collaborator,
   shoppingListId,
 }) => {
   return async (dispatch, getState) => {
-    console.log(
-      'shareShoppingListWithUser(): ' +
-        sender +
-        ' - ' +
-        collaborator.email +
-        ' - ' +
-        shoppingListId,
-    );
+    console.log('shareShoppingListWithUser(): ');
 
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
 
-    let result = false;
-
     const {receivers} = getState().shoppingList.currentShoppingList;
-    if (receivers.length > 0) {
-      result = await Collaboration.addSharedListCollaborator({
+
+    const listShared = receivers.length > 0;
+    if (listShared) {
+      await addSharedListCollaborator({
+        collaborator,
         shoppingListId,
-        collaborator: collaborator.email,
+        dispatch,
       });
     } else {
-      result = await Collaboration.shareShoppingList({});
-    }
-
-    if (result) {
-      dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
-    } else {
-      dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+      await shareShoppingList({collaborator, sender, shoppingListId, dispatch});
     }
   };
 };
@@ -122,15 +95,6 @@ export const cancelShareShoppingListWithUser = ({
   shoppingListId,
 }) => {
   return async (dispatch, getState) => {
-    console.log(
-      'cancelShareShoppingListWithUser(): ' +
-        sender +
-        ' - ' +
-        collaborator.email +
-        ' - ' +
-        shoppingListId,
-    );
-
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
 
     const {receivers} = getState().shoppingList.currentShoppingList;
@@ -140,59 +104,136 @@ export const cancelShareShoppingListWithUser = ({
     });
 
     if (result) {
-      dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+      dispatch({type: SET_COLLABORATOR_UNSELECTED, payload: collaborator.id});
     } else {
       dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
     }
   };
 };
 
-export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
-  return async dispatch => {
-    // ===
-    console.log(
-      'shareShoppingList(): ' +
-        receiver +
-        ' - ' +
-        sender +
-        ' - ' +
-        shoppingListId,
-    );
-    // ===
+const shareShoppingList = async ({
+  collaborator,
+  sender,
+  shoppingListId,
+  dispatch,
+}) => {
+  const shoppingListData = await Storage.subscribe({
+    shoppingListId,
+    event: Storage.events.SHOPPING_LIST_CHANGED,
+    once: true,
+  });
 
-    // const shoppingListData = await Storage.subscribe({
-    //   shoppingListId,
-    //   event: Storage.events.SHOPPING_LIST_CHANGED,
-    //   once: true,
-    // });
-    //
-    // const shoppingList = shoppingListData.data;
-    // shoppingList.creator = sender;
-    // const units = await Storage.getUnits({shoppingListId});
-    // const classes = await Storage.getClasses({shoppingListId});
-    //
-    // const receivers = [];
-    // receivers.push(receiver);
-    //
-    // const shoppingListCard = {
-    //   name: shoppingList.name,
-    //   totalItemsCount: shoppingList.totalItemsCount,
-    //   completedItemsCount: shoppingList.completedItemsCount,
-    //   createTimestamp: shoppingList.createTimestamp,
-    //   updateTimestamp: shoppingList.updateTimestamp,
-    //   creator: sender,
-    // };
-    //
-    // await Collaboration.shareShoppingList({
-    //   receivers: receivers,
-    //   sender: sender,
-    //   shoppingList,
-    //   shoppingListCard,
-    //   units,
-    //   classes,
-    // });
+  const shoppingList = shoppingListData.data;
+  shoppingList.creator = sender;
+  const units = await Storage.getUnits({shoppingListId});
+  const classes = await Storage.getClasses({shoppingListId});
+
+  const receivers = [];
+  receivers.push(collaborator.email);
+
+  const shoppingListCard = {
+    name: shoppingList.name,
+    totalItemsCount: shoppingList.totalItemsCount,
+    completedItemsCount: shoppingList.completedItemsCount,
+    createTimestamp: shoppingList.createTimestamp,
+    updateTimestamp: shoppingList.updateTimestamp,
+    creator: sender,
   };
+
+  const result = await Collaboration.shareShoppingList({
+    receivers: receivers,
+    sender: sender,
+    shoppingList,
+    shoppingListCard,
+    units,
+    classes,
+  });
+
+  if (result.action === Collaboration.actions.SHARE_SHOPPING_LIST) {
+    console.log('ACTION_WAS: SHARE_SHOPPING_LIST');
+
+    if (result.success) {
+      dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+    } else {
+      dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+    }
+  } else if (
+    result.action === Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR
+  ) {
+    console.log('ACTION_WAS: ADD_SHARED_LIST_COLLABORATOR');
+
+    if (result.success) {
+      dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+    } else {
+      dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+    }
+  }
 };
+
+const addSharedListCollaborator = async ({
+  collaborator,
+  shoppingListId,
+  dispatch,
+}) => {
+  let result = {};
+  result.success = await Collaboration.addSharedListCollaborator({
+    shoppingListId,
+    collaborator: collaborator.email,
+  });
+
+  if (result.success) {
+    dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+  } else {
+    dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+  }
+};
+
+// export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
+//   return async dispatch => {
+//     // ===
+//     console.log(
+//       'shareShoppingList(): ' +
+//         receiver +
+//         ' - ' +
+//         sender +
+//         ' - ' +
+//         shoppingListId,
+//     );
+//     // ===
+//
+//     // const shoppingListData = await Storage.subscribe({
+//     //   shoppingListId,
+//     //   event: Storage.events.SHOPPING_LIST_CHANGED,
+//     //   once: true,
+//     // });
+//     //
+//     // const shoppingList = shoppingListData.data;
+//     // shoppingList.creator = sender;
+//     // const units = await Storage.getUnits({shoppingListId});
+//     // const classes = await Storage.getClasses({shoppingListId});
+//     //
+//     // const receivers = [];
+//     // receivers.push(receiver);
+//     //
+//     // const shoppingListCard = {
+//     //   name: shoppingList.name,
+//     //   totalItemsCount: shoppingList.totalItemsCount,
+//     //   completedItemsCount: shoppingList.completedItemsCount,
+//     //   createTimestamp: shoppingList.createTimestamp,
+//     //   updateTimestamp: shoppingList.updateTimestamp,
+//     //   creator: sender,
+//     // };
+//     //
+//     // await Collaboration.shareShoppingList({
+//     //   receivers: receivers,
+//     //   sender: sender,
+//     //   shoppingList,
+//     //   shoppingListCard,
+//     //   units,
+//     //   classes,
+//     // });
+//   };
+// };
 
 // export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
 //   return async dispatch => {

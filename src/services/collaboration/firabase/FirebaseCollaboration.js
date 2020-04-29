@@ -59,6 +59,19 @@ export class FirebaseCollaboration {
     }
   }
 
+  // ===
+  // =====
+  static testShareTimeout() {
+    return new Promise(resolve =>
+      setTimeout(() => {
+        const sharedListKey = Date.now();
+        const status = FirebaseCollaboration.status.SUCCESS;
+
+        resolve({sharedListKey, status});
+      }, 2000),
+    );
+  }
+
   static async shareShoppingList({
     receivers,
     sender,
@@ -67,43 +80,60 @@ export class FirebaseCollaboration {
     units,
     classes,
   }) {
-    console.log('HERE_HERE_HERE');
+    console.log('FirebaseCollaboration.shareShoppingList()');
 
-    const data = {
-      receivers,
-      sender,
-      shoppingList,
-      shoppingListCard: shoppingListCard,
-      units,
-      classes,
-    };
-    const serializedData = JSON.stringify(data);
+    const {status, sharedListKey} = await this.testShareTimeout();
 
-    try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/shareShoppingList',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status, sharedListKey} = responseData;
-
-      console.log('RESPONSE_STATUS: ' + status);
-      console.log('RESPONSE_KEY: ' + sharedListKey);
-
-      return 'SUCCESS';
-    } catch (e) {
-      throw new Error(e);
-    }
+    return {status, sharedListKey};
   }
+  // =====
+  // ===
+
+  // static async shareShoppingList({
+  //   receivers,
+  //   sender,
+  //   shoppingList,
+  //   shoppingListCard,
+  //   units,
+  //   classes,
+  // }) {
+  //   console.log('HERE_HERE_HERE');
+  //
+  //   const data = {
+  //     receivers,
+  //     sender,
+  //     shoppingList,
+  //     shoppingListCard: shoppingListCard,
+  //     units,
+  //     classes,
+  //   };
+  //   const serializedData = JSON.stringify(data);
+  //
+  //   try {
+  //     const response = await fetch(
+  //       'https://us-central1-surveillance-136a9.cloudfunctions.net/shareShoppingList',
+  //       {
+  //         method: 'POST',
+  //         headers: {
+  //           Accept: 'application/json',
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: serializedData,
+  //       },
+  //     );
+  //
+  //     const responseData = await response.json();
+  //
+  //     const {status, sharedListKey} = responseData;
+  //
+  //     console.log('RESPONSE_STATUS: ' + status);
+  //     console.log('RESPONSE_KEY: ' + sharedListKey);
+  //
+  //     return 'SUCCESS';
+  //   } catch (e) {
+  //     throw new Error(e);
+  //   }
+  // }
 
   static async addSharedListCollaborator({shoppingListId, collaborator}) {
     const data = {shoppingListId, collaborator};
@@ -346,3 +376,8 @@ export class FirebaseCollaboration {
     }
   }
 }
+
+FirebaseCollaboration.status = {
+  SUCCESS: 'SUCCESS',
+  ERROR: 'ERROR',
+};

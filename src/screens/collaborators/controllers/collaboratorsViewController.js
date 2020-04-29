@@ -1,7 +1,6 @@
 import {
   addCollaborator,
   cancelShareShoppingListWithUser,
-  shareShoppingList,
   shareShoppingListWithUser,
 } from '../../../store/actions/collaborationActions';
 

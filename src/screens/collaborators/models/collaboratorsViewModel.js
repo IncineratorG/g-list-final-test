@@ -64,6 +64,13 @@ export const useCollaboratorsScreenModel = () => {
         contact.selected = false;
       }
 
+      if (contact.forceSelected) {
+        contact.selected = true;
+      }
+      if (contact.forceUnselected) {
+        contact.selected = false;
+      }
+
       return contact;
     });
 
