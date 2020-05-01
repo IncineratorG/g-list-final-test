@@ -1,6 +1,7 @@
 import {FirebaseCollaboration} from './firabase/FirebaseCollaboration';
 import {StorageNotifier} from '../common-data/storage-notifier/StorageNotifier';
 import {CollaborationStorage} from './storage/CollaborationStorage';
+import {addSharedListCollaboratorPended} from './helpers/collaborationHelper';
 
 export class Collaboration {
   static async subscribe({entityIds, event, handler, once = false}) {
@@ -131,14 +132,17 @@ export class Collaboration {
     console.log('Collaboration.shareShoppingList(): ' + receivers[0]);
 
     if (Collaboration.pendingIdsMap.has(shoppingList.id)) {
-      return await this.addSharedListCollaboratorPended({
+      return await addSharedListCollaboratorPended({
         shoppingList,
         collaborator: receivers[0],
+        collaborationService: this,
       });
     }
 
     Collaboration.pendingIdsMap.clear();
     Collaboration.pendingIdsMap.set(shoppingList.id, undefined);
+
+    Collaboration.pendedActionsCounter.clear();
 
     const {
       status,
@@ -157,44 +161,17 @@ export class Collaboration {
     return {
       success: status === FirebaseCollaboration.status.SUCCESS,
       action: Collaboration.actions.SHARE_SHOPPING_LIST,
+      sharedListId: sharedListKey,
     };
-
-    // ===============================
-    // ===============================
-
-    // console.log('Collaboration.shareShoppingList()');
-    // await this.testShareTimeout();
-    // return true;
-
-    // try {
-    //   await FirebaseCollaboration.shareShoppingList({
-    //     receivers,
-    //     sender,
-    //     shoppingList,
-    //     shoppingListCard,
-    //     units,
-    //     classes,
-    //   });
-    // } catch (e) {
-    //   throw new Error(e);
-    // }
   }
 
   static async addSharedListCollaborator({shoppingListId, collaborator}) {
-    console.log(
-      'addSharedListCollaborator(): ' + shoppingListId + ' - ' + collaborator,
-    );
+    const result = await FirebaseCollaboration.addSharedListCollaborator({
+      shoppingListId,
+      collaborator,
+    });
 
-    await this.testShareTimeout();
-
-    return true;
-
-    // const result = await FirebaseCollaboration.addSharedListCollaborator({
-    //   shoppingListId,
-    //   collaborator,
-    // });
-    //
-    // return result === 'SUCCESS';
+    return result === 'SUCCESS';
   }
 
   static async removeSharedListCollaborator({shoppingListId, collaborator}) {
@@ -296,49 +273,6 @@ export class Collaboration {
       throw new Error(e);
     }
   }
-
-  static wait(milliseconds) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
-  }
-
-  static async addSharedListCollaboratorPended({shoppingList, collaborator}) {
-    const addSharedListCollaboratorPended = async sharedListData => {
-      let result = false;
-      const {status, sharedListKey} = sharedListData;
-      if (status === FirebaseCollaboration.status.SUCCESS) {
-        result = await this.addSharedListCollaborator({
-          shoppingListId: sharedListKey,
-          collaborator,
-        });
-      }
-      return {
-        success: result,
-        action: Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR,
-      };
-    };
-
-    let sharedListData = Collaboration.pendingIdsMap.get(shoppingList.id);
-    if (sharedListData) {
-      return await addSharedListCollaboratorPended(sharedListData);
-    }
-
-    let counter = 1000;
-    while (counter > 0) {
-      await this.wait(20);
-
-      sharedListData = Collaboration.pendingIdsMap.get(shoppingList.id);
-      if (sharedListData) {
-        return await addSharedListCollaboratorPended(sharedListData);
-      }
-
-      --counter;
-    }
-
-    return {
-      success: false,
-      action: Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR,
-    };
-  }
 }
 
 Collaboration.collaboratorStatus = {
@@ -358,6 +292,7 @@ Collaboration.actions = {
 Collaboration.notifier = new StorageNotifier({});
 Collaboration.localSubscriptions = [];
 Collaboration.pendingIdsMap = new Map();
+Collaboration.pendedActionsCounter = new Map();
 
 // const usedUnits = [];
 // const usedClasses = [];

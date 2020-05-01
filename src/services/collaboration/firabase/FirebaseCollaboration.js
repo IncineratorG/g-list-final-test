@@ -82,9 +82,42 @@ export class FirebaseCollaboration {
   }) {
     console.log('FirebaseCollaboration.shareShoppingList()');
 
-    const {status, sharedListKey} = await this.testShareTimeout();
+    const data = {
+      receivers,
+      sender,
+      shoppingList,
+      shoppingListCard: shoppingListCard,
+      units,
+      classes,
+    };
+    const serializedData = JSON.stringify(data);
 
-    return {status, sharedListKey};
+    try {
+      const response = await fetch(
+        'https://us-central1-surveillance-136a9.cloudfunctions.net/shareShoppingList',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: serializedData,
+        },
+      );
+
+      const responseData = await response.json();
+
+      const {status, sharedListKey} = responseData;
+
+      console.log('RESPONSE_STATUS: ' + status);
+      console.log('RESPONSE_KEY: ' + sharedListKey);
+
+      return {status, sharedListKey};
+    } catch (e) {
+      throw new Error(e);
+    }
+
+    // return {status, sharedListKey};
   }
   // =====
   // ===

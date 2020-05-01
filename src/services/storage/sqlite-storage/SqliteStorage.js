@@ -218,6 +218,7 @@ export class SqliteStorage {
     unitId,
     note,
     classId,
+    status,
   }) {
     const insertedId = await ShoppingListItemsTableOperations.addItem(
       db,
@@ -227,6 +228,7 @@ export class SqliteStorage {
       unitId,
       note,
       classId,
+      status,
     );
 
     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(

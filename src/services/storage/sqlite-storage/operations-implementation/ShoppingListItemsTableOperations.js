@@ -17,7 +17,7 @@ import {
 } from '../../data/productStatus';
 
 export class ShoppingListItemsTableOperations {
-  static addItem(db, shoppingListId, name, quantity, unitId, note, classId) {
+  static addItem(db, shoppingListId, name, quantity, unitId, note, classId, status) {
     const addProductStatement =
       'INSERT INTO ' +
       SHOPPING_LIST_ITEM_TABLE +
@@ -42,6 +42,7 @@ export class ShoppingListItemsTableOperations {
       ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
     const timestamp = Date.now();
+    const productStatus = status ? status : PRODUCT_NOT_COMPLETED;
 
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
@@ -54,7 +55,7 @@ export class ShoppingListItemsTableOperations {
             unitId,
             classId,
             note,
-            PRODUCT_NOT_COMPLETED,
+            productStatus,
             timestamp,
             timestamp,
           ],

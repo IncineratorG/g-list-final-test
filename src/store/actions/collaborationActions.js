@@ -9,7 +9,8 @@ import {
   SET_COLLABORATOR_UNSELECTED,
 } from '../types/collaborationTypes';
 import {Storage} from '../../services/storage/Storage';
-import {FirebaseCollaboration} from '../../services/collaboration/firabase/FirebaseCollaboration';
+import {subscribeToShoppingList} from './shoppingListActions';
+import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
 
 export const loadCollaborators = () => {
   return async dispatch => {
@@ -74,9 +75,12 @@ export const shareShoppingListWithUser = ({
 
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
 
+    const listType = StorageIdResolver.resolve(shoppingListId);
+
     const {receivers} = getState().shoppingList.currentShoppingList;
 
-    const listShared = receivers.length > 0;
+    const listShared =
+      listType === StorageIdResolver.listTypes.FIREBASE || receivers.length > 0;
     if (listShared) {
       await addSharedListCollaborator({
         collaborator,
@@ -98,12 +102,23 @@ export const cancelShareShoppingListWithUser = ({
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
 
     const {receivers} = getState().shoppingList.currentShoppingList;
+
     const result = await Collaboration.removeSharedListCollaborator({
       shoppingListId,
       collaborator: collaborator.email,
     });
 
     if (result) {
+      // ===
+      receivers.pop();
+      if (receivers.length <= 0) {
+        const copiedShoppingListId = await Storage.makeShoppingListLocalCopy({
+          shoppingListId,
+        });
+        console.log('COPIED_ID: ' + copiedShoppingListId);
+      }
+      // ===
+
       dispatch({type: SET_COLLABORATOR_UNSELECTED, payload: collaborator.id});
     } else {
       dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
@@ -123,8 +138,13 @@ const shareShoppingList = async ({
     once: true,
   });
 
+  const currentTimestamp = Date.now();
+
   const shoppingList = shoppingListData.data;
   shoppingList.creator = sender;
+  shoppingList.createTimestamp = currentTimestamp;
+  shoppingList.updateTimestamp = currentTimestamp;
+
   const units = await Storage.getUnits({shoppingListId});
   const classes = await Storage.getClasses({shoppingListId});
 
@@ -150,9 +170,12 @@ const shareShoppingList = async ({
   });
 
   if (result.action === Collaboration.actions.SHARE_SHOPPING_LIST) {
-    console.log('ACTION_WAS: SHARE_SHOPPING_LIST');
+    const sharedListId = result.sharedListId;
+    console.log('ACTION_WAS: SHARE_SHOPPING_LIST: ' + sharedListId);
 
     if (result.success) {
+      await dispatch(subscribeToShoppingList(sharedListId));
+      // dispatch(removeShoppingList(shoppingListId));
       dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
     } else {
       dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
@@ -175,6 +198,8 @@ const addSharedListCollaborator = async ({
   shoppingListId,
   dispatch,
 }) => {
+  console.log('addSharedListCollaborator_ACTION');
+
   let result = {};
   result.success = await Collaboration.addSharedListCollaborator({
     shoppingListId,

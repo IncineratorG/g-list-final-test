@@ -61,6 +61,34 @@ export class Storage {
     return {listType, canRemove};
   }
 
+  static async makeShoppingListLocalCopy({shoppingListId}) {
+    console.log('Storage.makeShoppingListLocalCopy(): ' + shoppingListId);
+
+    const shoppingList = await StorageDataExtractor.getShoppingList(
+      shoppingListId,
+      true,
+    );
+
+    const copiedShoppingListId = await SqliteStorage.addShoppingList(
+      shoppingList.name,
+    );
+
+    await Promise.all(
+      shoppingList.productsList.map(async product => {
+        await SqliteStorage.addProduct({
+          shoppingListId: copiedShoppingListId,
+          name: product.name,
+          unitId: product.unitId,
+          classId: product.classId,
+          note: product.note,
+          status: product.completionStatus,
+        });
+      }),
+    );
+
+    return copiedShoppingListId;
+  }
+
   static async addProduct({
     shoppingListId,
     name,
