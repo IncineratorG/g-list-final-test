@@ -323,9 +323,11 @@ export class FirebaseRemoteProvider {
 
       const {status} = responseData;
 
-      console.log('RESPONSE_STATUS: ' + status);
-
-      return 'SUCCESS';
+      if (status === 'SUCCESS') {
+        return FirebaseResponse.type.SUCCESS;
+      } else {
+        return FirebaseResponse.type.ERROR;
+      }
     } catch (e) {
       throw new Error(e);
     }
