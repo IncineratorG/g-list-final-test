@@ -37,6 +37,10 @@ export const useCollaboratorsScreenController = model => {
     const shoppingListId = model.data.currentShoppingListId;
     const sender = model.data.currentEmail;
 
+    console.log(
+      'selectContactButtonPressHandler()->SHOPPING_LIST_ID: ' + shoppingListId,
+    );
+
     if (contact.selected) {
       model.dispatch(
         cancelShareShoppingListWithUser({

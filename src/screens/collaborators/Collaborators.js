@@ -18,4 +18,10 @@ const Collaborators = () => {
   );
 };
 
+Collaborators.navigationOptions = ({navigation}) => {
+  return {
+    headerTitle: 'Контакты',
+  };
+};
+
 export default Collaborators;

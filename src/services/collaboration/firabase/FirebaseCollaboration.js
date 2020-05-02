@@ -1,30 +1,16 @@
+import {FirebaseRemoteProvider} from './provider/remote/FirebaseRemoteProvider';
+import {FirebaseResponse} from './response/FirebaseResponse';
+
 export class FirebaseCollaboration {
   static async checkUserExistence({email}) {
-    const checkData = {email};
-    const serializedCheckData = JSON.stringify(checkData);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/checkUser',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedCheckData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      if (responseData.status === 'USER_EXISTS') {
-        return 'EXIST';
-      } else {
-        return 'NOT_EXIST';
-      }
+      return await FirebaseRemoteProvider.checkUser({email});
     } catch (e) {
-      throw new Error(e);
+      console.log('FirebaseCollaboration.checkUserExistence()->ERROR: ' + e);
+      console.log(
+        'FirebaseCollaboration.checkUserExistence()->INPUT: ' + email,
+      );
+      return FirebaseResponse.type.ERROR;
     }
   }
 
@@ -59,8 +45,6 @@ export class FirebaseCollaboration {
     }
   }
 
-  // ===
-  // =====
   static testShareTimeout() {
     return new Promise(resolve =>
       setTimeout(() => {
@@ -80,207 +64,79 @@ export class FirebaseCollaboration {
     units,
     classes,
   }) {
-    console.log('FirebaseCollaboration.shareShoppingList()');
-
-    const data = {
-      receivers,
-      sender,
-      shoppingList,
-      shoppingListCard: shoppingListCard,
-      units,
-      classes,
-    };
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/shareShoppingList',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status, sharedListKey} = responseData;
-
-      console.log('RESPONSE_STATUS: ' + status);
-      console.log('RESPONSE_KEY: ' + sharedListKey);
+      const {
+        status,
+        sharedListKey,
+      } = await FirebaseRemoteProvider.shareShoppingList({
+        receivers,
+        sender,
+        shoppingList,
+        shoppingListCard,
+        units,
+        classes,
+      });
 
       return {status, sharedListKey};
     } catch (e) {
-      throw new Error(e);
+      console.log('FirebaseCollaboration.shareShoppingList()->ERROR: ' + e);
+      return FirebaseResponse.type.ERROR;
     }
-
-    // return {status, sharedListKey};
   }
-  // =====
-  // ===
-
-  // static async shareShoppingList({
-  //   receivers,
-  //   sender,
-  //   shoppingList,
-  //   shoppingListCard,
-  //   units,
-  //   classes,
-  // }) {
-  //   console.log('HERE_HERE_HERE');
-  //
-  //   const data = {
-  //     receivers,
-  //     sender,
-  //     shoppingList,
-  //     shoppingListCard: shoppingListCard,
-  //     units,
-  //     classes,
-  //   };
-  //   const serializedData = JSON.stringify(data);
-  //
-  //   try {
-  //     const response = await fetch(
-  //       'https://us-central1-surveillance-136a9.cloudfunctions.net/shareShoppingList',
-  //       {
-  //         method: 'POST',
-  //         headers: {
-  //           Accept: 'application/json',
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: serializedData,
-  //       },
-  //     );
-  //
-  //     const responseData = await response.json();
-  //
-  //     const {status, sharedListKey} = responseData;
-  //
-  //     console.log('RESPONSE_STATUS: ' + status);
-  //     console.log('RESPONSE_KEY: ' + sharedListKey);
-  //
-  //     return 'SUCCESS';
-  //   } catch (e) {
-  //     throw new Error(e);
-  //   }
-  // }
 
   static async addSharedListCollaborator({shoppingListId, collaborator}) {
-    const data = {shoppingListId, collaborator};
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/addCollaborator',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status} = responseData;
-
-      console.log('addSharedListCollaborator()->RESPONSE_STATUS: ' + status);
-
-      return status;
+      return await FirebaseRemoteProvider.addSharedListCollaborator({
+        shoppingListId,
+        collaborator,
+      });
     } catch (e) {
-      throw new Error(e);
+      console.log(
+        'FirebaseCollaboration.addSharedListCollaborator()->ERROR: ' + e,
+      );
+      return FirebaseResponse.type.ERROR;
     }
   }
 
   static async removeSharedListCollaborator({shoppingListId, collaborator}) {
-    const data = {shoppingListId, collaborator};
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/removeCollaborator',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status} = responseData;
-
-      console.log('removeSharedListCollaborator()->RESPONSE_STATUS: ' + status);
-
+      const {
+        status,
+      } = await FirebaseRemoteProvider.removeSharedListCollaborator({
+        shoppingListId,
+        collaborator,
+      });
       return status;
     } catch (e) {
-      throw new Error(e);
+      console.log(
+        'FirebaseCollaboration.removeSharedListCollaborator()->ERROR: ' + e,
+      );
+      return FirebaseResponse.type.ERROR;
     }
   }
 
   static async removeSharedShoppingList({shoppingListId}) {
-    const data = {shoppingListId};
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/removeShoppingList',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status} = responseData;
-
-      console.log('RESPONSE_STATUS: ' + status);
-
-      return 'SUCCESS';
+      return await FirebaseRemoteProvider.removeSharedShoppingList({
+        shoppingListId,
+      });
     } catch (e) {
-      throw new Error(e);
+      console.log(
+        'FirebaseCollaboration.removeSharedShoppingList()->ERROR: ' + e,
+      );
+      return FirebaseResponse.type.ERROR;
     }
   }
 
   static async updateListTimestamp({editor, shoppingListId}) {
-    const data = {editor, shoppingListId};
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/updateTimestamp',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status} = responseData;
-
-      console.log('RESPONSE_STATUS: ' + status);
-
-      return 'SUCCESS';
+      return await FirebaseRemoteProvider.updateListTimestamp({
+        editor,
+        shoppingListId,
+      });
     } catch (e) {
-      throw new Error(e);
+      console.log('FirebaseCollaboration.updateListTimestamp()->ERROR: ' + e);
+      return FirebaseResponse.type.ERROR;
     }
   }
 
@@ -292,38 +148,18 @@ export class FirebaseCollaboration {
     completedItemsCount,
     totalItemsCount,
   }) {
-    const data = {
-      editor,
-      shoppingListId,
-      productId,
-      status,
-      completedItemsCount,
-      totalItemsCount,
-    };
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/setProductStatus',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status} = responseData;
-
-      console.log('RESPONSE_STATUS: ' + status);
-
-      return 'SUCCESS';
+      return await FirebaseRemoteProvider.setProductStatus({
+        editor,
+        shoppingListId,
+        productId,
+        status,
+        completedItemsCount,
+        totalItemsCount,
+      });
     } catch (e) {
-      throw new Error(e);
+      console.log('FirebaseCollaboration.setProductStatus()->ERROR: ' + e);
+      return FirebaseResponse.type.ERROR;
     }
   }
 
@@ -334,37 +170,17 @@ export class FirebaseCollaboration {
     completedItemsCount,
     totalItemsCount,
   }) {
-    const data = {
-      editor,
-      shoppingListId,
-      product,
-      completedItemsCount,
-      totalItemsCount,
-    };
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/addProduct',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status} = responseData;
-
-      console.log('RESPONSE_STATUS: ' + status);
-
-      return status;
+      return await FirebaseRemoteProvider.addProduct({
+        editor,
+        shoppingListId,
+        product,
+        completedItemsCount,
+        totalItemsCount,
+      });
     } catch (e) {
-      throw new Error(e);
+      console.log('FirebaseCollaboration.addProduct()->ERROR: ' + e);
+      return FirebaseResponse.type.ERROR;
     }
   }
 
@@ -375,37 +191,17 @@ export class FirebaseCollaboration {
     completedItemsCount,
     totalItemsCount,
   }) {
-    const data = {
-      editor,
-      shoppingListId,
-      productId,
-      completedItemsCount,
-      totalItemsCount,
-    };
-    const serializedData = JSON.stringify(data);
-
     try {
-      const response = await fetch(
-        'https://us-central1-surveillance-136a9.cloudfunctions.net/removeProduct',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: serializedData,
-        },
-      );
-
-      const responseData = await response.json();
-
-      const {status} = responseData;
-
-      console.log('RESPONSE_STATUS: ' + status);
-
-      return 'SUCCESS';
+      return await FirebaseRemoteProvider.removeProduct({
+        editor,
+        shoppingListId,
+        productId,
+        completedItemsCount,
+        totalItemsCount,
+      });
     } catch (e) {
-      throw new Error(e);
+      console.log('FirebaseCollaboration.removeProduct()->ERROR: ' + e);
+      return FirebaseResponse.type.ERROR;
     }
   }
 }
@@ -413,4 +209,6 @@ export class FirebaseCollaboration {
 FirebaseCollaboration.status = {
   SUCCESS: 'SUCCESS',
   ERROR: 'ERROR',
+  EXIST: 'EXIST',
+  NOT_EXIST: 'NOT_EXIST',
 };
