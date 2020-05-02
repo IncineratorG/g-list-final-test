@@ -92,8 +92,48 @@ export const shareShoppingListWithUser = ({
     const listShared = listType === StorageIdResolver.listTypes.FIREBASE;
     if (listShared) {
       console.log('ADD_COLLABORATOR_NEEDED');
+
+      const result = await addSharedListCollaborator({
+        collaborator,
+        shoppingListId,
+      });
+
+      if (result.success) {
+        dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+      } else {
+        dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+      }
     } else {
       console.log('SHARE_LIST_NEEDED');
+
+      const result = await shareShoppingList({
+        collaborator,
+        sender,
+        shoppingListId,
+      });
+
+      if (result.action === Collaboration.actions.SHARE_SHOPPING_LIST) {
+        const sharedListId = result.sharedListId;
+        console.log('ACTION_WAS: SHARE_SHOPPING_LIST: ' + sharedListId);
+
+        if (result.success) {
+          await dispatch(subscribeToShoppingList(sharedListId));
+          await dispatch(removeShoppingList(shoppingListId));
+          dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+        } else {
+          dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+        }
+      } else if (
+        result.action === Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR
+      ) {
+        console.log('ACTION_WAS: ADD_SHARED_LIST_COLLABORATOR');
+
+        if (result.success) {
+          dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+        } else {
+          dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+        }
+      }
     }
 
     dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
@@ -157,12 +197,7 @@ export const cancelShareShoppingListWithUser = ({
   };
 };
 
-const shareShoppingList = async ({
-  collaborator,
-  sender,
-  shoppingListId,
-  dispatch,
-}) => {
+const shareShoppingList = async ({collaborator, sender, shoppingListId}) => {
   const shoppingListData = await Storage.subscribe({
     shoppingListId,
     event: Storage.events.SHOPPING_LIST_CHANGED,
@@ -191,7 +226,7 @@ const shareShoppingList = async ({
     creator: sender,
   };
 
-  const result = await Collaboration.shareShoppingList({
+  return await Collaboration.shareShoppingList({
     receivers: receivers,
     sender: sender,
     shoppingList,
@@ -199,50 +234,102 @@ const shareShoppingList = async ({
     units,
     classes,
   });
-
-  if (result.action === Collaboration.actions.SHARE_SHOPPING_LIST) {
-    const sharedListId = result.sharedListId;
-    console.log('ACTION_WAS: SHARE_SHOPPING_LIST: ' + sharedListId);
-
-    if (result.success) {
-      await dispatch(subscribeToShoppingList(sharedListId));
-      await dispatch(removeShoppingList(shoppingListId));
-      dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
-    } else {
-      dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
-    }
-  } else if (
-    result.action === Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR
-  ) {
-    console.log('ACTION_WAS: ADD_SHARED_LIST_COLLABORATOR');
-
-    if (result.success) {
-      dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
-    } else {
-      dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
-    }
-  }
 };
+// const shareShoppingList = async ({
+//   collaborator,
+//   sender,
+//   shoppingListId,
+//   dispatch,
+// }) => {
+//   const shoppingListData = await Storage.subscribe({
+//     shoppingListId,
+//     event: Storage.events.SHOPPING_LIST_CHANGED,
+//     once: true,
+//   });
+//
+//   const currentTimestamp = Date.now();
+//
+//   const shoppingList = shoppingListData.data;
+//   shoppingList.creator = sender;
+//   shoppingList.createTimestamp = currentTimestamp;
+//   shoppingList.updateTimestamp = currentTimestamp;
+//
+//   const units = await Storage.getUnits({shoppingListId});
+//   const classes = await Storage.getClasses({shoppingListId});
+//
+//   const receivers = [];
+//   receivers.push(collaborator.email);
+//
+//   const shoppingListCard = {
+//     name: shoppingList.name,
+//     totalItemsCount: shoppingList.totalItemsCount,
+//     completedItemsCount: shoppingList.completedItemsCount,
+//     createTimestamp: shoppingList.createTimestamp,
+//     updateTimestamp: shoppingList.updateTimestamp,
+//     creator: sender,
+//   };
+//
+//   const result = await Collaboration.shareShoppingList({
+//     receivers: receivers,
+//     sender: sender,
+//     shoppingList,
+//     shoppingListCard,
+//     units,
+//     classes,
+//   });
+//
+//   if (result.action === Collaboration.actions.SHARE_SHOPPING_LIST) {
+//     const sharedListId = result.sharedListId;
+//     console.log('ACTION_WAS: SHARE_SHOPPING_LIST: ' + sharedListId);
+//
+//     if (result.success) {
+//       await dispatch(subscribeToShoppingList(sharedListId));
+//       await dispatch(removeShoppingList(shoppingListId));
+//       dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+//     } else {
+//       dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+//     }
+//   } else if (
+//     result.action === Collaboration.actions.ADD_SHARED_LIST_COLLABORATOR
+//   ) {
+//     console.log('ACTION_WAS: ADD_SHARED_LIST_COLLABORATOR');
+//
+//     if (result.success) {
+//       dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+//     } else {
+//       dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+//     }
+//   }
+// };
 
-const addSharedListCollaborator = async ({
-  collaborator,
-  shoppingListId,
-  dispatch,
-}) => {
+const addSharedListCollaborator = async ({collaborator, shoppingListId}) => {
   console.log('addSharedListCollaborator_ACTION');
 
-  let result = {};
-  result.success = await Collaboration.addSharedListCollaborator({
+  return await Collaboration.addSharedListCollaborator({
     shoppingListId,
     collaborator: collaborator.email,
   });
-
-  if (result.success) {
-    dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
-  } else {
-    dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
-  }
 };
+
+// const addSharedListCollaborator = async ({
+//   collaborator,
+//   shoppingListId,
+//   dispatch,
+// }) => {
+//   console.log('addSharedListCollaborator_ACTION');
+//
+//   let result = {};
+//   result.success = await Collaboration.addSharedListCollaborator({
+//     shoppingListId,
+//     collaborator: collaborator.email,
+//   });
+//
+//   if (result.success) {
+//     dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+//   } else {
+//     dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
+//   }
+// };
 
 // export const shareShoppingList = ({receiver, sender, shoppingListId}) => {
 //   return async dispatch => {
