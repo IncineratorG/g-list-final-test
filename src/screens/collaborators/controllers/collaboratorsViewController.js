@@ -1,8 +1,7 @@
 import {
   addCollaborator,
-  selectCollaborator,
-  shareShoppingList,
-  unselectCollaborator,
+  cancelShareShoppingListWithUser,
+  shareShoppingListWithUser,
 } from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenController = model => {
@@ -34,14 +33,37 @@ export const useCollaboratorsScreenController = model => {
     );
   };
 
-  const selectContactButtonPressHandler = ({id, email, status}) => {
-    // console.log('HERE: ' + id + ' - ' + email + ' - ' + status);
-
+  const selectContactButtonPressHandler = ({contact}) => {
     const shoppingListId = model.data.currentShoppingListId;
     const sender = model.data.currentEmail;
-    const receiver = email;
 
-    model.dispatch(shareShoppingList({receiver, sender, shoppingListId}));
+    console.log(
+      'selectContactButtonPressHandler()->SHOPPING_LIST_ID: ' + shoppingListId,
+    );
+
+    if (contact.selected) {
+      model.dispatch(
+        cancelShareShoppingListWithUser({
+          sender,
+          collaborator: contact,
+          shoppingListId,
+        }),
+      );
+    } else {
+      model.dispatch(
+        shareShoppingListWithUser({
+          sender,
+          collaborator: contact,
+          shoppingListId,
+        }),
+      );
+    }
+
+    // const shoppingListId = model.data.currentShoppingListId;
+    // const sender = model.data.currentEmail;
+    // const receiver = email;
+
+    // model.dispatch(shareShoppingList({receiver, sender, shoppingListId}));
 
     // const selectedContactData = model.data.contacts.filter(
     //   contact => contact.id === id,

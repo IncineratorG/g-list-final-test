@@ -4,9 +4,7 @@ import {Collaboration} from '../../../../services/collaboration/Collaboration';
 import {icons} from '../../../../assets/icons';
 
 export const ContactGeneral = ({styles, listItem, onSelectPress}) => {
-  const {email, status, selected} = listItem;
-
-  // console.log(email + ' - ' + selected);
+  const {email, status, selected, pending, error} = listItem;
 
   const selectContactPressHandler = () => {
     if (status === Collaboration.collaboratorStatus.NOT_EXIST) {
@@ -15,15 +13,24 @@ export const ContactGeneral = ({styles, listItem, onSelectPress}) => {
     }
 
     if (onSelectPress) {
-      // onSelectPress(listItem.id, status);
-      onSelectPress({id: listItem.id, email, status});
+      onSelectPress({contact: listItem});
     }
   };
 
   let selectButtonStyle = styles.selectButton;
   let statusImageComponent = null;
 
-  if (selected) {
+  if (pending) {
+    selectButtonStyle = styles.selectButtonChecking;
+    statusImageComponent = (
+      <Image style={styles.statusIcon} source={icons.check_progress} />
+    );
+  } else if (error) {
+    selectButtonStyle = styles.selectButtonNotExist;
+    statusImageComponent = (
+      <Image style={styles.statusIcon} source={icons.warning} />
+    );
+  } else if (selected) {
     selectButtonStyle = styles.selectButtonSelected;
     statusImageComponent = (
       <Image style={styles.statusIconSelected} source={icons.checkmark} />

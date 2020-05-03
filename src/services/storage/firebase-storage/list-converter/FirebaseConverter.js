@@ -1,4 +1,20 @@
 export class FirebaseConverter {
+  static listFromFirebase({
+    shoppingListId,
+    shoppingListCardSnapshot,
+    receiversSnapshot,
+    productsSnapshot,
+  }) {
+    const shoppingList = this.cardFromFirebase({
+      shoppingListId,
+      shoppingListCardSnapshot,
+      receiversSnapshot,
+    });
+    shoppingList.productsList = this.productsFromFirebase_V2(productsSnapshot);
+
+    return shoppingList;
+  }
+
   static cardFromFirebase({
     shoppingListId,
     shoppingListCardSnapshot,

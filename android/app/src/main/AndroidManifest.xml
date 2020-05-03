@@ -28,11 +28,13 @@
 <!--</manifest>-->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.gllistfinaltest">
+          package="com.gllistfinaltest"
+          xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission tools:node="remove" android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission tools:node="remove" android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission tools:node="remove" android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
             android:name=".MainApplication"

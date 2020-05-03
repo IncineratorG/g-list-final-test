@@ -38,6 +38,7 @@ const initialState = {
     name: '',
     shared: false,
     creator: '',
+    receivers: [],
     products: [],
   },
 };
@@ -52,6 +53,7 @@ export const shoppingListReducer = (state = initialState, action) => {
           id: action.payload.shoppingListId,
           name: action.payload.name,
           products: [],
+          receivers: [],
         },
       };
     }
@@ -184,6 +186,7 @@ export const shoppingListReducer = (state = initialState, action) => {
           id: undefined,
           name: '',
           products: [],
+          receivers: [],
         },
       };
     }
@@ -207,6 +210,9 @@ export const shoppingListReducer = (state = initialState, action) => {
             ? action.payload.shoppingList.creator
             : '',
           products: [...action.payload.shoppingList.productsList],
+          receivers: action.payload.shoppingList.receivers
+            ? [...action.payload.shoppingList.receivers]
+            : [],
         },
       };
     }
@@ -234,9 +240,28 @@ export const shoppingListReducer = (state = initialState, action) => {
             ? action.payload.shoppingList.creator
             : '',
           products: [...action.payload.shoppingList.productsList],
+          receivers: action.payload.shoppingList.receivers
+            ? [...action.payload.shoppingList.receivers]
+            : [],
         },
       };
     }
+
+    // case ADD_REJECTED_PRODUCT: {
+    //   const rejectedProduct = action.payload;
+    //   rejectedProduct.rejected = true;
+    //
+    //   const rejectedProducts = [...state.currentShoppingList.rejectedProducts];
+    //   rejectedProducts.push(rejectedProduct);
+    //
+    //   return {
+    //     ...state,
+    //     currentShoppingList: {
+    //       ...state.currentShoppingList,
+    //       rejectedProducts,
+    //     },
+    //   };
+    // }
 
     default: {
       return state;

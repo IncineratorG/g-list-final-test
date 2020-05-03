@@ -1,25 +1,9 @@
 import {FirebaseCollaboration} from './firabase/FirebaseCollaboration';
 import {StorageNotifier} from '../common-data/storage-notifier/StorageNotifier';
 import {CollaborationStorage} from './storage/CollaborationStorage';
+import {addSharedListCollaboratorPended} from './helpers/collaborationHelper';
 
 export class Collaboration {
-  // ===
-  // static async testShare({
-  //   receivers,
-  //   sender,
-  //   shoppingList,
-  //   shoppingListCard,
-  //   units,
-  //   classes,
-  // }) {
-  //   console.log('testShare()->START')
-  //
-  //   setTimeout(() => {
-  //     console.log('testShare()->COMPLETE: ' + sender + ' - ' + shoppingList.id);
-  //   }, 1000);
-  // }
-  // ===
-
   static async subscribe({entityIds, event, handler, once = false}) {
     const unsubscribe = once
       ? () => {}
@@ -107,12 +91,10 @@ export class Collaboration {
   }
 
   static async addCollaborator({email, status}) {
-    const newCollaborator = await CollaborationStorage.addCollaborator({
+    return await CollaborationStorage.addCollaborator({
       email,
       status,
     });
-
-    return newCollaborator;
   }
 
   static async removeCollaborator({id}) {
@@ -147,18 +129,69 @@ export class Collaboration {
     units,
     classes,
   }) {
-    try {
-      await FirebaseCollaboration.shareShoppingList({
-        receivers,
-        sender,
+    console.log('Collaboration.shareShoppingList(): ' + receivers[0]);
+
+    if (Collaboration.pendingIdsMap.has(shoppingList.id)) {
+      return await addSharedListCollaboratorPended({
         shoppingList,
-        shoppingListCard,
-        units,
-        classes,
+        collaborator: receivers[0],
+        collaborationService: this,
       });
-    } catch (e) {
-      throw new Error(e);
     }
+
+    Collaboration.pendingIdsMap.clear();
+    Collaboration.pendingIdsMap.set(shoppingList.id, undefined);
+
+    Collaboration.pendedActionsCounter.clear();
+
+    const {
+      status,
+      sharedListKey,
+    } = await FirebaseCollaboration.shareShoppingList({
+      receivers,
+      sender,
+      shoppingList,
+      shoppingListCard,
+      units,
+      classes,
+    });
+
+    Collaboration.pendingIdsMap.set(shoppingList.id, {status, sharedListKey});
+
+    return {
+      success: status === FirebaseCollaboration.status.SUCCESS,
+      action: Collaboration.actions.SHARE_SHOPPING_LIST,
+      sharedListId: sharedListKey,
+    };
+  }
+
+  static async addSharedListCollaborator({shoppingListId, collaborator}) {
+    const result = await FirebaseCollaboration.addSharedListCollaborator({
+      shoppingListId,
+      collaborator,
+    });
+
+    return result === 'SUCCESS';
+  }
+
+  static async removeSharedListCollaborator({shoppingListId, collaborator}) {
+    const result = await FirebaseCollaboration.removeSharedListCollaborator({
+      shoppingListId,
+      collaborator,
+    });
+
+    return result === 'SUCCESS';
+  }
+
+  static testShareTimeout() {
+    return new Promise(resolve =>
+      setTimeout(() => {
+        const id = Date.now();
+        const result = 'SUCCESS';
+
+        resolve({id, result});
+      }, 2000),
+    );
   }
 
   static async removeSharedShoppingList({shoppingListId}) {
@@ -207,13 +240,15 @@ export class Collaboration {
     totalItemsCount,
   }) {
     try {
-      await FirebaseCollaboration.addProduct({
+      const status = await FirebaseCollaboration.addProduct({
         editor,
         shoppingListId,
         product,
         completedItemsCount,
         totalItemsCount,
       });
+
+      return status === 'SUCCESS';
     } catch (e) {
       throw new Error(e);
     }
@@ -250,8 +285,14 @@ Collaboration.events = {
   COLLABORATOR_REMOVED: 'COLLABORATOR_REMOVED',
   COLLABORATOR_STATUS_CHANGED: 'COLLABORATOR_STATUS_CHANGED',
 };
+Collaboration.actions = {
+  SHARE_SHOPPING_LIST: 'SHARE_SHOPPING_LIST',
+  ADD_SHARED_LIST_COLLABORATOR: 'ADD_SHARED_LIST_COLLABORATOR',
+};
 Collaboration.notifier = new StorageNotifier({});
 Collaboration.localSubscriptions = [];
+Collaboration.pendingIdsMap = new Map();
+Collaboration.pendedActionsCounter = new Map();
 
 // const usedUnits = [];
 // const usedClasses = [];

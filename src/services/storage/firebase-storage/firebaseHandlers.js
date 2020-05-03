@@ -34,31 +34,12 @@ export const sharedListChangedHandler = async snapshot => {
   );
   const receiversSnapshot = await receiversPath.once('value');
 
-  const shoppingListCard = FirebaseConverter.cardFromFirebase({
+  const shoppingList = FirebaseConverter.listFromFirebase({
     shoppingListId: snapshot.val().id,
     shoppingListCardSnapshot: snapshot,
     receiversSnapshot,
+    productsSnapshot: snapshot.child('productsList'),
   });
-
-  const productsListSnapshot = snapshot.child('productsList');
-
-  const productsList = FirebaseConverter.productsFromFirebase_V2(
-    productsListSnapshot,
-    shoppingListCard.id,
-  );
-
-  const shoppingList = {
-    id: shoppingListCard.id,
-    name: shoppingListCard.name,
-    totalItemsCount: shoppingListCard.totalItemsCount,
-    completedItemsCount: shoppingListCard.completedItemsCount,
-    createTimestamp: shoppingListCard.createTimestamp,
-    updateTimestamp: shoppingListCard.updateTimestamp,
-    creator: shoppingListCard.creator,
-    receivers: shoppingListCard.receivers,
-    shared: true,
-    productsList,
-  };
 
   if (FirebaseStorage.sendSharedShoppingLists.has(shoppingList.id)) {
     FirebaseStorage.sendSharedShoppingLists.get(
@@ -77,6 +58,62 @@ export const sharedListChangedHandler = async snapshot => {
     data: shoppingList,
   });
 };
+// export const sharedListChangedHandler = async snapshot => {
+//   if (snapshot.val() === null) {
+//     return;
+//   }
+//
+//   const receiversPath = database().ref(
+//     FirebasePaths.getPath({
+//       pathType: FirebasePaths.paths.SHOPPING_LIST_RECEIVERS,
+//       shoppingListId: snapshot.val().id,
+//     }),
+//   );
+//   const receiversSnapshot = await receiversPath.once('value');
+//
+//   const shoppingListCard = FirebaseConverter.cardFromFirebase({
+//     shoppingListId: snapshot.val().id,
+//     shoppingListCardSnapshot: snapshot,
+//     receiversSnapshot,
+//   });
+//
+//   const productsListSnapshot = snapshot.child('productsList');
+//
+//   const productsList = FirebaseConverter.productsFromFirebase_V2(
+//     productsListSnapshot,
+//     shoppingListCard.id,
+//   );
+//
+//   const shoppingList = {
+//     id: shoppingListCard.id,
+//     name: shoppingListCard.name,
+//     totalItemsCount: shoppingListCard.totalItemsCount,
+//     completedItemsCount: shoppingListCard.completedItemsCount,
+//     createTimestamp: shoppingListCard.createTimestamp,
+//     updateTimestamp: shoppingListCard.updateTimestamp,
+//     creator: shoppingListCard.creator,
+//     receivers: shoppingListCard.receivers,
+//     shared: shoppingListCard.shared,
+//     productsList,
+//   };
+//
+//   if (FirebaseStorage.sendSharedShoppingLists.has(shoppingList.id)) {
+//     FirebaseStorage.sendSharedShoppingLists.get(
+//       shoppingList.id,
+//     ).shoppingList = shoppingList;
+//   } else if (FirebaseStorage.receivedSharedShoppingLists.has(shoppingList.id)) {
+//     FirebaseStorage.receivedSharedShoppingLists.get(
+//       shoppingList.id,
+//     ).shoppingList = shoppingList;
+//   } else {
+//     console.log('UNKNOWN_ID');
+//   }
+//
+//   FirebaseStorage.notifier.notify({
+//     event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+//     data: shoppingList,
+//   });
+// };
 
 const processSharedPathSnapshot = async ({
   snapshot,

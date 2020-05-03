@@ -9,6 +9,10 @@ import {StorageNotifier} from '../../common-data/storage-notifier/StorageNotifie
 import {PRODUCT_COMPLETED, PRODUCT_NOT_COMPLETED} from '../data/productStatus';
 import {IdManager} from './id-manager/IdManager';
 import {Authentication} from '../../authentication/Authentication';
+import {
+  getShoppingListOnce,
+  getShoppingListPended,
+} from '../helpers/firebaseStorageHelper';
 
 export class FirebaseStorage {
   static subscribe({entityIds, event, handler}) {
@@ -107,64 +111,96 @@ export class FirebaseStorage {
   }
 
   static async getShoppingList(shoppingListId, once) {
-    // Получаем данные соответсвующего списка покупок.
-    const listData = FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)
-      ? FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
-      : FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
-
-    // Уведомляем списком покупок из запрошенных данных всех слушателей текущего списка.
-    FirebaseStorage.notifier.notify({
-      event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-      data: listData.shoppingList,
-    });
-
-    // Если на кокой-либо список покупок в firebase установлен слушатель - снимаем его.
-    if (FirebaseStorage.shoppingListPathHandler.path) {
-      FirebaseStorage.shoppingListPathHandler.path.off(
-        'value',
-        FirebaseStorage.shoppingListPathHandler.handler,
-      );
+    if (once) {
+      return await getShoppingListOnce(shoppingListId, this);
+    } else {
+      return await getShoppingListPended(shoppingListId, this);
     }
-
-    // Получаем путь до соответвующего списка покупок.
-    const shoppingListPath = FirebasePaths.getPath({
-      pathType: FirebasePaths.paths.SHOPPING_LIST,
-      shoppingListId,
-    });
-
-    // Устанавливаем слушатель на соответсвующий список покупок в firebase.
-    const shoppingListPathRef = database().ref(shoppingListPath);
-    shoppingListPathRef.on(
-      'value',
-      FirebaseStorage.handlers.get('sharedListChanged'),
-    );
-
-    FirebaseStorage.shoppingListPathHandler.path = shoppingListPathRef;
-    FirebaseStorage.shoppingListPathHandler.handler = FirebaseStorage.handlers.get(
-      'sharedListChanged',
-    );
-
-    // Помечаем список покупок как прочитанный.
-    if (
-      FirebaseStorage.receivedSharedShoppingLists.has(shoppingListId) &&
-      !listData.touched
-    ) {
-      listData.touched = true;
-      FirebaseStorage.receivedSharedShoppingLists.set(shoppingListId, listData);
-
-      const receivedPath = FirebasePaths.getPath({
-        pathType: FirebasePaths.paths.USER_RECEIVED_DELIM,
-        userId: IdManager.getFirebaseId(FirebaseStorage.localSignInInfo),
-      });
-
-      database()
-        .ref(receivedPath)
-        .child(shoppingListId)
-        .update({touched: true});
-    }
-
-    return listData.shoppingList;
   }
+
+  // static async getShoppingListPended(shoppingListId) {
+  //   const getShoppingListPended = async listData => {
+  //     // Уведомляем списком покупок из запрошенных данных всех слушателей текущего списка.
+  //     FirebaseStorage.notifier.notify({
+  //       event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+  //       data: listData.shoppingList,
+  //     });
+  //
+  //     // Если на кокой-либо список покупок в firebase установлен слушатель - снимаем его.
+  //     if (FirebaseStorage.shoppingListPathHandler.path) {
+  //       FirebaseStorage.shoppingListPathHandler.path.off(
+  //         'value',
+  //         FirebaseStorage.shoppingListPathHandler.handler,
+  //       );
+  //     }
+  //
+  //     // Получаем путь до соответвующего списка покупок.
+  //     const shoppingListPath = FirebasePaths.getPath({
+  //       pathType: FirebasePaths.paths.SHOPPING_LIST,
+  //       shoppingListId,
+  //     });
+  //
+  //     // Устанавливаем слушатель на соответсвующий список покупок в firebase.
+  //     const shoppingListPathRef = database().ref(shoppingListPath);
+  //     shoppingListPathRef.on(
+  //       'value',
+  //       FirebaseStorage.handlers.get('sharedListChanged'),
+  //     );
+  //
+  //     FirebaseStorage.shoppingListPathHandler.path = shoppingListPathRef;
+  //     FirebaseStorage.shoppingListPathHandler.handler = FirebaseStorage.handlers.get(
+  //       'sharedListChanged',
+  //     );
+  //
+  //     // Помечаем список покупок как прочитанный.
+  //     if (
+  //       FirebaseStorage.receivedSharedShoppingLists.has(shoppingListId) &&
+  //       !listData.touched
+  //     ) {
+  //       listData.touched = true;
+  //       FirebaseStorage.receivedSharedShoppingLists.set(
+  //         shoppingListId,
+  //         listData,
+  //       );
+  //
+  //       const receivedPath = FirebasePaths.getPath({
+  //         pathType: FirebasePaths.paths.USER_RECEIVED_DELIM,
+  //         userId: IdManager.getFirebaseId(FirebaseStorage.localSignInInfo),
+  //       });
+  //
+  //       database()
+  //         .ref(receivedPath)
+  //         .child(shoppingListId)
+  //         .update({touched: true});
+  //     }
+  //
+  //     return listData.shoppingList;
+  //   };
+  //
+  //   let counter = 1000;
+  //   while (counter > 0) {
+  //     // Получаем данные соответсвующего списка покупок.
+  //     const listData = FirebaseStorage.sendSharedShoppingLists.has(
+  //       shoppingListId,
+  //     )
+  //       ? FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+  //       : FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
+  //
+  //     if (listData) {
+  //       return await getShoppingListPended(listData);
+  //     }
+  //
+  //     await this.wait(20);
+  //
+  //     --counter;
+  //   }
+  //
+  //   return undefined;
+  // }
+  //
+  // static wait(milliseconds) {
+  //   return new Promise(resolve => setTimeout(resolve, milliseconds));
+  // }
 
   static async removeShoppingList(shoppingListId) {
     if (FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)) {
@@ -188,6 +224,7 @@ export class FirebaseStorage {
     unitId,
     note,
     classId,
+    status,
   }) {
     // Получаем данные списка покупок.
     const listData = FirebaseStorage.sendSharedShoppingLists.get(

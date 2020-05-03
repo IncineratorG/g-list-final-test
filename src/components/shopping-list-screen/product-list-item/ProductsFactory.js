@@ -10,11 +10,14 @@ import {
   PRODUCT_COMPLETED,
   PRODUCT_NOT_COMPLETED,
 } from '../../../services/storage/data/productStatus';
+import {productStylesRejected} from './rejected/styles/productStylesRejected';
+import {ProductRejected} from './rejected/ProductRejected';
 
 export default class ProductsFactory {
   static get(listItem, index, onStatusPress) {
     const completedStyles = productStylesCompleted;
     const notCompletedStyles = productStylesNotCompleted;
+    const rejectedStyles = productStylesRejected;
     const extraStyles = productStylesExtra;
 
     const completedItem = (
@@ -33,6 +36,14 @@ export default class ProductsFactory {
       />
     );
 
+    const rejectedItem = (
+      <ProductRejected
+        styles={productStylesRejected}
+        itemToRender={listItem}
+        onStatusPress={onStatusPress}
+      />
+    );
+
     const extraItem = (
       <ProductExtra
         styles={extraStyles}
@@ -41,6 +52,7 @@ export default class ProductsFactory {
       />
     );
 
+    const listItemRejected = listItem.rejected;
     const listItemExtra = listItem.extra;
     const listItemCompleted = listItem.completionStatus === PRODUCT_COMPLETED;
     const listItemNotCompleted =
@@ -48,6 +60,8 @@ export default class ProductsFactory {
 
     if (listItemExtra) {
       return extraItem;
+    } else if (listItemRejected) {
+      return rejectedItem;
     } else if (listItemCompleted) {
       return completedItem;
     } else if (listItemNotCompleted) {
