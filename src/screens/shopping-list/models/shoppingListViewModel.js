@@ -32,9 +32,6 @@ export const useShoppingListScreenModel = () => {
   const productsList = useSelector(
     state => state.shoppingList.currentShoppingList.products,
   );
-  // const rejectedProductsList = useSelector(
-  //   state => state.shoppingList.currentShoppingList.rejectedProducts,
-  // );
   const listLoading = useSelector(
     state => state.shoppingList.currentShoppingList.loading,
   );
@@ -81,6 +78,12 @@ export const useShoppingListScreenModel = () => {
       };
     })
     .sort((p1, p2) => p1.id < p2.id);
+  if (products.length > 0) {
+    products.push({
+      id: 'MAX_VALUE',
+      extra: true,
+    });
+  }
   // =====
   // ===
 

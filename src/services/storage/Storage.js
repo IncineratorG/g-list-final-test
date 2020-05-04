@@ -314,6 +314,72 @@ export class Storage {
         },
       }),
     );
+
+    // ===
+    // =====
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADING,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADING,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADED,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADED,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADING,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADED,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_LIST_LOADING,
+        handler: () => {
+          console.log('STORAGE->SHARED_LIST_LOADING');
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_LIST_LOADED,
+        handler: () => {
+          console.log('STORAGE->SHARED_LIST_LOADED');
+        },
+      }),
+    );
+    // =====
+    // ===
   }
 
   static removeStorageSubscriptions() {
@@ -327,6 +393,15 @@ export class Storage {
 
 Storage.events = {
   LIST_OF_SHOPPING_LISTS_CHANGED: 'LIST_OF_SHOPPING_LISTS_CHANGED',
+
+  SEND_LIST_OF_SHOPPING_LISTS_LOADING: 'SEND_LIST_OF_SHOPPING_LISTS_LOADING',
+  SEND_LIST_OF_SHOPPING_LISTS_LOADED: 'SEND_LIST_OF_SHOPPING_LISTS_LOADED',
+
+  RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING:
+    'RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING',
+  RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED:
+    'RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED',
+
   SHOPPING_LIST_CHANGED: 'SHOPPING_LIST_CHANGED',
 };
 Storage.notifier = new StorageNotifier({});

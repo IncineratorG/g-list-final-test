@@ -14,7 +14,12 @@ const MainView = ({styles, model, controller}) => {
     sectionsShoppingLists,
     sectionFreeShoppingList,
     shoppingListsLoading,
+    sharedListsLoading,
   } = model;
+
+  // ===
+  console.log('SHARED_LISTS_LOADING: ' + sharedListsLoading);
+  // ===
 
   const {
     listItemPressHandler,
@@ -83,8 +88,21 @@ const MainView = ({styles, model, controller}) => {
     ? listOfShoppingListsComponent
     : emptyMainScreenComponent;
 
+  // ===
+  const sharedListsLoadingComponent = (
+    <View style={{height: 20, width: 200, backgroundColor: 'green'}} />
+  );
+  const sharedListsLoadedComponent = (
+    <View style={{height: 20, width: 200, backgroundColor: 'grey'}} />
+  );
+  const sharedListsLoadingStatusComponent = sharedListsLoading
+    ? sharedListsLoadingComponent
+    : sharedListsLoadedComponent;
+  // ===
+
   return (
     <View style={styles.mainContainer}>
+      {sharedListsLoadingStatusComponent}
       {mainScreenContent}
       {removeConfirmationDialog}
       <View

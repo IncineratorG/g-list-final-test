@@ -10,9 +10,12 @@ import {
   REMOVE_SHOPPING_LIST_ERROR,
   REMOVE_SHOPPING_LIST_FINISHED,
   SET_PRODUCT_STATUS,
+  SET_RECEIVED_LISTS_LOADING,
+  SET_SEND_LISTS_LOADING,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_BEGIN,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_ERROR,
   SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_FINISHED,
+  SUBSCRIBE_TO_SHARED_LISTS_OF_SHOPPING_LISTS_LOADING_STATUS,
   SUBSCRIBE_TO_SHOPPING_LIST_BEGIN,
   SUBSCRIBE_TO_SHOPPING_LIST_ERROR,
   SUBSCRIBE_TO_SHOPPING_LIST_FINISHED,
@@ -25,7 +28,10 @@ const initialState = {
   classes: [],
   allShoppingLists: {
     unsubscribeHandler: undefined,
+    sharedListsLoadingStatusUnsubscribeHandlers: [],
     loading: true,
+    sendListsLoading: true,
+    receivedListsLoading: true,
     removing: false,
     error: '',
     data: [],
@@ -167,6 +173,46 @@ export const shoppingListReducer = (state = initialState, action) => {
         allShoppingLists: {
           ...state.allShoppingLists,
           data: [...action.payload],
+        },
+      };
+    }
+
+    case SUBSCRIBE_TO_SHARED_LISTS_OF_SHOPPING_LISTS_LOADING_STATUS: {
+      if (state.allShoppingLists.sharedListsLoadingStatusUnsubscribeHandlers) {
+        state.allShoppingLists.sharedListsLoadingStatusUnsubscribeHandlers.forEach(
+          unsubscribeFunc => {
+            unsubscribeFunc();
+          },
+        );
+      }
+
+      return {
+        ...state,
+        allShoppingLists: {
+          ...state.allShoppingLists,
+          sharedListsLoadingStatusUnsubscribeHandlers: [
+            ...action.payload.unsubscribeHandlers,
+          ],
+        },
+      };
+    }
+
+    case SET_SEND_LISTS_LOADING: {
+      return {
+        ...state,
+        allShoppingLists: {
+          ...state.allShoppingLists,
+          sendListsLoading: action.payload,
+        },
+      };
+    }
+
+    case SET_RECEIVED_LISTS_LOADING: {
+      return {
+        ...state,
+        allShoppingLists: {
+          ...state.allShoppingLists,
+          receivedListsLoading: action.payload,
         },
       };
     }

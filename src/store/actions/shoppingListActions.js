@@ -18,10 +18,14 @@ import {
   REMOVE_PRODUCT_BEGIN,
   REMOVE_PRODUCT_FINISHED,
   REMOVE_PRODUCT_ERROR,
+  SET_SEND_LISTS_LOADING,
+  SET_RECEIVED_LISTS_LOADING,
+  SUBSCRIBE_TO_SHARED_LISTS_OF_SHOPPING_LISTS_LOADING_STATUS,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
 import {Collaboration} from '../../services/collaboration/Collaboration';
+import awaitAsyncGenerator from '@babel/runtime/helpers/esm/awaitAsyncGenerator';
 
 export const loadUnits = ({shoppingListId}) => {
   return async dispatch => {
@@ -79,6 +83,52 @@ export const subscribeToListOfShoppingLists = () => {
     } catch (e) {
       dispatch({type: SUBSCRIBE_TO_LIST_OF_SHOPPING_LISTS_ERROR, payload: e});
     }
+  };
+};
+
+export const subscribeToSharedListOfShoppingListsLoadingStatus = () => {
+  return async dispatch => {
+    const sendListsLoadingHandler = () => {
+      dispatch({type: SET_SEND_LISTS_LOADING, payload: true});
+    };
+    const sendListsLoadedHandler = () => {
+      dispatch({type: SET_SEND_LISTS_LOADING, payload: false});
+    };
+    const receivedListsLoadingHandler = () => {
+      dispatch({type: SET_RECEIVED_LISTS_LOADING, payload: true});
+    };
+    const receivedListsLoadedHandler = () => {
+      dispatch({type: SET_RECEIVED_LISTS_LOADING, payload: false});
+    };
+
+    const sendListsLoadingSubscription = await Storage.subscribe({
+      event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADING,
+      handler: sendListsLoadingHandler,
+    });
+    const sendListsLoadedSubscription = await Storage.subscribe({
+      event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADED,
+      handler: sendListsLoadedHandler,
+    });
+    const receivedListsLoadingSubscription = await Storage.subscribe({
+      event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING,
+      handler: receivedListsLoadingHandler,
+    });
+    const receivedListsLoadedSubscription = await Storage.subscribe({
+      event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED,
+      handler: receivedListsLoadedHandler,
+    });
+
+    const unsubscribeHandlers = [
+      sendListsLoadingSubscription.unsubscribe,
+      sendListsLoadedSubscription.unsubscribe,
+      receivedListsLoadingSubscription.unsubscribe,
+      receivedListsLoadedSubscription.unsubscribe,
+    ];
+
+    dispatch({
+      type: SUBSCRIBE_TO_SHARED_LISTS_OF_SHOPPING_LISTS_LOADING_STATUS,
+      payload: {unsubscribeHandlers},
+    });
   };
 };
 
