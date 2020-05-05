@@ -262,11 +262,15 @@ export class FirebaseStorage {
     shoppingListCard.totalItemsCount = totalItemsCount;
     shoppingListCard.updateTimestamp = updateTimestamp;
 
-    // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
-    FirebaseStorage.notifier.notify({
-      event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-      data: shoppingList,
-    });
+    // FirebaseStorage.notifier.notify({
+    //   event: FirebaseStorage.events.SHARED_PRODUCTS_UPDATED,
+    //   data: {shoppingListId, products: [product]},
+    // });
+    // // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
+    // FirebaseStorage.notifier.notify({
+    //   event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+    //   data: shoppingList,
+    // });
 
     return {completedItemsCount, totalItemsCount};
   }
@@ -286,9 +290,15 @@ export class FirebaseStorage {
     let {shoppingList, shoppingListCard} = listData;
 
     // Удаляем продукт из списка.
-    shoppingList.productsList = shoppingList.productsList.filter(
-      product => product.id !== productId,
-    );
+    let removedProduct;
+    shoppingList.productsList = shoppingList.productsList.filter(product => {
+      if (product.id === productId) {
+        removedProduct = product;
+        return false;
+      } else {
+        return true;
+      }
+    });
 
     // Устанавливаем статистические параметры спсика и карточки списка.
     let completedItemsCount = 0;
@@ -314,11 +324,15 @@ export class FirebaseStorage {
       shoppingListCard,
     });
 
-    // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
     FirebaseStorage.notifier.notify({
-      event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-      data: shoppingList,
+      event: FirebaseStorage.events.SHARED_PRODUCTS_DELETED,
+      data: {shoppingListId, products: [removedProduct]},
     });
+    // // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
+    // FirebaseStorage.notifier.notify({
+    //   event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+    //   data: shoppingList,
+    // });
 
     return {completedItemsCount, totalItemsCount};
   }
@@ -375,8 +389,11 @@ FirebaseStorage.events = {
   SHARED_RECEIVED_LISTS_LOADING: 'SHARED_RECEIVED_LISTS_LOADING',
   SHARED_RECEIVED_LISTS_LOADED: 'SHARED_RECEIVED_LISTS_LOADED',
 
-  SHARED_PRODUCT_UPDATED: 'SHARED_PRODUCT_UPDATED',
-  SHARED_PRODUCT_ADDED: 'SHARED_PRODUCT_ADDED',
+  // SHARED_PRODUCT_UPDATED: 'SHARED_PRODUCT_UPDATED',
+
+  SHARED_PRODUCTS_UPDATED: 'SHARED_PRODUCTS_UPDATED',
+  SHARED_PRODUCTS_ADDED: 'SHARED_PRODUCTS_ADDED',
+  SHARED_PRODUCTS_DELETED: 'SHARED_PRODUCTS_DELETED',
 
   SHARED_LIST_LOADING: 'SHARED_LIST_LOADING',
   SHARED_LIST_LOADED: 'SHARED_LIST_LOADED',

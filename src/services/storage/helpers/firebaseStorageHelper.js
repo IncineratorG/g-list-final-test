@@ -15,8 +15,8 @@ export const getShoppingListPended = async (
   const pendedFunc = async listData => {
     // Уведомляем списком покупок из запрошенных данных всех слушателей текущего списка.
     firebaseStorage.notifier.notify({
-      event: firebaseStorage.events.SHARED_PRODUCT_UPDATED,
-      data: listData.shoppingList,
+      event: firebaseStorage.events.SHARED_PRODUCTS_UPDATED,
+      data: {shoppingListId, products: listData.shoppingList.productsList},
     });
 
     // Если на кокой-либо список покупок в firebase установлен слушатель - снимаем его.

@@ -20,6 +20,7 @@ export const useShoppingListScreenModel = () => {
     removeConfirmationDialogVisible,
     setRemoveConfirmationDialogVisible,
   ] = useState(false);
+  const [sharedListLoading, setSharedListLoading] = useState(false);
 
   const units = useSelector(state => state.shoppingList.units);
   const classes = useSelector(state => state.shoppingList.classes);
@@ -37,6 +38,9 @@ export const useShoppingListScreenModel = () => {
   );
   const shared = useSelector(
     state => state.shoppingList.currentShoppingList.shared,
+  );
+  const currentSharedListLoading = useSelector(
+    state => state.shoppingList.currentShoppingList.sharedListLoading,
   );
   const creator = useSelector(
     state => state.shoppingList.currentShoppingList.creator,
@@ -114,10 +118,10 @@ export const useShoppingListScreenModel = () => {
   // );
   // // ===
 
-  useEffect(() => {
-    dispatch(loadUnits({shoppingListId}));
-    dispatch(loadClasses({shoppingListId}));
-  }, [dispatch, shoppingListId]);
+  // useEffect(() => {
+  //   dispatch(loadUnits({shoppingListId}));
+  //   dispatch(loadClasses({shoppingListId}));
+  // }, [dispatch, shoppingListId]);
 
   useEffect(() => {
     navigation.setParams({shoppingListName});
@@ -133,12 +137,17 @@ export const useShoppingListScreenModel = () => {
     }
   }, [creator, currentId]);
 
+  useEffect(() => {
+    setSharedListLoading(currentSharedListLoading);
+  }, [currentSharedListLoading]);
+
   return {
     data: {
       inputAreaVisible,
       shoppingListId,
       shoppingListName,
       listLoading,
+      sharedListLoading,
       products,
       units,
       signedIn,

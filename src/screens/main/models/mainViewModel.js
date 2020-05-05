@@ -1,10 +1,7 @@
-import {useState, useEffect} from 'react';
-import {useNavigation} from 'react-navigation-hooks';
+import {useState, useEffect, useCallback} from 'react';
+import {useNavigation, useFocusEffect} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  subscribeToListOfShoppingLists,
-  subscribeToSharedListOfShoppingListsLoadingStatus,
-} from '../../../store/actions/shoppingListActions';
+import {subscribeToListOfShoppingLists} from '../../../store/actions/shoppingListActions';
 
 export const useMainScreenModel = () => {
   const navigation = useNavigation();
@@ -101,10 +98,12 @@ export const useMainScreenModel = () => {
   });
   // ===
 
-  useEffect(() => {
-    dispatch(subscribeToSharedListOfShoppingListsLoadingStatus());
-    dispatch(subscribeToListOfShoppingLists());
-  }, [dispatch]);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(subscribeToListOfShoppingLists());
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   useEffect(() => {
     if (sendListsLoading || receivedListsLoading) {

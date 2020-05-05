@@ -2,6 +2,7 @@ import database from '@react-native-firebase/database';
 import {FirebasePaths} from './FirebasePaths';
 import {FirebaseConverter} from './list-converter/FirebaseConverter';
 import {FirebaseStorage} from './FirebaseStorage';
+import {add} from 'react-native-reanimated';
 
 export const sendPathHandler = async snapshot => {
   await processSharedPathSnapshot({
@@ -30,11 +31,10 @@ export const sharedListChangedHandler = async snapshot => {
     return;
   }
 
-  // ===
   FirebaseStorage.notifier.notify({
     event: FirebaseStorage.events.SHARED_LIST_LOADING,
+    data: snapshot.val().id,
   });
-  // ===
 
   const receiversPath = database().ref(
     FirebasePaths.getPath({
@@ -51,6 +51,36 @@ export const sharedListChangedHandler = async snapshot => {
     productsSnapshot: snapshot.child('productsList'),
   });
 
+  // ===
+  const prevList = FirebaseStorage.sendSharedShoppingLists.has(shoppingList.id)
+    ? FirebaseStorage.sendSharedShoppingLists.get(shoppingList.id).shoppingList
+    : FirebaseStorage.receivedSharedShoppingLists.get(shoppingList.id)
+        .shoppingList;
+  const {addedProducts, updatedProducts, deletedProducts} = compareLists(
+    prevList,
+    shoppingList,
+  );
+
+  if (addedProducts.length > 0) {
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCTS_ADDED,
+      data: {shoppingListId: shoppingList.id, products: addedProducts},
+    });
+  }
+  if (updatedProducts.length > 0) {
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCTS_UPDATED,
+      data: {shoppingListId: shoppingList.id, products: updatedProducts},
+    });
+  }
+  if (deletedProducts.length > 0) {
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCTS_UPDATED,
+      data: {shoppingListId: shoppingList.id, products: deletedProducts},
+    });
+  }
+  // ===
+
   if (FirebaseStorage.sendSharedShoppingLists.has(shoppingList.id)) {
     FirebaseStorage.sendSharedShoppingLists.get(
       shoppingList.id,
@@ -63,16 +93,72 @@ export const sharedListChangedHandler = async snapshot => {
     console.log('UNKNOWN_ID');
   }
 
-  // ===
+  // FirebaseStorage.notifier.notify({
+  //   event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+  //   data: shoppingList,
+  // });
   FirebaseStorage.notifier.notify({
     event: FirebaseStorage.events.SHARED_LIST_LOADED,
+    data: shoppingList.id,
   });
-  // ===
+};
 
-  FirebaseStorage.notifier.notify({
-    event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-    data: shoppingList,
+const compareLists = (prev, curr) => {
+  const addedProducts = [];
+  const updatedProducts = [];
+  const deletedProducts = [];
+
+  if (!prev || !prev.productsList) {
+    // console.log('NO_PREV->UPDATE_ALL');
+    if (curr && curr.productsList) {
+      curr.productsList.forEach(product => addedProducts.push(product));
+    }
+    return {addedProducts, updatedProducts, deletedProducts};
+  }
+
+  if (!curr || !curr.productsList) {
+    // console.log('NO_CURR->UPDATE_ALL');
+    if (prev && prev.productsList) {
+      prev.productsList.forEach(product => deletedProducts.push(product));
+    }
+    return {addedProducts, updatedProducts, deletedProducts};
+  }
+
+  const prevProductsMap = new Map();
+  const currProductsMap = new Map();
+
+  prev.productsList.forEach(product => {
+    prevProductsMap.set(product.id, product);
   });
+  curr.productsList.forEach(product =>
+    currProductsMap.set(product.id, product),
+  );
+
+  for (let i = 0; i < prev.productsList.length; ++i) {
+    const prevProduct = prev.productsList[i];
+    const currProduct = currProductsMap.get(prevProduct.id);
+
+    if (!currProduct) {
+      deletedProducts.push(prevProduct);
+      break;
+    }
+    if (prevProduct.updateTimestamp < currProduct.updateTimestamp) {
+      updatedProducts.push(currProduct);
+      break;
+    }
+  }
+
+  curr.productsList.forEach(currProduct => {
+    if (!prevProductsMap.has(currProduct.id)) {
+      addedProducts.push(currProduct);
+    }
+  });
+
+  // console.log('ADDED_SIZE: ' + addedProducts.length);
+  // console.log('UPDATED_SIZE: ' + updatedProducts.length);
+  // console.log('DELETED_SIZE: ' + deletedProducts.length);
+
+  return {addedProducts, updatedProducts, deletedProducts};
 };
 
 const processSharedPathSnapshot = async ({

@@ -33,7 +33,8 @@ export const useCollaboratorsScreenModel = () => {
   useFocusEffect(
     useCallback(() => {
       dispatch(loadCollaborators());
-    }, [dispatch]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
   );
 
   useEffect(() => {

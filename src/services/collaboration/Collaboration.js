@@ -219,7 +219,7 @@ export class Collaboration {
     totalItemsCount,
   }) {
     try {
-      await FirebaseCollaboration.setProductStatus({
+      const result = await FirebaseCollaboration.setProductStatus({
         editor,
         shoppingListId,
         productId,
@@ -227,6 +227,7 @@ export class Collaboration {
         completedItemsCount,
         totalItemsCount,
       });
+      return result === FirebaseCollaboration.status.SUCCESS;
     } catch (e) {
       throw new Error(e);
     }

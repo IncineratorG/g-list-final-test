@@ -1,10 +1,12 @@
 import {
   removeShoppingList,
   subscribeToShoppingList,
+  unsubscribeFromListOfShoppingLists,
 } from '../../../store/actions/shoppingListActions';
 
 export const useMainScreenController = model => {
   const listItemPressHandler = listItemId => {
+    model.dispatch(unsubscribeFromListOfShoppingLists());
     model.dispatch(subscribeToShoppingList(listItemId));
     model.navigation.navigate('ShoppingList');
   };

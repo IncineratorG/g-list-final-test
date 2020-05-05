@@ -16,6 +16,7 @@ const ShoppingListView = ({styles, model, controller}) => {
     editable,
     removeProductName,
     removeConfirmationDialogVisible,
+    sharedListLoading,
   } = model;
 
   const {
@@ -107,8 +108,21 @@ const ShoppingListView = ({styles, model, controller}) => {
     />
   ) : null;
 
+  // ===
+  const sharedListLoadingComponent = (
+    <View style={{height: 20, width: 200, backgroundColor: 'green'}} />
+  );
+  const sharedListLoadedComponent = (
+    <View style={{height: 20, width: 200, backgroundColor: 'grey'}} />
+  );
+  const sharedListLoadingStatusComponent = sharedListLoading
+    ? sharedListLoadingComponent
+    : sharedListLoadedComponent;
+  // ===
+
   return (
     <View style={styles.mainContainer}>
+      {sharedListLoadingStatusComponent}
       {shoppingListScreenContent}
       {removeConfirmationDialog}
       <View style={styles.addShoppingListItemButtonContainer}>

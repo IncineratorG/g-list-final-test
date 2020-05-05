@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StatusBar} from 'react-native';
+import {View} from 'react-native';
 import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
 import LinearGradient from 'react-native-linear-gradient';
 import {EmptyMainScreen} from '../../../components/main-screen/EmptyMainScreen';
@@ -18,7 +18,7 @@ const MainView = ({styles, model, controller}) => {
   } = model;
 
   // ===
-  console.log('SHARED_LISTS_LOADING: ' + sharedListsLoading);
+  // console.log('SHARED_LISTS_LOADING: ' + sharedListsLoading);
   // ===
 
   const {
