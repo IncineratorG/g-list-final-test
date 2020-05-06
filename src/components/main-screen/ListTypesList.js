@@ -1,7 +1,18 @@
 import React from 'react';
-import {View, StyleSheet, FlatList, Text} from 'react-native';
+import {View, StyleSheet, FlatList} from 'react-native';
+import {ListTypeItem} from './ListTypeItem';
 
-export const ListTypesList = ({types, selectedListType}) => {
+export const ListTypesList = ({types, selectedListType, onSelectListType}) => {
+  const renderItem = ({item}) => {
+    return (
+      <ListTypeItem
+        item={item}
+        selectedListType={selectedListType}
+        onSelectListType={onSelectListType}
+      />
+    );
+  };
+
   return (
     <View style={styles.mainContainer}>
       <FlatList
@@ -9,13 +20,7 @@ export const ListTypesList = ({types, selectedListType}) => {
         horizontal={true}
         activeOpacity={1}
         showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => {
-          return (
-            <View style={styles.typeItemMainContainer}>
-              <Text style={styles.typeTitle}>{item.title}</Text>
-            </View>
-          );
-        }}
+        renderItem={renderItem}
         keyExtractor={item => item.type.toString()}
       />
     </View>
@@ -25,15 +30,5 @@ export const ListTypesList = ({types, selectedListType}) => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-  },
-  typeItemMainContainer: {
-    backgroundColor: 'lightgrey',
-    margin: 4,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  typeTitle: {
-    margin: 5,
   },
 });

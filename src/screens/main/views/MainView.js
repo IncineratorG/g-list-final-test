@@ -26,6 +26,7 @@ const MainView = ({styles, model, controller}) => {
     removeConfirmationDialogTouchOutsideHandler,
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
+    selectListTypeHandler,
   } = controller;
 
   const removeConfirmationDialog = (
