@@ -13,7 +13,13 @@ import {listOfShoppingListsItemStylesGeneral} from './general/styles/listOfShopp
 import {ListOfShoppingListsItemGeneral} from './general/ListOfShoppingListItemGeneral';
 
 export default class ListOfShoppingListsItemsFactory {
-  static get({listItem, onItemPress, onRemovePress, onSharePress}) {
+  static get({
+    listItem,
+    onItemPress,
+    onRemovePress,
+    onSharePress,
+    currentEmail,
+  }) {
     const generalItemStyles = listOfShoppingListsItemStylesGeneral;
     const completedItemStyles = listOfShoppingListsItemStylesCompleted;
     const notCompletedItemStyles = listOfShoppingListsItemStylesNotCompleted;
@@ -27,6 +33,7 @@ export default class ListOfShoppingListsItemsFactory {
         listItem={listItem}
         onItemPress={onItemPress}
         onRemovePress={onRemovePress}
+        currentEmail={currentEmail}
       />
     );
 

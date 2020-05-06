@@ -9,7 +9,7 @@ import {
 import {icons} from '../../../../assets/icons';
 import {PRODUCT_NOT_COMPLETED} from '../../../../services/storage/data/productStatus';
 
-export const ProductCompleted = ({styles, itemToRender, onStatusPress}) => {
+const ProductCompleted = ({styles, itemToRender, onStatusPress}) => {
   const statusPressHandler = () => {
     onStatusPress(itemToRender.id, PRODUCT_NOT_COMPLETED);
   };
@@ -68,3 +68,14 @@ export const ProductCompleted = ({styles, itemToRender, onStatusPress}) => {
     </TouchableHighlight>
   );
 };
+
+const comparator = (prevProps, currProps) => {
+  return (
+    prevProps.itemToRender.completionStatus ===
+      currProps.itemToRender.completionStatus ||
+    prevProps.itemToRender.updateTimestamp ===
+      currProps.itemToRender.updateTimestamp
+  );
+};
+
+export default React.memo(ProductCompleted, comparator);

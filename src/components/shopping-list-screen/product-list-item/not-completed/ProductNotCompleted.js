@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import {PRODUCT_COMPLETED} from '../../../../services/storage/data/productStatus';
 
-export const ProductNotCompleted = ({styles, itemToRender, onStatusPress}) => {
+const ProductNotCompleted = ({styles, itemToRender, onStatusPress}) => {
   const statusPressHandler = () => {
     onStatusPress(itemToRender.id, PRODUCT_COMPLETED);
   };
@@ -64,3 +64,14 @@ export const ProductNotCompleted = ({styles, itemToRender, onStatusPress}) => {
     </TouchableHighlight>
   );
 };
+
+const comparator = (prevProps, currProps) => {
+  return (
+    prevProps.itemToRender.completionStatus ===
+      currProps.itemToRender.completionStatus ||
+    prevProps.itemToRender.updateTimestamp ===
+      currProps.itemToRender.updateTimestamp
+  );
+};
+
+export default React.memo(ProductNotCompleted, comparator);

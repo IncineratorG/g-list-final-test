@@ -1,3 +1,4 @@
+import {useCallback} from 'react';
 import {
   addProduct,
   removeProduct,
@@ -47,6 +48,20 @@ export const useShoppingListScreenController = model => {
       }),
     );
   };
+
+  // const statusPressHandler = useCallback(
+  //   (productId, status) => {
+  //     model.dispatch(
+  //       setProductStatus({
+  //         editor: model.data.currentId,
+  //         shoppingListId: model.data.shoppingListId,
+  //         productId,
+  //         status,
+  //       }),
+  //     );
+  //   },
+  //   [model.data.currentId, model.data.shoppingListId],
+  // );
 
   const productRemoveHandler = (product, row) => {
     model.setters.setRemoveProductName(product.name);

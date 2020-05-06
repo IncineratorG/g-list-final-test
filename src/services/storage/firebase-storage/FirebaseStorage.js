@@ -206,8 +206,8 @@ export class FirebaseStorage {
 
     // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
     FirebaseStorage.notifier.notify({
-      event: FirebaseStorage.events.SHARED_PRODUCT_ADDED,
-      data: shoppingList,
+      event: FirebaseStorage.events.SHARED_PRODUCTS_ADDED,
+      data: {shoppingListId, products: [newProduct]},
     });
 
     return {completedItemsCount, totalItemsCount, product: newProduct};

@@ -38,12 +38,15 @@ const initialState = {
   allShoppingLists: {
     unsubscribeHandler: undefined,
     sharedListsLoadingStatusUnsubscribeHandlers: [],
-    loading: true,
     sendListsLoading: true,
     receivedListsLoading: true,
+    sharedListsLoading: true,
+    localListsLoading: true,
     removing: false,
     error: '',
     data: [],
+    sharedLists: [],
+    localLists: [],
   },
   currentShoppingList: {
     unsubscribeHandler: undefined,
@@ -52,7 +55,7 @@ const initialState = {
     updateProductsUnsubscribeHandler: undefined,
     shoppingListChangedUnsubscribeHandler: undefined,
     sharedListLoadingStatusUnsubscribeHandlers: [],
-    loading: true,
+    localListLoading: true,
     sharedListLoading: true,
     error: '',
     id: undefined,
@@ -132,10 +135,11 @@ export const shoppingListReducer = (state = initialState, action) => {
 
       const updatedProducts = state.currentShoppingList.products.map(
         product => {
-          if (product.id === productId) {
-            product.completionStatus = newStatus;
+          let updatedProduct = {...product};
+          if (updatedProduct.id === productId) {
+            updatedProduct.completionStatus = newStatus;
           }
-          return product;
+          return updatedProduct;
         },
       );
 
@@ -178,7 +182,9 @@ export const shoppingListReducer = (state = initialState, action) => {
         ...state,
         allShoppingLists: {
           ...state.allShoppingLists,
-          loading: true,
+          localListsLoading: true,
+          receivedListsLoading: true,
+          sendListsLoading: true,
           error: '',
           unsubscribeHandler: undefined,
         },
@@ -190,14 +196,33 @@ export const shoppingListReducer = (state = initialState, action) => {
         state.allShoppingLists.unsubscribeHandler();
       }
 
+      let sharedLists = [];
+      let localLists = [];
+      action.payload.listOfShoppingLists.forEach(list => {
+        if (list.shared) {
+          sharedLists.push(list);
+        } else {
+          localLists.push(list);
+        }
+      });
+
+      sharedLists = sharedLists.sort(
+        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
+      );
+      localLists = localLists.sort(
+        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
+      );
+
       return {
         ...state,
         allShoppingLists: {
           ...state.allShoppingLists,
-          loading: false,
+          localListsLoading: false,
           error: '',
           unsubscribeHandler: action.payload.unsubscribe,
           data: [...action.payload.listOfShoppingLists],
+          sharedLists: [...sharedLists],
+          localLists: [...localLists],
         },
       };
     }
@@ -207,7 +232,7 @@ export const shoppingListReducer = (state = initialState, action) => {
         ...state,
         allShoppingLists: {
           ...state.allShoppingLists,
-          loading: false,
+          localListsLoading: false,
           error: action.payload ? action.payload : '',
           data: [],
         },
@@ -215,11 +240,32 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case UPDATE_LIST_OF_SHOPPING_LISTS: {
+      console.log('UPDATE_LIST_OF_SHOPPING_LISTS');
+
+      let sharedLists = [];
+      let localLists = [];
+      action.payload.forEach(list => {
+        if (list.shared) {
+          sharedLists.push(list);
+        } else {
+          localLists.push(list);
+        }
+      });
+
+      sharedLists = sharedLists.sort(
+        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
+      );
+      localLists = localLists.sort(
+        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
+      );
+
       return {
         ...state,
         allShoppingLists: {
           ...state.allShoppingLists,
           data: [...action.payload],
+          sharedLists: [...sharedLists],
+          localLists: [...localLists],
         },
       };
     }
@@ -259,11 +305,31 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case SET_SEND_LISTS_LOADING: {
+      const receivedListsLoading = state.allShoppingLists.receivedListsLoading;
+      const sendListsLoading = action.payload;
+      const sharedListsLoading = receivedListsLoading || sendListsLoading;
+
       return {
         ...state,
         allShoppingLists: {
           ...state.allShoppingLists,
           sendListsLoading: action.payload,
+          sharedListsLoading: sharedListsLoading,
+        },
+      };
+    }
+
+    case SET_RECEIVED_LISTS_LOADING: {
+      const receivedListsLoading = state.allShoppingLists.receivedListsLoading;
+      const sendListsLoading = action.payload;
+      const sharedListsLoading = receivedListsLoading || sendListsLoading;
+
+      return {
+        ...state,
+        allShoppingLists: {
+          ...state.allShoppingLists,
+          receivedListsLoading: action.payload,
+          sharedListsLoading: sharedListsLoading,
         },
       };
     }
@@ -286,30 +352,27 @@ export const shoppingListReducer = (state = initialState, action) => {
       };
     }
 
-    case SET_RECEIVED_LISTS_LOADING: {
-      return {
-        ...state,
-        allShoppingLists: {
-          ...state.allShoppingLists,
-          receivedListsLoading: action.payload,
-        },
-      };
-    }
-
     // ===
     case ADD_PRODUCTS: {
       const shoppingListId = action.payload.shoppingListId;
       const products = action.payload.products;
 
+      console.log('ADD_PRODUCT');
+
       if (shoppingListId !== state.currentShoppingList.id) {
         return {...state};
       }
+
+      const newProducts = [
+        ...state.currentShoppingList.products,
+        ...products,
+      ].sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
 
       return {
         ...state,
         currentShoppingList: {
           ...state.currentShoppingList,
-          products: [...state.currentShoppingList.products, ...products],
+          products: [...newProducts],
         },
       };
     }
@@ -317,6 +380,8 @@ export const shoppingListReducer = (state = initialState, action) => {
     case UPDATE_PRODUCTS: {
       const shoppingListId = action.payload.shoppingListId;
       const products = action.payload.products;
+
+      console.log('UPDATE_PRODUCTS');
 
       if (shoppingListId !== state.currentShoppingList.id) {
         return {...state};
@@ -326,13 +391,13 @@ export const shoppingListReducer = (state = initialState, action) => {
         products.map(product => [product.id, product]),
       );
 
-      const updatedProducts = state.currentShoppingList.products.map(
-        product => {
+      let updatedProducts = state.currentShoppingList.products
+        .map(product => {
           return updatedProductsMap.has(product.id)
             ? updatedProductsMap.get(product.id)
             : product;
-        },
-      );
+        })
+        .sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
 
       return {
         ...state,
@@ -376,7 +441,7 @@ export const shoppingListReducer = (state = initialState, action) => {
           updateProductsUnsubscribeHandler: undefined,
           deleteProductsUnsubscribeHandler: undefined,
           shoppingListChangedUnsubscribeHandler: undefined,
-          loading: true,
+          localListsLoading: true,
           error: '',
           id: undefined,
         },
@@ -409,7 +474,7 @@ export const shoppingListReducer = (state = initialState, action) => {
             action.payload.productsDeletedUnsubscribe,
           shoppingListChangedUnsubscribeHandler:
             action.payload.shoppingListChangeUnsubscribe,
-          loading: false,
+          localListLoading: false,
           error: '',
           id: action.payload.shoppingList.id,
           name: action.payload.shoppingList.name,
@@ -417,86 +482,22 @@ export const shoppingListReducer = (state = initialState, action) => {
           creator: action.payload.shoppingList.creator
             ? action.payload.shoppingList.creator
             : '',
-          products: [...action.payload.shoppingList.productsList],
+          products: [...action.payload.shoppingList.productsList].sort(
+            (p1, p2) => p1.createTimestamp < p2.createTimestamp,
+          ),
           receivers: action.payload.shoppingList.receivers
             ? [...action.payload.shoppingList.receivers]
             : [],
         },
       };
-
-      // return {
-      //   ...state,
-      //   currentShoppingList: {
-      //     ...state.currentShoppingList,
-      //     unsubscribeHandler: action.payload.unsubscribe,
-      //     loading: false,
-      //     error: '',
-      //     id: action.payload.shoppingList.id,
-      //     name: action.payload.shoppingList.name,
-      //     shared: action.payload.shoppingList.shared ? true : false,
-      //     creator: action.payload.shoppingList.creator
-      //       ? action.payload.shoppingList.creator
-      //       : '',
-      //     products: [...action.payload.shoppingList.productsList],
-      //     receivers: action.payload.shoppingList.receivers
-      //       ? [...action.payload.shoppingList.receivers]
-      //       : [],
-      //   },
-      // };
     }
-
-    // case SUBSCRIBE_TO_SHOPPING_LIST_BEGIN: {
-    //   if (state.currentShoppingList.unsubscribeHandler) {
-    //     state.currentShoppingList.unsubscribeHandler();
-    //   }
-    //
-    //   return {
-    //     ...state,
-    //     currentShoppingList: {
-    //       ...state.currentShoppingList,
-    //       unsubscribeHandler: undefined,
-    //       loading: true,
-    //       error: '',
-    //       id: undefined,
-    //       name: '',
-    //       products: [],
-    //       receivers: [],
-    //     },
-    //   };
-    // }
-
-    // case SUBSCRIBE_TO_SHOPPING_LIST_FINISHED: {
-    //   if (state.currentShoppingList.unsubscribeHandler) {
-    //     state.currentShoppingList.unsubscribeHandler();
-    //   }
-    //
-    //   return {
-    //     ...state,
-    //     currentShoppingList: {
-    //       ...state.currentShoppingList,
-    //       unsubscribeHandler: action.payload.unsubscribe,
-    //       loading: false,
-    //       error: '',
-    //       id: action.payload.shoppingList.id,
-    //       name: action.payload.shoppingList.name,
-    //       shared: action.payload.shoppingList.shared ? true : false,
-    //       creator: action.payload.shoppingList.creator
-    //         ? action.payload.shoppingList.creator
-    //         : '',
-    //       products: [...action.payload.shoppingList.productsList],
-    //       receivers: action.payload.shoppingList.receivers
-    //         ? [...action.payload.shoppingList.receivers]
-    //         : [],
-    //     },
-    //   };
-    // }
 
     case SUBSCRIBE_TO_SHOPPING_LIST_ERROR: {
       return {
         ...state,
         currentShoppingList: {
           ...state.currentShoppingList,
-          loading: false,
+          localListLoading: false,
           error: action.payload ? action.payload : '',
         },
       };

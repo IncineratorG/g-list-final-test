@@ -248,18 +248,30 @@ export class SqliteStorage {
       completedShoppingListItems.length,
     );
 
+    let addedProduct;
+    for (let i = 0; i < totalShoppingListItems.length; ++i) {
+      if (totalShoppingListItems.item(i).id === insertedId) {
+        addedProduct = totalShoppingListItems.item(i);
+        break;
+      }
+    }
+
     SqliteStorage.notifier.notify({
-      event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
-      data: {
-        shoppingListId,
-        productId: insertedId,
-        name,
-        quantity,
-        unitId,
-        note,
-        classId,
-      },
+      event: SqliteStorage.events.LOCAL_PRODUCTS_ADDED,
+      data: {shoppingListId, products: [addedProduct]},
     });
+    // SqliteStorage.notifier.notify({
+    //   event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
+    //   data: {
+    //     shoppingListId,
+    //     productId: insertedId,
+    //     name,
+    //     quantity,
+    //     unitId,
+    //     note,
+    //     classId,
+    //   },
+    // });
 
     return insertedId;
   }
@@ -291,11 +303,23 @@ export class SqliteStorage {
       completedShoppingListItems.length,
     );
 
+    let updatedProduct;
+    for (let i = 0; i < totalShoppingListItems.length; ++i) {
+      if (totalShoppingListItems.item(i).id === productId) {
+        updatedProduct = totalShoppingListItems.item(i);
+        break;
+      }
+    }
+
     SqliteStorage.notifier.notify({
-      event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-      data: {shoppingListId, productId},
-      // data: {shoppingListId, productId, status},
+      event: SqliteStorage.events.LOCAL_PRODUCTS_UPDATED,
+      data: {shoppingListId, products: [updatedProduct]},
     });
+    // SqliteStorage.notifier.notify({
+    //   event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
+    //   data: {shoppingListId, productId},
+    //   // data: {shoppingListId, productId, status},
+    // });
 
     return shoppingListId;
   }
@@ -320,10 +344,16 @@ export class SqliteStorage {
       completedShoppingListItems.length,
     );
 
+    let removedProduct = {id: productId};
+
     SqliteStorage.notifier.notify({
-      event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-      data: {shoppingListId, productId},
+      event: SqliteStorage.events.LOCAL_PRODUCTS_DELETED,
+      data: {shoppingListId, products: [removedProduct]},
     });
+    // SqliteStorage.notifier.notify({
+    //   event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
+    //   data: {shoppingListId, productId},
+    // });
 
     return shoppingListId;
   }
@@ -368,7 +398,11 @@ export class SqliteStorage {
 SqliteStorage.events = {
   LOCAL_SHOPPING_LIST_ADDED: 'LOCAL_SHOPPING_LIST_ADDED',
   LOCAL_SHOPPING_LIST_REMOVED: 'LOCAL_SHOPPING_LIST_REMOVED',
-  LOCAL_PRODUCT_ADDED: 'LOCAL_PRODUCT_ADDED',
-  LOCAL_PRODUCT_UPDATED: 'LOCAL_PRODUCT_UPDATED',
+  // LOCAL_PRODUCT_ADDED: 'LOCAL_PRODUCT_ADDED',
+  // LOCAL_PRODUCT_UPDATED: 'LOCAL_PRODUCT_UPDATED',
+
+  LOCAL_PRODUCTS_ADDED: 'LOCAL_PRODUCTS_ADDED',
+  LOCAL_PRODUCTS_UPDATED: 'LOCAL_PRODUCTS_UPDATED',
+  LOCAL_PRODUCTS_DELETED: 'LOCAL_PRODUCTS_DELETED',
 };
 SqliteStorage.notifier = new StorageNotifier({});

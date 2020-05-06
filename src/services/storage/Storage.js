@@ -201,22 +201,11 @@ export class Storage {
 
     Storage.localSubscriptions.push(
       SqliteStorage.subscribe({
-        event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
-        handler: async ({shoppingListId}) => {
-          const shoppingLists = await StorageDataExtractor.getShoppingLists();
-
-          const shoppingList = await StorageDataExtractor.getShoppingList(
-            shoppingListId,
-          );
-
+        event: SqliteStorage.events.LOCAL_PRODUCTS_ADDED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
-          });
-          Storage.notifier.notify({
-            entityIds: {shoppingListId},
-            event: Storage.events.SHOPPING_LIST_CHANGED,
-            data: shoppingList,
+            event: Storage.events.PRODUCTS_ADDED,
+            data: {shoppingListId, products},
           });
         },
       }),
@@ -224,22 +213,23 @@ export class Storage {
 
     Storage.localSubscriptions.push(
       SqliteStorage.subscribe({
-        event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-        handler: async ({shoppingListId}) => {
-          const shoppingLists = await StorageDataExtractor.getShoppingLists();
-
-          const shoppingList = await StorageDataExtractor.getShoppingList(
-            shoppingListId,
-          );
-
+        event: SqliteStorage.events.LOCAL_PRODUCTS_UPDATED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
+            event: Storage.events.PRODUCTS_UPDATED,
+            data: {shoppingListId, products},
           });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_PRODUCTS_DELETED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            entityIds: {shoppingListId},
-            event: Storage.events.SHOPPING_LIST_CHANGED,
-            data: shoppingList,
+            event: Storage.events.PRODUCTS_DELETED,
+            data: {shoppingListId, products},
           });
         },
       }),

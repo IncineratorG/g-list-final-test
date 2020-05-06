@@ -13,6 +13,7 @@ const ShoppingListView = ({styles, model, controller}) => {
     listLoading,
     products,
     units,
+    classes,
     editable,
     removeProductName,
     removeConfirmationDialogVisible,
@@ -77,6 +78,8 @@ const ShoppingListView = ({styles, model, controller}) => {
         list={products}
         onStatusPress={statusPressHandler}
         onRemovePress={productRemoveHandler}
+        units={units}
+        classes={classes}
       />
     </View>
   );

@@ -13,8 +13,27 @@ export const ListOfShoppingListsItemGeneral = ({
   listItem,
   onItemPress,
   onRemovePress,
+  currentEmail,
 }) => {
-  const {name, collaborators, completedItemsCount, totalItemsCount} = listItem;
+  const {
+    name,
+    completedItemsCount,
+    totalItemsCount,
+    creator,
+    receivers,
+  } = listItem;
+
+  const collaborators = [];
+  if (creator && receivers) {
+    if (creator !== currentEmail) {
+      collaborators.push(creator);
+    }
+    receivers.forEach(receiver => {
+      if (receiver !== currentEmail) {
+        collaborators.push(receiver);
+      }
+    });
+  }
 
   const [menuVisible, setMenuVisible] = useState(false);
 
