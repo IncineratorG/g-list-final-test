@@ -73,7 +73,7 @@ export const shareShoppingListWithUser = ({
   collaborator,
   shoppingListId,
 }) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     console.log('shareShoppingListWithUser()_ACTION');
 
     if (!sender || !collaborator || !shoppingListId) {
@@ -88,6 +88,9 @@ export const shareShoppingListWithUser = ({
     }
 
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
+
+    const {id} = getState().shoppingList.currentShoppingList;
+    const needSubscribe = shoppingListId === id;
 
     const listShared = listType === StorageIdResolver.listTypes.FIREBASE;
     if (listShared) {
@@ -117,7 +120,9 @@ export const shareShoppingListWithUser = ({
         console.log('ACTION_WAS: SHARE_SHOPPING_LIST: ' + sharedListId);
 
         if (result.success) {
-          await dispatch(subscribeToShoppingList(sharedListId));
+          if (needSubscribe) {
+            await dispatch(subscribeToShoppingList(sharedListId));
+          }
           await dispatch(removeShoppingList(shoppingListId));
           dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
         } else {
@@ -173,7 +178,8 @@ export const cancelShareShoppingListWithUser = ({
   return async (dispatch, getState) => {
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
 
-    const {receivers} = getState().shoppingList.currentShoppingList;
+    const {id, receivers} = getState().shoppingList.currentShoppingList;
+    const needSubscribe = shoppingListId === id;
 
     const result = await Collaboration.removeSharedListCollaborator({
       shoppingListId,
@@ -186,7 +192,9 @@ export const cancelShareShoppingListWithUser = ({
         const copiedShoppingListId = await Storage.makeShoppingListLocalCopy({
           shoppingListId,
         });
-        await dispatch(subscribeToShoppingList(copiedShoppingListId));
+        if (needSubscribe) {
+          await dispatch(subscribeToShoppingList(copiedShoppingListId));
+        }
         dispatch(removeShoppingList(shoppingListId));
       }
 

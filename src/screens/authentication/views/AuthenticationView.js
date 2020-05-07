@@ -69,6 +69,7 @@ const AuthenticationView = ({styles, model, controller}) => {
         emailHandler={emailInputHandler}
         passwordHandler={passwordInputHandler}
         verifyPasswordHandler={verifyPasswordInputHandler}
+        onSignUp={signUpButtonHandler}
       />
     ) : (
       <SignInComponent
@@ -78,6 +79,7 @@ const AuthenticationView = ({styles, model, controller}) => {
         phoneHandler={phoneInputHandler}
         emailHandler={emailInputHandler}
         passwordHandler={passwordInputHandler}
+        onSignIn={signInButtonHandler}
       />
     );
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {View, TextInput, StyleSheet, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {icons} from '../../assets/icons';
@@ -10,7 +10,20 @@ export const SignInComponent = ({
   phoneHandler,
   emailHandler,
   passwordHandler,
+  onSignIn,
 }) => {
+  const passwordTextInputRef = useRef(null);
+
+  const onEmailSubmit = () => {
+    passwordTextInputRef.current.focus();
+  };
+
+  const onPasswordSubmit = () => {
+    if (onSignIn) {
+      onSignIn();
+    }
+  };
+
   return (
     <LinearGradient
       style={styles.mainContainer}
@@ -30,6 +43,8 @@ export const SignInComponent = ({
               autoCapitalize={'none'}
               value={email}
               onChangeText={emailHandler}
+              onSubmitEditing={onEmailSubmit}
+              blurOnSubmit={false}
             />
           </View>
         </View>
@@ -41,6 +56,7 @@ export const SignInComponent = ({
           </View>
           <View style={styles.passwordInputContainer}>
             <TextInput
+              ref={passwordTextInputRef}
               style={styles.passwordTextInput}
               placeholder={'пароль'}
               spellCheck={false}
@@ -48,6 +64,7 @@ export const SignInComponent = ({
               secureTextEntry={true}
               value={password}
               onChangeText={passwordHandler}
+              onSubmitEditing={onPasswordSubmit}
             />
           </View>
         </View>

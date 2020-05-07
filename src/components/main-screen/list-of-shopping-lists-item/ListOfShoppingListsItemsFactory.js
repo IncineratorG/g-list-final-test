@@ -10,7 +10,7 @@ import {listOfShoppingListsItemStylesOutgoing} from './outgoing/styles/listOfSho
 import {ListOfShoppingListsItemExtra} from './extra/ListOfShoppingListsItemExtra';
 import {listOfShoppingListsItemStylesExtra} from './extra/styles/listOfShoppingListsItemStylesExtra';
 import {listOfShoppingListsItemStylesGeneral} from './general/styles/listOfShoppingListItemStyleGeneral';
-import {ListOfShoppingListsItemGeneral} from './general/ListOfShoppingListItemGeneral';
+import ListOfShoppingListsItemGeneral from './general/ListOfShoppingListItemGeneral';
 
 export default class ListOfShoppingListsItemsFactory {
   static get({

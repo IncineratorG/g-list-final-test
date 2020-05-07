@@ -33,7 +33,7 @@ export class FirebaseStorage {
     if (email) {
       this.setListeners();
     } else {
-      this.removeListeners();
+      this.removeListenersAndClearCachedLists();
     }
   }
 
@@ -48,7 +48,7 @@ export class FirebaseStorage {
   }
 
   static setListeners() {
-    this.removeListeners();
+    this.removeListenersAndClearCachedLists();
 
     const sendPath = FirebasePaths.getPath({
       pathType: FirebasePaths.paths.USER_SEND,
@@ -75,7 +75,7 @@ export class FirebaseStorage {
     );
   }
 
-  static removeListeners() {
+  static removeListenersAndClearCachedLists() {
     FirebaseStorage.pathHandlersMap.forEach((handler, path) => {
       path.off('value', handler);
     });
@@ -87,11 +87,20 @@ export class FirebaseStorage {
         FirebaseStorage.shoppingListPathHandler.handler,
       );
     }
+
+    FirebaseStorage.sendSharedShoppingLists.clear();
+    FirebaseStorage.sendSharedShoppingListsIds.clear();
+    FirebaseStorage.receivedSharedShoppingLists.clear();
+    FirebaseStorage.receivedSharedShoppingListsIds.clear();
+
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
+    });
   }
 
   static off() {
     console.log('FIREBASE_STORAGE_OFF');
-    this.removeListeners();
+    this.removeListenersAndClearCachedLists();
     this.removeSubscriptions();
   }
 

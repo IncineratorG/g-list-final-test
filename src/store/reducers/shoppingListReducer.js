@@ -133,10 +133,13 @@ export const shoppingListReducer = (state = initialState, action) => {
         return {...state};
       }
 
+      // console.log('SET_PRODUCT_STATUS_BEGIN');
+
       const updatedProducts = state.currentShoppingList.products.map(
         product => {
           let updatedProduct = {...product};
           if (updatedProduct.id === productId) {
+            // console.log('SET_PRODUCT_STATUS_BEGIN: ' + updatedProduct.completionStatus + ' - ' + newStatus);
             updatedProduct.completionStatus = newStatus;
           }
           return updatedProduct;

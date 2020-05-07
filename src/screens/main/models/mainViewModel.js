@@ -21,6 +21,9 @@ export const useMainScreenModel = () => {
   const [listProcessed, setListProcessed] = useState(false);
   const [busy, setBusy] = useState(true);
 
+  const signedIn = useSelector(
+    state => state.authentication.currentUser.signedIn,
+  );
   const currentEmail = useSelector(
     state => state.authentication.currentUser.email,
   );
@@ -47,8 +50,11 @@ export const useMainScreenModel = () => {
     const allListsTypeTitle = 'Все';
     const localListsTypeTitle = 'Локальные';
     const sharedListsTypeTitle = 'Совместные';
-    const listTypesArr = [{type: ListTypes.type.ALL, title: allListsTypeTitle}];
-    if (localShoppingLists.length) {
+    const listTypesArr = [];
+    if (localShoppingLists.length && sharedShoppingLists.length) {
+      listTypesArr.push({type: ListTypes.type.ALL, title: allListsTypeTitle});
+    }
+    if (localShoppingLists.length && sharedShoppingLists.length) {
       listTypesArr.push({
         type: ListTypes.type.LOCAL,
         title: localListsTypeTitle,
@@ -107,7 +113,7 @@ export const useMainScreenModel = () => {
     } else {
       setBusy(true);
     }
-  }, [sharedShoppingListsLoading, listProcessed])
+  }, [sharedShoppingListsLoading, listProcessed]);
 
   useFocusEffect(
     useCallback(() => {
@@ -128,6 +134,7 @@ export const useMainScreenModel = () => {
       selectedListType,
       selectedShoppingLists,
       busy,
+      signedIn,
     },
     setters: {
       setRemoveConfirmationDialogVisible,

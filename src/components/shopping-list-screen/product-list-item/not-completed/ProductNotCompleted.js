@@ -65,13 +65,15 @@ const ProductNotCompleted = ({styles, itemToRender, onStatusPress}) => {
   );
 };
 
-const comparator = (prevProps, currProps) => {
-  return (
-    prevProps.itemToRender.completionStatus ===
-      currProps.itemToRender.completionStatus ||
-    prevProps.itemToRender.updateTimestamp ===
-      currProps.itemToRender.updateTimestamp
-  );
-};
+// const comparator = (prevProps, currProps) => {
+//   const needUpdate =
+//     prevProps.itemToRender.completionStatus !==
+//       currProps.itemToRender.completionStatus ||
+//     prevProps.itemToRender.updateTimestamp !==
+//       currProps.itemToRender.updateTimestamp ||
+//     prevProps.onStatusPress !== currProps.onStatusPress;
+//
+//   return needUpdate;
+// };
 
-export default React.memo(ProductNotCompleted, comparator);
+export default React.memo(ProductNotCompleted);

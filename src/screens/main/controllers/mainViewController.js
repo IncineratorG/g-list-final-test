@@ -43,7 +43,16 @@ export const useMainScreenController = model => {
   };
 
   const shareListHandler = listId => {
-    console.log('shareListHandler: ' + listId);
+    if (model.data.signedIn) {
+      model.navigation.navigate('Collaborators', {
+        shoppingListId: listId,
+      });
+    } else {
+      model.navigation.navigate('Authentication', {
+        destinationScreen: 'Collaborators',
+        shoppingListId: listId,
+      });
+    }
   };
 
   return {

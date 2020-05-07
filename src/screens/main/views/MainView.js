@@ -60,11 +60,6 @@ const MainView = ({styles, model, controller}) => {
     />
   );
 
-  // const loadingComponent = (
-  //   // eslint-disable-next-line react-native/no-inline-styles
-  //   <View style={[styles.mainContainer, {backgroundColor: 'transparent'}]} />
-  // );
-
   const emptyMainScreenComponent = (
     <View style={styles.emptyMainScreenContent}>
       <EmptyMainScreen />
@@ -84,13 +79,19 @@ const MainView = ({styles, model, controller}) => {
     </View>
   );
 
-  const listTypesComponent = (
+  const listTypesComponent = listTypes.length ? (
     <View style={styles.listTypesContainer}>
       <ListTypesList
         types={listTypes}
         selectedListType={selectedListType}
         onSelectListType={selectListTypeHandler}
       />
+    </View>
+  ) : null;
+
+  const loadingIndicatorComponent = (
+    <View style={styles.loadingIndicatorContainer}>
+      <BusyIndicator busy={busy} />
     </View>
   );
 
@@ -103,14 +104,6 @@ const MainView = ({styles, model, controller}) => {
   //   : shoppingLists.length > 0
   //   ? listOfShoppingListsComponent
   //   : emptyMainScreenComponent;
-
-  // ===
-  const loadingIndicatorComponent = (
-    <View style={styles.loadingIndicatorContainer}>
-      <BusyIndicator busy={busy} />
-    </View>
-  );
-  // ===
 
   return (
     <View style={styles.mainContainer}>

@@ -16,6 +16,7 @@ export const ListTypesList = ({types, selectedListType, onSelectListType}) => {
   return (
     <View style={styles.mainContainer}>
       <FlatList
+        inverted={true}
         data={types}
         horizontal={true}
         activeOpacity={1}

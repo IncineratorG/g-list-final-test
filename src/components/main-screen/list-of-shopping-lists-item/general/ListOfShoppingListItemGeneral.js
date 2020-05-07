@@ -8,7 +8,7 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 
-export const ListOfShoppingListsItemGeneral = ({
+const ListOfShoppingListsItemGeneral = ({
   styles,
   listItem,
   onItemPress,
@@ -132,3 +132,12 @@ export const ListOfShoppingListsItemGeneral = ({
     </View>
   );
 };
+
+const comparator = (prevProps, currProps) => {
+  return (
+    prevProps.listItem.updateTimestamp === currProps.listItem.updateTimestamp
+  );
+};
+
+// export default React.memo(ListOfShoppingListsItemGeneral, comparator);
+export default ListOfShoppingListsItemGeneral;
