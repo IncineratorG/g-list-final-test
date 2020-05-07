@@ -17,8 +17,10 @@ export const useMainScreenModel = () => {
   const [removeItemId, setRemoveItemId] = useState(-1);
   const [listTypes, setListTypes] = useState([]);
   const [selectedListType, setSelectedListType] = useState(ListTypes.type.ALL);
+  const [selectedShoppingLists, setSelectedShoppingLists] = useState([]);
+  const [listProcessed, setListProcessed] = useState(false);
+  const [busy, setBusy] = useState(true);
 
-  // const currentId = useSelector(state => state.authentication.currentUser.id);
   const currentEmail = useSelector(
     state => state.authentication.currentUser.email,
   );
@@ -28,40 +30,84 @@ export const useMainScreenModel = () => {
   const sharedListsLoading = useSelector(
     state => state.shoppingList.allShoppingLists.sharedListsLoading,
   );
+  const allShoppingLists = useSelector(
+    state => state.shoppingList.allShoppingLists.allLists,
+  );
   const localShoppingLists = useSelector(
     state => state.shoppingList.allShoppingLists.localLists,
   );
   const sharedShoppingLists = useSelector(
     state => state.shoppingList.allShoppingLists.sharedLists,
   );
-
-  const localListsTitle = 'Локальные списки';
-  const sharedListsTitle = 'Совместные списки';
-
-  const sectionsShoppingLists = [
-    {title: localListsTitle, data: localShoppingLists},
-    {title: sharedListsTitle, data: sharedShoppingLists},
-  ];
-  if (localShoppingLists.length || sharedShoppingLists.length) {
-    sectionsShoppingLists.push({
-      title: '',
-      data: [{id: 'MAX_VALUE', extra: true}],
-    });
-  }
+  const sharedShoppingListsLoading = useSelector(
+    state => state.shoppingList.allShoppingLists.sharedListsLoading,
+  );
 
   useEffect(() => {
-    const allLists = 'Все';
-    const localLists = 'Локальные';
-    const sharedLists = 'Совместные';
-    const listTypesArr = [{type: ListTypes.type.ALL, title: allLists}];
+    const allListsTypeTitle = 'Все';
+    const localListsTypeTitle = 'Локальные';
+    const sharedListsTypeTitle = 'Совместные';
+    const listTypesArr = [{type: ListTypes.type.ALL, title: allListsTypeTitle}];
     if (localShoppingLists.length) {
-      listTypesArr.push({type: ListTypes.type.LOCAL, title: localLists});
+      listTypesArr.push({
+        type: ListTypes.type.LOCAL,
+        title: localListsTypeTitle,
+      });
     }
     if (sharedShoppingLists.length) {
-      listTypesArr.push({type: ListTypes.type.SHARED, title: sharedLists});
+      listTypesArr.push({
+        type: ListTypes.type.SHARED,
+        title: sharedListsTypeTitle,
+      });
     }
     setListTypes(listTypesArr);
   }, [localShoppingLists, sharedShoppingLists]);
+
+  useEffect(() => {
+    setListProcessed(false);
+    if (selectedListType === ListTypes.type.ALL) {
+      if (allShoppingLists.length) {
+        setSelectedShoppingLists([
+          ...allShoppingLists,
+          {id: 'MAX_VALUE', extra: true},
+        ]);
+      } else {
+        setSelectedShoppingLists(allShoppingLists);
+      }
+    } else if (selectedListType === ListTypes.type.LOCAL) {
+      if (localShoppingLists.length) {
+        setSelectedShoppingLists([
+          ...localShoppingLists,
+          {id: 'MAX_VALUE', extra: true},
+        ]);
+      } else {
+        setSelectedShoppingLists(localShoppingLists);
+      }
+    } else if (selectedListType === ListTypes.type.SHARED) {
+      if (sharedShoppingLists.length) {
+        setSelectedShoppingLists([
+          ...sharedShoppingLists,
+          {id: 'MAX_VALUE', extra: true},
+        ]);
+      } else {
+        setSelectedShoppingLists(sharedShoppingLists);
+      }
+    }
+    setListProcessed(true);
+  }, [
+    localShoppingLists,
+    sharedShoppingLists,
+    selectedListType,
+    allShoppingLists,
+  ]);
+
+  useEffect(() => {
+    if (!sharedShoppingListsLoading && listProcessed) {
+      setBusy(false);
+    } else {
+      setBusy(true);
+    }
+  }, [sharedShoppingListsLoading, listProcessed])
 
   useFocusEffect(
     useCallback(() => {
@@ -78,9 +124,10 @@ export const useMainScreenModel = () => {
       currentEmail,
       localListsLoading,
       sharedListsLoading,
-      sectionsShoppingLists,
       listTypes,
       selectedListType,
+      selectedShoppingLists,
+      busy,
     },
     setters: {
       setRemoveConfirmationDialogVisible,

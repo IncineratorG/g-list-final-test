@@ -6,17 +6,17 @@ import {EmptyMainScreen} from '../../../components/main-screen/EmptyMainScreen';
 import {ListOfShoppingLists} from '../../../components/main-screen/ListOfShoppingLists';
 import {AddButton} from '../../../components/common/AddButton';
 import {ListTypesList} from '../../../components/main-screen/ListTypesList';
+import BusyIndicator from '../../../components/main-screen/BusyIndicator';
 
 const MainView = ({styles, model, controller}) => {
   const {
     removeConfirmationDialogVisible,
     removeItemName,
-    localListsLoading,
-    sharedListsLoading,
-    sectionsShoppingLists,
     currentEmail,
     listTypes,
     selectedListType,
+    selectedShoppingLists,
+    busy,
   } = model;
 
   const {
@@ -27,6 +27,7 @@ const MainView = ({styles, model, controller}) => {
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
     selectListTypeHandler,
+    shareListHandler,
   } = controller;
 
   const removeConfirmationDialog = (
@@ -59,10 +60,10 @@ const MainView = ({styles, model, controller}) => {
     />
   );
 
-  const loadingComponent = (
-    // eslint-disable-next-line react-native/no-inline-styles
-    <View style={[styles.mainContainer, {backgroundColor: 'transparent'}]} />
-  );
+  // const loadingComponent = (
+  //   // eslint-disable-next-line react-native/no-inline-styles
+  //   <View style={[styles.mainContainer, {backgroundColor: 'transparent'}]} />
+  // );
 
   const emptyMainScreenComponent = (
     <View style={styles.emptyMainScreenContent}>
@@ -74,21 +75,29 @@ const MainView = ({styles, model, controller}) => {
     <View style={styles.listOfShoppingListContainer}>
       <ListOfShoppingLists
         currentEmail={currentEmail}
-        list={[]}
-        sectionList={sectionsShoppingLists}
+        list={selectedShoppingLists}
+        sectionList={[]}
         onItemPress={listItemPressHandler}
         onRemovePress={listItemRemoveHandler}
+        onSharePress={shareListHandler}
       />
     </View>
   );
 
   const listTypesComponent = (
     <View style={styles.listTypesContainer}>
-      <ListTypesList types={listTypes} selectedListType={selectedListType} />
+      <ListTypesList
+        types={listTypes}
+        selectedListType={selectedListType}
+        onSelectListType={selectListTypeHandler}
+      />
     </View>
   );
 
-  const mainScreenContent = listOfShoppingListsComponent;
+  const mainScreenContent = selectedShoppingLists.length
+    ? listOfShoppingListsComponent
+    : emptyMainScreenComponent;
+  // const mainScreenContent = listOfShoppingListsComponent;
   // const mainScreenContent = shoppingListsLoading
   //   ? loadingComponent
   //   : shoppingLists.length > 0
@@ -96,20 +105,16 @@ const MainView = ({styles, model, controller}) => {
   //   : emptyMainScreenComponent;
 
   // ===
-  const sharedListsLoadingComponent = (
-    <View style={{height: 5, width: 200, backgroundColor: 'green'}} />
+  const loadingIndicatorComponent = (
+    <View style={styles.loadingIndicatorContainer}>
+      <BusyIndicator busy={busy} />
+    </View>
   );
-  const sharedListsLoadedComponent = (
-    <View style={{height: 5, width: 200, backgroundColor: 'grey'}} />
-  );
-  const sharedListsLoadingStatusComponent = sharedListsLoading
-    ? sharedListsLoadingComponent
-    : sharedListsLoadedComponent;
   // ===
 
   return (
     <View style={styles.mainContainer}>
-      {sharedListsLoadingStatusComponent}
+      {loadingIndicatorComponent}
       {listTypesComponent}
       {mainScreenContent}
       {removeConfirmationDialog}

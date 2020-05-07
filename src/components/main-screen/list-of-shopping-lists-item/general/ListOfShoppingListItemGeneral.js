@@ -13,9 +13,11 @@ export const ListOfShoppingListsItemGeneral = ({
   listItem,
   onItemPress,
   onRemovePress,
+  onSharedPress,
   currentEmail,
 }) => {
   const {
+    id,
     name,
     completedItemsCount,
     totalItemsCount,
@@ -51,7 +53,10 @@ export const ListOfShoppingListsItemGeneral = ({
   };
 
   const onSharePressHandler = () => {
-    console.log('onSharePressHandler');
+    // console.log('onSharePressHandler');
+    if (onSharedPress) {
+      onSharedPress(id);
+    }
     setMenuVisible(false);
   };
 

@@ -16,6 +16,11 @@ export const mainViewStyles = StyleSheet.create({
     flexDirection: 'row-reverse',
     // backgroundColor: 'yellow',
   },
+  loadingIndicatorContainer: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    height: 10,
+  },
   addShoppingListButton: {},
   addShoppingListButtonContainer: {
     position: 'absolute',

@@ -50,15 +50,17 @@ export class Storage {
 
   static async removeShoppingList({shoppingListId}) {
     const listType = StorageIdResolver.resolve(shoppingListId);
-    let canRemove = true;
+    let currentUserIsOwner = true;
 
     if (listType === StorageIdResolver.listTypes.LOCAL) {
       await SqliteStorage.removeShoppingList(shoppingListId);
     } else {
-      canRemove = await FirebaseStorage.removeShoppingList(shoppingListId);
+      currentUserIsOwner = await FirebaseStorage.removeShoppingList(
+        shoppingListId,
+      );
     }
 
-    return {listType, canRemove};
+    return {listType, currentUserIsOwner};
   }
 
   static async makeShoppingListLocalCopy({shoppingListId}) {
@@ -303,73 +305,73 @@ export class Storage {
 
     // // ===
     // // =====
-    // Storage.localSubscriptions.push(
-    //     FirebaseStorage.subscribe({
-    //       event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADING,
-    //       handler: () => {
-    //         Storage.notifier.notify({
-    //           event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADING,
-    //         });
-    //       },
-    //     }),
-    // );
-    //
-    // Storage.localSubscriptions.push(
-    //     FirebaseStorage.subscribe({
-    //       event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADED,
-    //       handler: () => {
-    //         Storage.notifier.notify({
-    //           event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADED,
-    //         });
-    //       },
-    //     }),
-    // );
-    //
-    // Storage.localSubscriptions.push(
-    //     FirebaseStorage.subscribe({
-    //       event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADING,
-    //       handler: () => {
-    //         Storage.notifier.notify({
-    //           event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING,
-    //         });
-    //       },
-    //     }),
-    // );
-    //
-    // Storage.localSubscriptions.push(
-    //     FirebaseStorage.subscribe({
-    //       event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADED,
-    //       handler: () => {
-    //         Storage.notifier.notify({
-    //           event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED,
-    //         });
-    //       },
-    //     }),
-    // );
-    //
-    // Storage.localSubscriptions.push(
-    //     FirebaseStorage.subscribe({
-    //       event: FirebaseStorage.events.SHARED_LIST_LOADING,
-    //       handler: listId => {
-    //         Storage.notifier.notify({
-    //           event: Storage.events.SHARED_LIST_LOADING,
-    //           data: listId,
-    //         });
-    //       },
-    //     }),
-    // );
-    //
-    // Storage.localSubscriptions.push(
-    //     FirebaseStorage.subscribe({
-    //       event: FirebaseStorage.events.SHARED_LIST_LOADED,
-    //       handler: listId => {
-    //         Storage.notifier.notify({
-    //           event: Storage.events.SHARED_LIST_LOADED,
-    //           data: listId,
-    //         });
-    //       },
-    //     }),
-    // );
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADING,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADING,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADED,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADED,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADING,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADED,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_LIST_LOADING,
+        handler: listId => {
+          Storage.notifier.notify({
+            event: Storage.events.SHARED_LIST_LOADING,
+            data: listId,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_LIST_LOADED,
+        handler: listId => {
+          Storage.notifier.notify({
+            event: Storage.events.SHARED_LIST_LOADED,
+            data: listId,
+          });
+        },
+      }),
+    );
     // // =====
     // // ===
   }

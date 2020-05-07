@@ -176,16 +176,25 @@ export const createShoppingList = listName => async dispatch => {
 };
 
 export const removeShoppingList = id => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const currentUserEmail = getState().authentication.currentUser.email;
+
     dispatch({type: REMOVE_SHOPPING_LIST_BEGIN});
 
     try {
-      const {listType, canRemove} = await Storage.removeShoppingList({
+      const {listType, currentUserIsOwner} = await Storage.removeShoppingList({
         shoppingListId: id,
       });
 
-      if (listType === StorageIdResolver.listTypes.FIREBASE && canRemove) {
-        await Collaboration.removeSharedShoppingList({shoppingListId: id});
+      if (listType === StorageIdResolver.listTypes.FIREBASE) {
+        if (currentUserIsOwner) {
+          await Collaboration.removeSharedShoppingList({shoppingListId: id});
+        } else {
+          await Collaboration.removeSharedListCollaborator({
+            shoppingListId: id,
+            collaborator: currentUserEmail,
+          });
+        }
       }
 
       dispatch({type: REMOVE_SHOPPING_LIST_FINISHED, payload: id});

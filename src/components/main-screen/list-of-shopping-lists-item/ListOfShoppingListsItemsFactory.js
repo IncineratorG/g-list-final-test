@@ -33,6 +33,7 @@ export default class ListOfShoppingListsItemsFactory {
         listItem={listItem}
         onItemPress={onItemPress}
         onRemovePress={onRemovePress}
+        onSharedPress={onSharePress}
         currentEmail={currentEmail}
       />
     );

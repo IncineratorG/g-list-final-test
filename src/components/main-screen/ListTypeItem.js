@@ -1,15 +1,17 @@
 import React from 'react';
-import {View, StyleSheet, Text, TouchableHighlight} from 'react-native';
+import {View, StyleSheet, Text, TouchableWithoutFeedback} from 'react-native';
 
 export const ListTypeItem = ({item, selectedListType, onSelectListType}) => {
   const itemPressHandler = () => {
-    console.log('itemPressHandler');
+    if (onSelectListType) {
+      onSelectListType(item.type);
+    }
   };
 
   return (
-    <TouchableHighlight
+    <TouchableWithoutFeedback
       style={styles.touchable}
-      underlayColor={'grey'}
+      // underlayColor={'grey'}
       onPress={itemPressHandler}>
       <View
         style={[
@@ -21,7 +23,7 @@ export const ListTypeItem = ({item, selectedListType, onSelectListType}) => {
         ]}>
         <Text style={styles.typeTitle}>{item.title}</Text>
       </View>
-    </TouchableHighlight>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -34,7 +36,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     backgroundColor: 'lightgrey',
-    // margin: 4,
+    margin: 4,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',

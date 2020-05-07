@@ -1,4 +1,3 @@
-import {FirebaseRemoteProvider} from './provider/remote/FirebaseRemoteProvider';
 import {FirebaseResponse} from './response/FirebaseResponse';
 import {FirebaseLocalProvider} from './provider/local/FirebaseLocalProvider';
 

@@ -42,6 +42,10 @@ export const useMainScreenController = model => {
     model.setters.setSelectedListType(selectedType);
   };
 
+  const shareListHandler = listId => {
+    console.log('shareListHandler: ' + listId);
+  };
+
   return {
     listItemPressHandler,
     listItemRemoveHandler,
@@ -51,5 +55,6 @@ export const useMainScreenController = model => {
     removeConfirmationDialogCancelRemoveHandler,
     menuButtonHandler,
     selectListTypeHandler,
+    shareListHandler,
   };
 };

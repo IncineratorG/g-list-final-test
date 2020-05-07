@@ -44,7 +44,7 @@ const initialState = {
     localListsLoading: true,
     removing: false,
     error: '',
-    data: [],
+    allLists: [],
     sharedLists: [],
     localLists: [],
   },
@@ -196,22 +196,19 @@ export const shoppingListReducer = (state = initialState, action) => {
         state.allShoppingLists.unsubscribeHandler();
       }
 
-      let sharedLists = [];
-      let localLists = [];
-      action.payload.listOfShoppingLists.forEach(list => {
+      const allLists = action.payload.listOfShoppingLists.sort(
+        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
+      );
+
+      const sharedLists = [];
+      const localLists = [];
+      allLists.forEach(list => {
         if (list.shared) {
           sharedLists.push(list);
         } else {
           localLists.push(list);
         }
       });
-
-      sharedLists = sharedLists.sort(
-        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
-      );
-      localLists = localLists.sort(
-        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
-      );
 
       return {
         ...state,
@@ -220,7 +217,7 @@ export const shoppingListReducer = (state = initialState, action) => {
           localListsLoading: false,
           error: '',
           unsubscribeHandler: action.payload.unsubscribe,
-          data: [...action.payload.listOfShoppingLists],
+          allLists: [...allLists],
           sharedLists: [...sharedLists],
           localLists: [...localLists],
         },
@@ -234,7 +231,7 @@ export const shoppingListReducer = (state = initialState, action) => {
           ...state.allShoppingLists,
           localListsLoading: false,
           error: action.payload ? action.payload : '',
-          data: [],
+          allLists: [],
         },
       };
     }
@@ -242,9 +239,13 @@ export const shoppingListReducer = (state = initialState, action) => {
     case UPDATE_LIST_OF_SHOPPING_LISTS: {
       console.log('UPDATE_LIST_OF_SHOPPING_LISTS');
 
-      let sharedLists = [];
-      let localLists = [];
-      action.payload.forEach(list => {
+      const allLists = action.payload.sort(
+        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
+      );
+
+      const sharedLists = [];
+      const localLists = [];
+      allLists.forEach(list => {
         if (list.shared) {
           sharedLists.push(list);
         } else {
@@ -252,18 +253,11 @@ export const shoppingListReducer = (state = initialState, action) => {
         }
       });
 
-      sharedLists = sharedLists.sort(
-        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
-      );
-      localLists = localLists.sort(
-        (l1, l2) => l1.createTimestamp < l2.createTimestamp,
-      );
-
       return {
         ...state,
         allShoppingLists: {
           ...state.allShoppingLists,
-          data: [...action.payload],
+          allLists: [...action.payload],
           sharedLists: [...sharedLists],
           localLists: [...localLists],
         },

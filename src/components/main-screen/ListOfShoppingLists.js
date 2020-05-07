@@ -2,7 +2,7 @@
  * */
 
 import React from 'react';
-import {View, StyleSheet, SectionList} from 'react-native';
+import {View, StyleSheet, FlatList} from 'react-native';
 import ListOfShoppingListsItemsFactory from './list-of-shopping-lists-item/ListOfShoppingListsItemsFactory';
 
 export const ListOfShoppingLists = ({
@@ -11,6 +11,7 @@ export const ListOfShoppingLists = ({
   sectionList,
   onItemPress,
   onRemovePress,
+  onSharePress,
 }) => {
   const renderItem = ({item}) => {
     return ListOfShoppingListsItemsFactory.get({
@@ -18,16 +19,15 @@ export const ListOfShoppingLists = ({
       onItemPress,
       onRemovePress,
       currentEmail,
+      onSharePress,
     });
   };
 
-  const renderSectionHeader = ({section}) => {};
-
   return (
     <View style={styles.mainContainer}>
-      <SectionList
+      <FlatList
         style={styles.list}
-        sections={sectionList}
+        data={list}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
