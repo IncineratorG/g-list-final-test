@@ -6,24 +6,30 @@ import {View, StyleSheet, FlatList} from 'react-native';
 import ListOfShoppingListsItemsFactory from './list-of-shopping-lists-item/ListOfShoppingListsItemsFactory';
 
 export const ListOfShoppingLists = ({
+  currentEmail,
   list,
   sectionList,
   onItemPress,
   onRemovePress,
+  onSharePress,
 }) => {
+  const renderItem = ({item}) => {
+    return ListOfShoppingListsItemsFactory.get({
+      listItem: item,
+      onItemPress,
+      onRemovePress,
+      currentEmail,
+      onSharePress,
+    });
+  };
+
   return (
     <View style={styles.mainContainer}>
       <FlatList
         style={styles.list}
         data={list}
         showsVerticalScrollIndicator={false}
-        renderItem={({item}) => {
-          return ListOfShoppingListsItemsFactory.get({
-            listItem: item,
-            onItemPress,
-            onRemovePress,
-          });
-        }}
+        renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
       />
     </View>
@@ -32,7 +38,7 @@ export const ListOfShoppingLists = ({
 
 const styles = StyleSheet.create({
   mainContainer: {
-    marginTop: 7,
+    marginTop: 1,
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -77,6 +83,79 @@ const styles = StyleSheet.create({
     height: '40%',
   },
 });
+
+// export const ListOfShoppingLists = ({
+//   list,
+//   sectionList,
+//   onItemPress,
+//   onRemovePress,
+// }) => {
+//   return (
+//     <View style={styles.mainContainer}>
+//       <FlatList
+//         style={styles.list}
+//         data={list}
+//         showsVerticalScrollIndicator={false}
+//         renderItem={({item}) => {
+//           return ListOfShoppingListsItemsFactory.get({
+//             listItem: item,
+//             onItemPress,
+//             onRemovePress,
+//           });
+//         }}
+//         keyExtractor={item => item.id.toString()}
+//       />
+//     </View>
+//   );
+// };
+//
+// const styles = StyleSheet.create({
+//   mainContainer: {
+//     marginTop: 7,
+//     flex: 1,
+//     flexDirection: 'row',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   list: {
+//     flex: 1,
+//   },
+//   options: {
+//     top: 0,
+//     bottom: 0,
+//     right: 0,
+//     left: 0,
+//     // marginTop: 7,
+//     marginBottom: 7,
+//     borderRadius: 5,
+//     backgroundColor: 'red',
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'flex-end',
+//     position: 'absolute',
+//   },
+//   removeButtonContainer: {
+//     backgroundColor: 'red',
+//     width: 80,
+//     height: '100%',
+//     borderTopRightRadius: 5,
+//     borderBottomRightRadius: 5,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   removeButtonTouchable: {
+//     width: 80,
+//     height: '100%',
+//     borderTopRightRadius: 5,
+//     borderBottomRightRadius: 5,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   removeIcon: {
+//     width: '40%',
+//     height: '40%',
+//   },
+// });
 
 // export const ListOfShoppingLists = ({
 //   list,

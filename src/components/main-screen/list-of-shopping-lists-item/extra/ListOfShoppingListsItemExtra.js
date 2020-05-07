@@ -6,11 +6,5 @@ export const ListOfShoppingListsItemExtra = ({
   listItem,
   onItemPress,
 }) => {
-  // const onItemPressHandler = () => {
-  //   if (onItemPress) {
-  //     onItemPress(listItem.id);
-  //   }
-  // };
-
   return <View style={styles.mainContainer} />;
 };

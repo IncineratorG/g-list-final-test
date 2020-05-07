@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {View, TextInput, StyleSheet, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {icons} from '../../assets/icons';
@@ -12,7 +12,25 @@ export const SignUpComponent = ({
   emailHandler,
   passwordHandler,
   verifyPasswordHandler,
+  onSignUp,
 }) => {
+  const passwordTextInputRef = useRef(null);
+  const verifyPasswordTextInputRef = useRef(null);
+
+  const onEmailSubmit = () => {
+    passwordTextInputRef.current.focus();
+  };
+
+  const onPasswordSubmit = () => {
+    verifyPasswordTextInputRef.current.focus();
+  };
+
+  const onVerifyPasswordSubmit = () => {
+    if (onSignUp) {
+      onSignUp();
+    }
+  };
+
   return (
     <LinearGradient
       style={styles.mainContainer}
@@ -32,6 +50,8 @@ export const SignUpComponent = ({
               autoCapitalize={'none'}
               value={email}
               onChangeText={emailHandler}
+              onSubmitEditing={onEmailSubmit}
+              blurOnSubmit={false}
             />
           </View>
         </View>
@@ -43,6 +63,7 @@ export const SignUpComponent = ({
           </View>
           <View style={styles.passwordInputContainer}>
             <TextInput
+              ref={passwordTextInputRef}
               style={styles.passwordTextInput}
               placeholder={'пароль'}
               spellCheck={false}
@@ -50,6 +71,8 @@ export const SignUpComponent = ({
               secureTextEntry={true}
               value={password}
               onChangeText={passwordHandler}
+              onSubmitEditing={onPasswordSubmit}
+              blurOnSubmit={false}
             />
           </View>
         </View>
@@ -64,6 +87,7 @@ export const SignUpComponent = ({
           </View>
           <View style={styles.passwordConfirmationInputContainer}>
             <TextInput
+              ref={verifyPasswordTextInputRef}
               style={styles.passwordConfirmationTextInput}
               placeholder={'подтвердите пароль'}
               spellCheck={false}
@@ -71,6 +95,7 @@ export const SignUpComponent = ({
               secureTextEntry={true}
               value={verifyPassword}
               onChangeText={verifyPasswordHandler}
+              onSubmitEditing={onVerifyPasswordSubmit}
             />
           </View>
         </View>

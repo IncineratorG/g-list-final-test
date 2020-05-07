@@ -34,11 +34,18 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const selectContactButtonPressHandler = ({contact}) => {
-    const shoppingListId = model.data.currentShoppingListId;
+    const shoppingListId = model.data.navigationShoppingListId
+      ? model.data.navigationShoppingListId
+      : model.data.currentShoppingListId;
     const sender = model.data.currentEmail;
 
     console.log(
-      'selectContactButtonPressHandler()->SHOPPING_LIST_ID: ' + shoppingListId,
+      'selectContactButtonPressHandler()->SHOPPING_LIST_ID: ' +
+        shoppingListId +
+        ' - ' +
+        sender +
+        ' - ' +
+        contact.email,
     );
 
     if (contact.selected) {
@@ -58,29 +65,6 @@ export const useCollaboratorsScreenController = model => {
         }),
       );
     }
-
-    // const shoppingListId = model.data.currentShoppingListId;
-    // const sender = model.data.currentEmail;
-    // const receiver = email;
-
-    // model.dispatch(shareShoppingList({receiver, sender, shoppingListId}));
-
-    // const selectedContactData = model.data.contacts.filter(
-    //   contact => contact.id === id,
-    // );
-    // if (selectedContactData.length <= 0) {
-    //   console.log(
-    //     'collaboratorsViewController->selectContactButtonPressHandler(): BAD_SELECTED_DATA_LENGTH',
-    //   );
-    //   return;
-    // }
-    //
-    // const contact = selectedContactData[0];
-    // if (contact.selected) {
-    //   model.dispatch(unselectCollaborator({id}));
-    // } else {
-    //   model.dispatch(selectCollaborator({id}));
-    // }
   };
 
   return {

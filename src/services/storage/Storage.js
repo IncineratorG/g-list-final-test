@@ -50,15 +50,17 @@ export class Storage {
 
   static async removeShoppingList({shoppingListId}) {
     const listType = StorageIdResolver.resolve(shoppingListId);
-    let canRemove = true;
+    let currentUserIsOwner = true;
 
     if (listType === StorageIdResolver.listTypes.LOCAL) {
       await SqliteStorage.removeShoppingList(shoppingListId);
     } else {
-      canRemove = await FirebaseStorage.removeShoppingList(shoppingListId);
+      currentUserIsOwner = await FirebaseStorage.removeShoppingList(
+        shoppingListId,
+      );
     }
 
-    return {listType, canRemove};
+    return {listType, currentUserIsOwner};
   }
 
   static async makeShoppingListLocalCopy({shoppingListId}) {
@@ -201,22 +203,11 @@ export class Storage {
 
     Storage.localSubscriptions.push(
       SqliteStorage.subscribe({
-        event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
-        handler: async ({shoppingListId}) => {
-          const shoppingLists = await StorageDataExtractor.getShoppingLists();
-
-          const shoppingList = await StorageDataExtractor.getShoppingList(
-            shoppingListId,
-          );
-
+        event: SqliteStorage.events.LOCAL_PRODUCTS_ADDED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
-          });
-          Storage.notifier.notify({
-            entityIds: {shoppingListId},
-            event: Storage.events.SHOPPING_LIST_CHANGED,
-            data: shoppingList,
+            event: Storage.events.PRODUCTS_ADDED,
+            data: {shoppingListId, products},
           });
         },
       }),
@@ -224,22 +215,23 @@ export class Storage {
 
     Storage.localSubscriptions.push(
       SqliteStorage.subscribe({
-        event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-        handler: async ({shoppingListId}) => {
-          const shoppingLists = await StorageDataExtractor.getShoppingLists();
-
-          const shoppingList = await StorageDataExtractor.getShoppingList(
-            shoppingListId,
-          );
-
+        event: SqliteStorage.events.LOCAL_PRODUCTS_UPDATED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
+            event: Storage.events.PRODUCTS_UPDATED,
+            data: {shoppingListId, products},
           });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      SqliteStorage.subscribe({
+        event: SqliteStorage.events.LOCAL_PRODUCTS_DELETED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            entityIds: {shoppingListId},
-            event: Storage.events.SHOPPING_LIST_CHANGED,
-            data: shoppingList,
+            event: Storage.events.PRODUCTS_DELETED,
+            data: {shoppingListId, products},
           });
         },
       }),
@@ -279,18 +271,46 @@ export class Storage {
 
     Storage.localSubscriptions.push(
       FirebaseStorage.subscribe({
-        event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-        handler: async shoppingList => {
-          const shoppingLists = await StorageDataExtractor.getShoppingLists();
-
+        event: FirebaseStorage.events.SHARED_PRODUCTS_ADDED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
+            event: Storage.events.PRODUCTS_ADDED,
+            data: {shoppingListId, products},
           });
+        },
+      }),
+    );
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_PRODUCTS_UPDATED,
+        handler: ({shoppingListId, products}) => {
           Storage.notifier.notify({
-            entityIds: {shoppingListId: shoppingList.id},
-            event: Storage.events.SHOPPING_LIST_CHANGED,
-            data: shoppingList,
+            event: Storage.events.PRODUCTS_UPDATED,
+            data: {shoppingListId, products},
+          });
+        },
+      }),
+    );
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_PRODUCTS_DELETED,
+        handler: ({shoppingListId, products}) => {
+          Storage.notifier.notify({
+            event: Storage.events.PRODUCTS_DELETED,
+            data: {shoppingListId, products},
+          });
+        },
+      }),
+    );
+
+    // // ===
+    // // =====
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADING,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADING,
           });
         },
       }),
@@ -298,22 +318,62 @@ export class Storage {
 
     Storage.localSubscriptions.push(
       FirebaseStorage.subscribe({
-        event: FirebaseStorage.events.SHARED_PRODUCT_ADDED,
-        handler: async shoppingList => {
-          const shoppingLists = await StorageDataExtractor.getShoppingLists();
-
+        event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADED,
+        handler: () => {
           Storage.notifier.notify({
-            event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
-            data: shoppingLists,
-          });
-          Storage.notifier.notify({
-            entityIds: {shoppingListId: shoppingList.id},
-            event: Storage.events.SHOPPING_LIST_CHANGED,
-            data: shoppingList,
+            event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADED,
           });
         },
       }),
     );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADING,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADED,
+        handler: () => {
+          Storage.notifier.notify({
+            event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_LIST_LOADING,
+        handler: listId => {
+          Storage.notifier.notify({
+            event: Storage.events.SHARED_LIST_LOADING,
+            data: listId,
+          });
+        },
+      }),
+    );
+
+    Storage.localSubscriptions.push(
+      FirebaseStorage.subscribe({
+        event: FirebaseStorage.events.SHARED_LIST_LOADED,
+        handler: listId => {
+          Storage.notifier.notify({
+            event: Storage.events.SHARED_LIST_LOADED,
+            data: listId,
+          });
+        },
+      }),
+    );
+    // // =====
+    // // ===
   }
 
   static removeStorageSubscriptions() {
@@ -327,7 +387,222 @@ export class Storage {
 
 Storage.events = {
   LIST_OF_SHOPPING_LISTS_CHANGED: 'LIST_OF_SHOPPING_LISTS_CHANGED',
+
+  SEND_LIST_OF_SHOPPING_LISTS_LOADING: 'SEND_LIST_OF_SHOPPING_LISTS_LOADING',
+  SEND_LIST_OF_SHOPPING_LISTS_LOADED: 'SEND_LIST_OF_SHOPPING_LISTS_LOADED',
+
+  RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING:
+    'RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING',
+  RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED:
+    'RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED',
+
   SHOPPING_LIST_CHANGED: 'SHOPPING_LIST_CHANGED',
+
+  SHARED_LIST_LOADING: 'SHARED_LIST_LOADING',
+  SHARED_LIST_LOADED: 'SHARED_LIST_LOADED',
+
+  PRODUCTS_ADDED: 'PRODUCTS_ADDED',
+  PRODUCTS_UPDATED: 'PRODUCTS_UPDATED',
+  PRODUCTS_DELETED: 'PRODUCTS_DELETED',
 };
 Storage.notifier = new StorageNotifier({});
 Storage.localSubscriptions = [];
+
+// static setStorageSubscriptions() {
+//   Storage.localSubscriptions.push(
+//     SqliteStorage.subscribe({
+//       event: SqliteStorage.events.LOCAL_SHOPPING_LIST_ADDED,
+//       handler: async () => {
+//         const shoppingLists = await StorageDataExtractor.getShoppingLists();
+//
+//         Storage.notifier.notify({
+//           event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+//           data: shoppingLists,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     SqliteStorage.subscribe({
+//       event: SqliteStorage.events.LOCAL_SHOPPING_LIST_REMOVED,
+//       handler: async () => {
+//         const shoppingLists = await StorageDataExtractor.getShoppingLists();
+//
+//         Storage.notifier.notify({
+//           event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+//           data: shoppingLists,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     SqliteStorage.subscribe({
+//       event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
+//       handler: async ({shoppingListId}) => {
+//         const shoppingLists = await StorageDataExtractor.getShoppingLists();
+//
+//         const shoppingList = await StorageDataExtractor.getShoppingList(
+//           shoppingListId,
+//         );
+//
+//         Storage.notifier.notify({
+//           event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+//           data: shoppingLists,
+//         });
+//         Storage.notifier.notify({
+//           entityIds: {shoppingListId},
+//           event: Storage.events.SHOPPING_LIST_CHANGED,
+//           data: shoppingList,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     SqliteStorage.subscribe({
+//       event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
+//       handler: async ({shoppingListId}) => {
+//         const shoppingLists = await StorageDataExtractor.getShoppingLists();
+//
+//         const shoppingList = await StorageDataExtractor.getShoppingList(
+//           shoppingListId,
+//         );
+//
+//         Storage.notifier.notify({
+//           event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+//           data: shoppingLists,
+//         });
+//         Storage.notifier.notify({
+//           entityIds: {shoppingListId},
+//           event: Storage.events.SHOPPING_LIST_CHANGED,
+//           data: shoppingList,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
+//       handler: async () => {
+//         console.log('STORAGE->SHARED_SEND_LISTS_CHANGED');
+//
+//         const shoppingLists = await StorageDataExtractor.getShoppingLists();
+//
+//         Storage.notifier.notify({
+//           event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+//           data: shoppingLists,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_CHANGED,
+//       handler: async () => {
+//         console.log('STORAGE->SHARED_RECEIVED_LISTS_CHANGED');
+//
+//         const shoppingLists = await StorageDataExtractor.getShoppingLists();
+//
+//         Storage.notifier.notify({
+//           event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+//           data: shoppingLists,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
+//       handler: async shoppingList => {
+//         const shoppingLists = await StorageDataExtractor.getShoppingLists();
+//
+//         Storage.notifier.notify({
+//           event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+//           data: shoppingLists,
+//         });
+//         Storage.notifier.notify({
+//           entityIds: {shoppingListId: shoppingList.id},
+//           event: Storage.events.SHOPPING_LIST_CHANGED,
+//           data: shoppingList,
+//         });
+//       },
+//     }),
+//   );
+//
+//   // ===
+//   // =====
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADING,
+//       handler: () => {
+//         Storage.notifier.notify({
+//           event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADING,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADED,
+//       handler: () => {
+//         Storage.notifier.notify({
+//           event: Storage.events.SEND_LIST_OF_SHOPPING_LISTS_LOADED,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADING,
+//       handler: () => {
+//         Storage.notifier.notify({
+//           event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADING,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADED,
+//       handler: () => {
+//         Storage.notifier.notify({
+//           event: Storage.events.RECEIVED_LIST_OF_SHOPPING_LISTS_LOADED,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_LIST_LOADING,
+//       handler: listId => {
+//         Storage.notifier.notify({
+//           event: Storage.events.SHARED_LIST_LOADING,
+//           data: listId,
+//         });
+//       },
+//     }),
+//   );
+//
+//   Storage.localSubscriptions.push(
+//     FirebaseStorage.subscribe({
+//       event: FirebaseStorage.events.SHARED_LIST_LOADED,
+//       handler: listId => {
+//         Storage.notifier.notify({
+//           event: Storage.events.SHARED_LIST_LOADED,
+//           data: listId,
+//         });
+//       },
+//     }),
+//   );
+//   // =====
+//   // ===
+// }

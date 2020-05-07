@@ -1,3 +1,4 @@
+import {useCallback, useMemo} from 'react';
 import {
   addProduct,
   removeProduct,
@@ -6,6 +7,8 @@ import {
 
 export const useShoppingListScreenController = model => {
   const navigationButtonHandler = () => {
+    console.log('SIGNED_IN: ' + model.data.signedIn);
+
     if (model.data.signedIn) {
       model.navigation.navigate('Collaborators');
     } else {
@@ -37,16 +40,46 @@ export const useShoppingListScreenController = model => {
     );
   };
 
-  const statusPressHandler = (productId, status) => {
-    model.dispatch(
-      setProductStatus({
-        editor: model.data.currentId,
-        shoppingListId: model.data.shoppingListId,
-        productId,
-        status,
-      }),
-    );
-  };
+  // const statusPressHandler = (productId, status) => {
+  //   console.log('statusPressHandler: ' + productId + ' - ' + status);
+  //
+  //   model.dispatch(
+  //     setProductStatus({
+  //       editor: model.data.currentId,
+  //       shoppingListId: model.data.shoppingListId,
+  //       productId,
+  //       status,
+  //     }),
+  //   );
+  // };
+
+  const statusPressHandler = useCallback(
+    (productId, status) => {
+      console.log(
+        'statusPressHandler: ' +
+          model.data.shoppingListId +
+          ' - ' +
+          productId +
+          ' - ' +
+          status,
+      );
+
+      model.dispatch(
+        setProductStatus({
+          editor: model.data.currentId,
+          shoppingListId: model.data.shoppingListId,
+          productId,
+          status,
+        }),
+      );
+    },
+    [model],
+  );
+
+  //   const statusPressHandler = useCallback(
+  // ,
+  //     [model],
+  //   );
 
   const productRemoveHandler = (product, row) => {
     model.setters.setRemoveProductName(product.name);

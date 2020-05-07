@@ -1,4 +1,8 @@
 export class IdManager {
+  static getId(email) {
+    return this.getFirebaseId({email});
+  }
+
   static getFirebaseId(signInInfo) {
     if (!signInInfo || !signInInfo.email) {
       return undefined;

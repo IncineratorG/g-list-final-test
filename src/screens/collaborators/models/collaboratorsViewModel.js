@@ -5,6 +5,7 @@ import {loadCollaborators} from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenModel = () => {
   const navigation = useNavigation();
+  const navigationShoppingListId = navigation.getParam('shoppingListId');
 
   const dispatch = useDispatch();
 
@@ -33,7 +34,8 @@ export const useCollaboratorsScreenModel = () => {
   useFocusEffect(
     useCallback(() => {
       dispatch(loadCollaborators());
-    }, [dispatch]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
   );
 
   useEffect(() => {
@@ -85,6 +87,7 @@ export const useCollaboratorsScreenModel = () => {
   return {
     data: {
       currentShoppingListId,
+      navigationShoppingListId,
       currentEmail,
       collaboratorInputAreaVisible,
       contacts,

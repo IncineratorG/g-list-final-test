@@ -2,7 +2,6 @@ import {useState, useEffect, useCallback} from 'react';
 import {useFocusEffect, useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
 import {resetSignErrors} from '../../../store/actions/authenticationActions';
-import DeviceInfo from 'react-native-device-info';
 
 export const useAuthenticationScreenModel = () => {
   const navigation = useNavigation();
@@ -13,7 +12,6 @@ export const useAuthenticationScreenModel = () => {
   const validPhoneLength = 12;
 
   const [mode, setMode] = useState('signIn');
-  // const [phone, setPhone] = useState('');
   const [displayPhone, setDisplayPhone] = useState('');
   const [internationalPhone, setInternationalPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -44,6 +42,7 @@ export const useAuthenticationScreenModel = () => {
 
   useEffect(() => {
     if (signedIn) {
+      navigation.pop();
       navigation.navigate(destinationScreen);
     }
   });
@@ -57,7 +56,6 @@ export const useAuthenticationScreenModel = () => {
   return {
     data: {
       mode,
-      // phone,
       displayPhone,
       internationalPhone,
       validPhoneLength,
@@ -70,7 +68,6 @@ export const useAuthenticationScreenModel = () => {
     },
     setters: {
       setMode,
-      // setPhone,
       setDisplayPhone,
       setInternationalPhone,
       setEmail,

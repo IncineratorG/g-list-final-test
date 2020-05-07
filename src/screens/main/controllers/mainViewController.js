@@ -1,10 +1,12 @@
 import {
   removeShoppingList,
   subscribeToShoppingList,
+  unsubscribeFromListOfShoppingLists,
 } from '../../../store/actions/shoppingListActions';
 
 export const useMainScreenController = model => {
   const listItemPressHandler = listItemId => {
+    model.dispatch(unsubscribeFromListOfShoppingLists());
     model.dispatch(subscribeToShoppingList(listItemId));
     model.navigation.navigate('ShoppingList');
   };
@@ -36,6 +38,23 @@ export const useMainScreenController = model => {
     model.navigation.toggleDrawer();
   };
 
+  const selectListTypeHandler = selectedType => {
+    model.setters.setSelectedListType(selectedType);
+  };
+
+  const shareListHandler = listId => {
+    if (model.data.signedIn) {
+      model.navigation.navigate('Collaborators', {
+        shoppingListId: listId,
+      });
+    } else {
+      model.navigation.navigate('Authentication', {
+        destinationScreen: 'Collaborators',
+        shoppingListId: listId,
+      });
+    }
+  };
+
   return {
     listItemPressHandler,
     listItemRemoveHandler,
@@ -44,5 +63,7 @@ export const useMainScreenController = model => {
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
     menuButtonHandler,
+    selectListTypeHandler,
+    shareListHandler,
   };
 };

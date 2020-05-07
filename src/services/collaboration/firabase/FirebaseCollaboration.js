@@ -1,10 +1,10 @@
-import {FirebaseRemoteProvider} from './provider/remote/FirebaseRemoteProvider';
 import {FirebaseResponse} from './response/FirebaseResponse';
+import {FirebaseLocalProvider} from './provider/local/FirebaseLocalProvider';
 
 export class FirebaseCollaboration {
   static async checkUserExistence({email}) {
     try {
-      return await FirebaseRemoteProvider.checkUser({email});
+      return await FirebaseCollaboration.provider.checkUser({email});
     } catch (e) {
       console.log('FirebaseCollaboration.checkUserExistence()->ERROR: ' + e);
       console.log(
@@ -68,7 +68,7 @@ export class FirebaseCollaboration {
       const {
         status,
         sharedListKey,
-      } = await FirebaseRemoteProvider.shareShoppingList({
+      } = await FirebaseCollaboration.provider.shareShoppingList({
         receivers,
         sender,
         shoppingList,
@@ -86,7 +86,7 @@ export class FirebaseCollaboration {
 
   static async addSharedListCollaborator({shoppingListId, collaborator}) {
     try {
-      return await FirebaseRemoteProvider.addSharedListCollaborator({
+      return await FirebaseCollaboration.provider.addSharedListCollaborator({
         shoppingListId,
         collaborator,
       });
@@ -102,7 +102,7 @@ export class FirebaseCollaboration {
     try {
       const {
         status,
-      } = await FirebaseRemoteProvider.removeSharedListCollaborator({
+      } = await FirebaseCollaboration.provider.removeSharedListCollaborator({
         shoppingListId,
         collaborator,
       });
@@ -117,7 +117,7 @@ export class FirebaseCollaboration {
 
   static async removeSharedShoppingList({shoppingListId}) {
     try {
-      return await FirebaseRemoteProvider.removeSharedShoppingList({
+      return await FirebaseCollaboration.provider.removeSharedShoppingList({
         shoppingListId,
       });
     } catch (e) {
@@ -130,7 +130,7 @@ export class FirebaseCollaboration {
 
   static async updateListTimestamp({editor, shoppingListId}) {
     try {
-      return await FirebaseRemoteProvider.updateListTimestamp({
+      return await FirebaseCollaboration.provider.updateListTimestamp({
         editor,
         shoppingListId,
       });
@@ -149,7 +149,7 @@ export class FirebaseCollaboration {
     totalItemsCount,
   }) {
     try {
-      return await FirebaseRemoteProvider.setProductStatus({
+      return await FirebaseCollaboration.provider.setProductStatus({
         editor,
         shoppingListId,
         productId,
@@ -171,7 +171,7 @@ export class FirebaseCollaboration {
     totalItemsCount,
   }) {
     try {
-      return await FirebaseRemoteProvider.addProduct({
+      return await FirebaseCollaboration.provider.addProduct({
         editor,
         shoppingListId,
         product,
@@ -192,7 +192,7 @@ export class FirebaseCollaboration {
     totalItemsCount,
   }) {
     try {
-      return await FirebaseRemoteProvider.removeProduct({
+      return await FirebaseCollaboration.provider.removeProduct({
         editor,
         shoppingListId,
         productId,
@@ -212,3 +212,4 @@ FirebaseCollaboration.status = {
   EXIST: 'EXIST',
   NOT_EXIST: 'NOT_EXIST',
 };
+FirebaseCollaboration.provider = FirebaseLocalProvider;

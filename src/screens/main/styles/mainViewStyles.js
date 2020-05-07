@@ -7,6 +7,20 @@ export const mainViewStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#edeef1',
   },
+  listTypesContainer: {
+    alignSelf: 'stretch',
+    height: 40,
+    marginTop: 4,
+    marginLeft: 4,
+    marginRight: 4,
+    flexDirection: 'row-reverse',
+    // backgroundColor: 'yellow',
+  },
+  loadingIndicatorContainer: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    height: 10,
+  },
   addShoppingListButton: {},
   addShoppingListButtonContainer: {
     position: 'absolute',

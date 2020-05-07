@@ -10,10 +10,16 @@ import {listOfShoppingListsItemStylesOutgoing} from './outgoing/styles/listOfSho
 import {ListOfShoppingListsItemExtra} from './extra/ListOfShoppingListsItemExtra';
 import {listOfShoppingListsItemStylesExtra} from './extra/styles/listOfShoppingListsItemStylesExtra';
 import {listOfShoppingListsItemStylesGeneral} from './general/styles/listOfShoppingListItemStyleGeneral';
-import {ListOfShoppingListsItemGeneral} from './general/ListOfShoppingListItemGeneral';
+import ListOfShoppingListsItemGeneral from './general/ListOfShoppingListItemGeneral';
 
 export default class ListOfShoppingListsItemsFactory {
-  static get({listItem, onItemPress, onRemovePress, onSharePress}) {
+  static get({
+    listItem,
+    onItemPress,
+    onRemovePress,
+    onSharePress,
+    currentEmail,
+  }) {
     const generalItemStyles = listOfShoppingListsItemStylesGeneral;
     const completedItemStyles = listOfShoppingListsItemStylesCompleted;
     const notCompletedItemStyles = listOfShoppingListsItemStylesNotCompleted;
@@ -27,6 +33,8 @@ export default class ListOfShoppingListsItemsFactory {
         listItem={listItem}
         onItemPress={onItemPress}
         onRemovePress={onRemovePress}
+        onSharedPress={onSharePress}
+        currentEmail={currentEmail}
       />
     );
 

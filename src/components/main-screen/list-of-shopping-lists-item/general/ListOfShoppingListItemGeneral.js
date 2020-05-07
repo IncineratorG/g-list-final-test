@@ -8,13 +8,34 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 
-export const ListOfShoppingListsItemGeneral = ({
+const ListOfShoppingListsItemGeneral = ({
   styles,
   listItem,
   onItemPress,
   onRemovePress,
+  onSharedPress,
+  currentEmail,
 }) => {
-  const {name, collaborators, completedItemsCount, totalItemsCount} = listItem;
+  const {
+    id,
+    name,
+    completedItemsCount,
+    totalItemsCount,
+    creator,
+    receivers,
+  } = listItem;
+
+  const collaborators = [];
+  if (creator && receivers) {
+    if (creator !== currentEmail) {
+      collaborators.push(creator);
+    }
+    receivers.forEach(receiver => {
+      if (receiver !== currentEmail) {
+        collaborators.push(receiver);
+      }
+    });
+  }
 
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -32,7 +53,10 @@ export const ListOfShoppingListsItemGeneral = ({
   };
 
   const onSharePressHandler = () => {
-    console.log('onSharePressHandler');
+    // console.log('onSharePressHandler');
+    if (onSharedPress) {
+      onSharedPress(id);
+    }
     setMenuVisible(false);
   };
 
@@ -108,3 +132,12 @@ export const ListOfShoppingListsItemGeneral = ({
     </View>
   );
 };
+
+const comparator = (prevProps, currProps) => {
+  return (
+    prevProps.listItem.updateTimestamp === currProps.listItem.updateTimestamp
+  );
+};
+
+// export default React.memo(ListOfShoppingListsItemGeneral, comparator);
+export default ListOfShoppingListsItemGeneral;
