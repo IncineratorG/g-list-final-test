@@ -10,6 +10,8 @@ import {
   PLACEHOLDER_PRODUCT_NAME,
   PLACEHOLDER_QUANTITY_VALUE,
   PLACEHOLDER_NOTE,
+  INPUT_CATEGORY,
+  PLACEHOLDER_CATEGORY,
 } from './inputAreaTypes';
 import {
   HIDE_INPUT_AREA,
@@ -20,6 +22,9 @@ import {
   SUBMIT_VALUES,
   SET_UNITS,
   SET_UNIT,
+  SELECT_CATEGORY,
+  SET_CLASSES,
+  SET_CLASS,
 } from './inputAreaActions';
 
 export function reducer(state, action) {
@@ -49,6 +54,7 @@ export function reducer(state, action) {
         inputAreaVisible: false,
         keyboardType: 'default',
         textInputIcon: icons.title,
+        categoriesVisible: false,
         textInputOptionsVisible: false,
         currentInput: INPUT_PRODUCT_NAME,
         values: {
@@ -69,6 +75,7 @@ export function reducer(state, action) {
         keyboardType: 'default',
         textInputIcon: icons.title,
         textInputOptionsVisible: false,
+        categoriesVisible: false,
         currentInput: INPUT_PRODUCT_NAME,
         values: {...state.values, placeholder: PLACEHOLDER_PRODUCT_NAME},
       };
@@ -80,8 +87,26 @@ export function reducer(state, action) {
         keyboardType: 'numeric',
         textInputIcon: icons.weight,
         textInputOptionsVisible: true,
+        categoriesVisible: false,
         currentInput: INPUT_QUANTITY,
         values: {...state.values, placeholder: PLACEHOLDER_QUANTITY_VALUE},
+      };
+    }
+
+    case SELECT_CATEGORY: {
+      console.log('SELECT_CATEGORY');
+
+      return {
+        ...state,
+        keyboardType: 'default',
+        textInputIcon: icons.category,
+        currentInput: INPUT_CATEGORY,
+        textInputOptionsVisible: false,
+        categoriesVisible: true,
+        values: {
+          ...state.values,
+          placeholder: PLACEHOLDER_CATEGORY,
+        },
       };
     }
 
@@ -91,6 +116,7 @@ export function reducer(state, action) {
         keyboardType: 'default',
         textInputIcon: icons.note,
         textInputOptionsVisible: false,
+        categoriesVisible: false,
         currentInput: INPUT_NOTE,
         values: {...state.values, placeholder: PLACEHOLDER_NOTE},
       };
@@ -147,6 +173,17 @@ export function reducer(state, action) {
         ...state,
         values: {...state.values, quantityUnit: action.payload},
       };
+    }
+
+    case SET_CLASSES: {
+      const classes = action.payload ? action.payload : [];
+      return {...state, values: {...state.values, classes: classes}};
+    }
+
+    case SET_CLASS: {
+      console.log('SET_CLASS');
+
+      return {...state};
     }
 
     default: {

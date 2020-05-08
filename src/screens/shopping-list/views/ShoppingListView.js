@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, TouchableWithoutFeedback} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {EmptyShoppingListScreen} from '../../../components/shopping-list-screen/EmptyShoppingListScreen';
 import {ProductsList} from '../../../components/shopping-list-screen/ProductsList';
@@ -29,6 +29,7 @@ const ShoppingListView = ({styles, model, controller}) => {
     removeConfirmationDialogTouchOutsideHandler,
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
+    shadedBackgroundPressHandler,
   } = controller;
 
   const removeConfirmationDialog = (
@@ -85,7 +86,11 @@ const ShoppingListView = ({styles, model, controller}) => {
   );
 
   const shadedBackgroundComponent = inputAreaVisible ? (
-    <View style={styles.shadedBackground} />
+    <TouchableWithoutFeedback
+      onPress={shadedBackgroundPressHandler}
+      behavior={'position'}>
+      <View style={styles.shadedBackground} />
+    </TouchableWithoutFeedback>
   ) : null;
 
   const inputAreaComponent = inputAreaVisible ? (
@@ -94,6 +99,7 @@ const ShoppingListView = ({styles, model, controller}) => {
         onInputAreaHide={inputAreaHideHandler}
         onSubmitValues={inputAreaSubmitValuesHandler}
         units={units}
+        classes={classes}
       />
     </View>
   ) : null;

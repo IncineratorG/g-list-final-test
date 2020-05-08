@@ -110,6 +110,10 @@ export const useShoppingListScreenController = model => {
     model.setters.setProductRow(null);
   };
 
+  const shadedBackgroundPressHandler = () => {
+    model.setters.setInputAreaVisible(!model.data.inputAreaVisible);
+  };
+
   return {
     addProductButtonHandler,
     inputAreaSubmitValuesHandler,
@@ -120,5 +124,6 @@ export const useShoppingListScreenController = model => {
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogTouchOutsideHandler,
     removeConfirmationDialogCancelRemoveHandler,
+    shadedBackgroundPressHandler,
   };
 };
