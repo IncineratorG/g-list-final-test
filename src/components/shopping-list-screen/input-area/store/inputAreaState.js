@@ -6,6 +6,8 @@ import {
   INITIAL_QUANTITY_UNIT,
   INITIAL_NOTE,
   PLACEHOLDER_PRODUCT_NAME,
+  INITIAL_CATEGORY,
+  INITIAL_CATEGORY_ID,
 } from './inputAreaTypes';
 
 export const initialState = {
@@ -23,6 +25,8 @@ export const initialState = {
     productName: INITIAL_PRODUCT_NAME,
     quantityValue: INITIAL_QUANTITY_VALUE,
     quantityUnit: INITIAL_QUANTITY_UNIT,
+    category: INITIAL_CATEGORY,
+    categoryId: INITIAL_CATEGORY_ID,
     note: INITIAL_NOTE,
   },
 };

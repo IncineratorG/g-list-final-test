@@ -145,6 +145,13 @@ export function reducer(state, action) {
         case INPUT_NOTE: {
           return {...state, values: {...state.values, note: action.payload}};
         }
+
+        case INPUT_CATEGORY: {
+          return {
+            ...state,
+            values: {...state.values, category: action.payload},
+          };
+        }
       }
 
       return {...state};
@@ -181,9 +188,14 @@ export function reducer(state, action) {
     }
 
     case SET_CLASS: {
-      console.log('SET_CLASS');
-
-      return {...state};
+      return {
+        ...state,
+        values: {
+          ...state.values,
+          categoryId: action.payload.id,
+          category: action.payload.name,
+        },
+      };
     }
 
     default: {

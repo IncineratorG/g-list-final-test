@@ -33,7 +33,7 @@ export const shoppingLIstViewStyles = StyleSheet.create({
   },
   inputAreaContainer: {
     alignSelf: 'stretch',
-    height: 100,
+    height: 150,
     position: 'absolute',
     bottom: 0,
     left: 0,

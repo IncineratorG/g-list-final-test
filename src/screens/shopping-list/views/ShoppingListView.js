@@ -85,6 +85,9 @@ const ShoppingListView = ({styles, model, controller}) => {
     </View>
   );
 
+  // const shadedBackgroundComponent = inputAreaVisible ? (
+  //   <View style={styles.shadedBackground} />
+  // ) : null;
   const shadedBackgroundComponent = inputAreaVisible ? (
     <TouchableWithoutFeedback
       onPress={shadedBackgroundPressHandler}

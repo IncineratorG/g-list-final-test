@@ -6,6 +6,8 @@ export const INPUT_NOTE = 'note';
 export const INITIAL_PRODUCT_NAME = '';
 export const INITIAL_QUANTITY_VALUE = '';
 export const INITIAL_QUANTITY_UNIT = '';
+export const INITIAL_CATEGORY = '';
+export const INITIAL_CATEGORY_ID = '';
 export const INITIAL_NOTE = '';
 
 export const PLACEHOLDER_PRODUCT_NAME = 'Название продукта';
