@@ -2,6 +2,7 @@ import {
   CLASSES_TABLE,
   CLASSES_TABLE_ID,
   CLASSES_TABLE_CLASS_NAME,
+  CLASSES_TABLE_CLASS_COLOR,
 } from './tables-description/classesTableDescription';
 import {
   UNITS_TABLE,
@@ -57,6 +58,8 @@ export class SqliteStorage {
       CLASSES_TABLE_ID +
       ' INTEGER PRIMARY KEY NOT NULL, ' +
       CLASSES_TABLE_CLASS_NAME +
+      ' TEXT NOT NULL, ' +
+      CLASSES_TABLE_CLASS_COLOR +
       ' TEXT NOT NULL)';
 
     const createUnitsTableStatement =
@@ -149,8 +152,8 @@ export class SqliteStorage {
     return units;
   }
 
-  static addClass(className) {
-    return ClassesTableOperations.addClass(db, className);
+  static addClass({className, classColor}) {
+    return ClassesTableOperations.addClass(db, className, classColor);
   }
 
   static async getClasses() {

@@ -25,6 +25,7 @@ const ShoppingListView = ({styles, model, controller}) => {
     inputAreaSubmitValuesHandler,
     inputAreaHideHandler,
     statusPressHandler,
+    productPressHandler,
     productRemoveHandler,
     removeConfirmationDialogTouchOutsideHandler,
     removeConfirmationDialogRemoveHandler,
@@ -77,6 +78,7 @@ const ShoppingListView = ({styles, model, controller}) => {
       <ProductsList
         editable={editable}
         list={products}
+        onItemPress={productPressHandler}
         onStatusPress={statusPressHandler}
         onRemovePress={productRemoveHandler}
         units={units}

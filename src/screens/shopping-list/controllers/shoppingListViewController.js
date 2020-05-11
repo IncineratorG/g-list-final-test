@@ -40,6 +40,10 @@ export const useShoppingListScreenController = model => {
     );
   };
 
+  const productPressHandler = useCallback(product => {
+    console.log('productPressHandler: ' + JSON.stringify(product));
+  }, []);
+
   // const statusPressHandler = (productId, status) => {
   //   console.log('statusPressHandler: ' + productId + ' - ' + status);
   //
@@ -119,6 +123,7 @@ export const useShoppingListScreenController = model => {
     inputAreaSubmitValuesHandler,
     inputAreaHideHandler,
     statusPressHandler,
+    productPressHandler,
     navigationButtonHandler,
     productRemoveHandler,
     removeConfirmationDialogRemoveHandler,

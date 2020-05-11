@@ -1,6 +1,11 @@
 import {StyleSheet} from 'react-native';
 
 export const productStylesNotCompleted = StyleSheet.create({
+  touchable: {
+    flex: 1,
+    marginTop: 7,
+    borderRadius: 4,
+  },
   mainContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -9,11 +14,68 @@ export const productStylesNotCompleted = StyleSheet.create({
     // marginTop: 7,
     backgroundColor: 'white',
     borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'grey',
     // elevation: 3,
   },
-  touchable: {
+  colorComponent: {
+    alignSelf: 'stretch',
+    width: 10,
+    backgroundColor: 'grey',
+  },
+  infoContainer: {
     flex: 1,
-    marginTop: 7,
+    // backgroundColor: 'gold',
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+  },
+  majorInfoContainer: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    // height: 50,
+    // backgroundColor: 'cyan',
+  },
+  productNameContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+  },
+  productName: {
+    marginTop: 8,
+    marginBottom: 8,
+    marginLeft: 8,
+    marginRight: 8,
+    fontSize: 18,
+  },
+  quantityContainer: {
+    alignSelf: 'stretch',
+    width: 70,
+    flexDirection: 'row',
+    // backgroundColor: 'blue',
+  },
+  quantityCountContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    // backgroundColor: 'orange',
+  },
+  quantityCount: {
+    marginLeft: 2,
+    marginRight: 2,
+    fontSize: 18,
+  },
+  quantityUnitContainer: {
+    flex: 1,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: 'yellow',
+  },
+  quantityUnit: {
+    // marginLeft: 8,
+    marginRight: 2,
+    fontSize: 18,
   },
   statusContainer: {
     width: 60,
@@ -34,71 +96,10 @@ export const productStylesNotCompleted = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 15,
     elevation: 6,
+    marginTop: 10,
+    marginBottom: 10,
     // marginRight: 10,
   },
-  // контэйнер, в кот-ом распологается название продукта, кол-во и примечание.
-  infoContainer: {
-    flex: 1,
-    // backgroundColor: 'gold',
-    alignSelf: 'stretch',
-  },
-  // конт-р, в котором распологается название продукта, кол-во.
-  majorInfoContainer: {
-    flexDirection: 'row',
-    alignSelf: 'stretch',
-    height: 50,
-    // backgroundColor: 'cyan',
-  },
-  // конт-р, в котором распологается название продукта.
-  productNameContainer: {
-    flex: 1,
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-  },
-  // стиль для названия продукта
-  productName: {
-    marginTop: 8,
-    marginBottom: 8,
-    marginLeft: 8,
-    marginRight: 8,
-    fontSize: 18,
-  },
-  // конт-р, в котором распологается кол-во и ед-ца измерения продукта.
-  quantityContainer: {
-    alignSelf: 'stretch',
-    width: 70,
-    flexDirection: 'row',
-    // backgroundColor: 'blue',
-  },
-  // конт-р, в котором распологается кол-во продукта.
-  quantityCountContainer: {
-    flex: 1,
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    // backgroundColor: 'orange',
-  },
-  // строка с кол-вом продукта
-  quantityCount: {
-    marginLeft: 2,
-    marginRight: 2,
-    fontSize: 18,
-  },
-  // конт-р, в котором распологается ед-ца измерения продукта.
-  quantityUnitContainer: {
-    flex: 1,
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // backgroundColor: 'yellow',
-  },
-  // строка с единицей измерения кол-ва продукта
-  quantityUnit: {
-    // marginLeft: 8,
-    marginRight: 2,
-    fontSize: 18,
-  },
-  // конт-р, в котором распологается примечание к продукту.
   noteContainer: {
     flex: 1,
     alignSelf: 'stretch',

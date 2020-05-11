@@ -11,7 +11,13 @@ import {
   PRODUCT_NOT_COMPLETED,
 } from '../../../services/storage/data/productStatus';
 
-const GeneralProduct = ({product, onStatusPress, units, classes}) => {
+const GeneralProduct = ({
+  product,
+  onItemPress,
+  onStatusPress,
+  units,
+  classes,
+}) => {
   const getUnitName = unitId => {
     const filteredUnits = units.filter(unit => unit.id === unitId);
     return filteredUnits.length ? filteredUnits[0].name : '';
@@ -38,7 +44,9 @@ const GeneralProduct = ({product, onStatusPress, units, classes}) => {
     <ProductNotCompleted
       styles={productStylesNotCompleted}
       itemToRender={productItem}
+      onItemPress={onItemPress}
       onStatusPress={onStatusPress}
+      classes={classes}
     />
   );
 
