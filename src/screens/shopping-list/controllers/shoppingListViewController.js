@@ -35,7 +35,7 @@ export const useShoppingListScreenController = model => {
         quantity: values.quantityValue,
         unitId: values.quantityUnit,
         note: values.note,
-        classId: 1,
+        classId: values.classId,
       }),
     );
   };

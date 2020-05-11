@@ -54,9 +54,6 @@ const ProductInputArea = ({
     dispatch({type: SET_UNIT, payload: unitId});
 
   const categorySelectHandler = category => {
-    console.log(
-      'categorySelectHandler: ' + category.id + ' - ' + category.name,
-    );
     dispatch({type: SET_CLASS, payload: category});
   };
 
@@ -72,6 +69,7 @@ const ProductInputArea = ({
         : 1,
       quantityUnit: state.values.quantityUnit,
       note: state.values.note,
+      classId: state.values.categoryId ? state.values.categoryId : 1,
     };
 
     if (onSubmitValues) {
@@ -105,10 +103,13 @@ const ProductInputArea = ({
         dispatch({type: SET_UNIT, payload: state.values.units[0].id});
       }
     }
+  }, [state.values.units, units]);
+
+  useEffect(() => {
     if (classes) {
       dispatch({type: SET_CLASSES, payload: classes});
     }
-  }, [classes, state.values.units, units]);
+  }, [classes]);
 
   const pickerItems = state.values.units.map(unit => {
     return <Picker.Item label={unit.name} value={unit.id} key={unit.id} />;
@@ -128,7 +129,8 @@ const ProductInputArea = ({
     <View style={styles.categoriesContainer}>
       <CategoriesList
         userInput={state.values.category}
-        categories={classes}
+        categories={state.values.classes}
+        categoriesMap={state.values.classesMap}
         onCategoryPress={categorySelectHandler}
       />
     </View>

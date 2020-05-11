@@ -12,6 +12,7 @@ import {
   PLACEHOLDER_NOTE,
   INPUT_CATEGORY,
   PLACEHOLDER_CATEGORY,
+  INITIAL_CATEGORY_ID, INITIAL_CATEGORY,
 } from './inputAreaTypes';
 import {
   HIDE_INPUT_AREA,
@@ -147,9 +148,18 @@ export function reducer(state, action) {
         }
 
         case INPUT_CATEGORY: {
+          let categoryId;
+          if (state.values.classesMap.has(action.payload)) {
+            categoryId = state.values.classesMap.get(action.payload);
+          }
+
           return {
             ...state,
-            values: {...state.values, category: action.payload},
+            values: {
+              ...state.values,
+              category: action.payload,
+              categoryId: categoryId ? categoryId : INITIAL_CATEGORY_ID,
+            },
           };
         }
       }
@@ -166,6 +176,8 @@ export function reducer(state, action) {
           productName: INITIAL_PRODUCT_NAME,
           quantityValue: INITIAL_QUANTITY_VALUE,
           note: INITIAL_NOTE,
+          category: INITIAL_CATEGORY,
+          categoryId: INITIAL_CATEGORY_ID,
         },
       };
     }
@@ -184,7 +196,13 @@ export function reducer(state, action) {
 
     case SET_CLASSES: {
       const classes = action.payload ? action.payload : [];
-      return {...state, values: {...state.values, classes: classes}};
+      const classesMap = new Map();
+      classes.forEach(cl => classesMap.set(cl.name, cl.id));
+
+      return {
+        ...state,
+        values: {...state.values, classes: classes, classesMap: classesMap},
+      };
     }
 
     case SET_CLASS: {

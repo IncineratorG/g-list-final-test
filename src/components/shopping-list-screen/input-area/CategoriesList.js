@@ -7,9 +7,14 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-export const CategoriesList = ({userInput, categories, onCategoryPress}) => {
+export const CategoriesList = ({
+  userInput,
+  categories,
+  categoriesMap,
+  onCategoryPress,
+}) => {
   let validCategories = [];
-  if (!userInput) {
+  if (!userInput || categoriesMap.has(userInput)) {
     validCategories = [...categories];
   } else {
     validCategories = categories.filter(category => {
@@ -26,6 +31,25 @@ export const CategoriesList = ({userInput, categories, onCategoryPress}) => {
       validCategories.push({id: 'MAX_VALUE', name: 'Нет совпадений'});
     }
   }
+
+  // let validCategories = [];
+  // if (!userInput) {
+  //   validCategories = [...categories];
+  // } else {
+  //   validCategories = categories.filter(category => {
+  //     return category.name.toLowerCase().startsWith(userInput.toLowerCase());
+  //   });
+  // }
+  // if (!validCategories.length) {
+  //   const otherCategoryData = categories.filter(
+  //     category => category.name === 'Другое',
+  //   );
+  //   if (otherCategoryData.length) {
+  //     validCategories.push(otherCategoryData[0]);
+  //   } else {
+  //     validCategories.push({id: 'MAX_VALUE', name: 'Нет совпадений'});
+  //   }
+  // }
 
   const renderItem = ({item}) => {
     const categoryPressHandler = () => {

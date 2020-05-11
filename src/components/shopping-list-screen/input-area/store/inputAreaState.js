@@ -20,6 +20,7 @@ export const initialState = {
   values: {
     units: [],
     classes: [],
+    classesMap: new Map(),
     acceptable: false,
     placeholder: PLACEHOLDER_PRODUCT_NAME,
     productName: INITIAL_PRODUCT_NAME,
