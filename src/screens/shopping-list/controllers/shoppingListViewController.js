@@ -1,4 +1,4 @@
-import {useCallback, useMemo} from 'react';
+import {useCallback} from 'react';
 import {
   addProduct,
   removeProduct,
@@ -105,10 +105,9 @@ export const useShoppingListScreenController = model => {
     [model],
   );
 
-  const productRemoveHandler = (product, row) => {
+  const productRemoveHandler = product => {
     model.setters.setRemoveProductName(product.name);
     model.setters.setRemoveProductId(product.id);
-    model.setters.setProductRow(row);
     model.setters.setRemoveConfirmationDialogVisible(true);
   };
 
@@ -125,13 +124,10 @@ export const useShoppingListScreenController = model => {
       }),
     );
     model.setters.setRemoveConfirmationDialogVisible(false);
-    model.setters.setProductRow(null);
   };
 
   const removeConfirmationDialogCancelRemoveHandler = () => {
     model.setters.setRemoveConfirmationDialogVisible(false);
-    model.data.productRow.closeRow();
-    model.setters.setProductRow(null);
   };
 
   const shadedBackgroundPressHandler = () => {

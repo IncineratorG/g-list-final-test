@@ -342,7 +342,11 @@ export class FirebaseStorage {
 
   static async removeProduct({shoppingListId, productId}) {
     // Получаем данные списка покупок.
-    let listData = FirebaseStorage.sendSharedShoppingLists.get(shoppingListId);
+    // Получаем данные списка покупок.
+    const listData = FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)
+      ? FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+      : FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
+    // let listData = FirebaseStorage.sendSharedShoppingLists.get(shoppingListId);
     if (!listData) {
       console.log(
         'FirebaseStorage->removeProduct(): UNABLE_TO_FIND_SEND_LIST_DATA_WITH_ID: ' +

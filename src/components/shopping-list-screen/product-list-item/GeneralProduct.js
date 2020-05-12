@@ -14,6 +14,7 @@ import {
 const GeneralProduct = ({
   product,
   onItemPress,
+  onItemLongPress,
   onStatusPress,
   units,
   classes,
@@ -47,6 +48,7 @@ const GeneralProduct = ({
       styles={productStylesNotCompleted}
       itemToRender={productItem}
       onItemPress={onItemPress}
+      onItemLongPress={onItemLongPress}
       onStatusPress={onStatusPress}
       classes={classes}
       selectedCategory={selectedCategory}

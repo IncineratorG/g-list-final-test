@@ -14,6 +14,7 @@ const ProductNotCompleted = ({
   classes,
   onStatusPress,
   onItemPress,
+  onItemLongPress,
   selectedCategory,
 }) => {
   const getClassDescription = classId => {
@@ -26,6 +27,12 @@ const ProductNotCompleted = ({
   const itemPressHandler = () => {
     if (onItemPress) {
       onItemPress(itemToRender);
+    }
+  };
+
+  const itemLongPressHandler = () => {
+    if (onItemLongPress) {
+      onItemLongPress(itemToRender);
     }
   };
 
@@ -61,7 +68,8 @@ const ProductNotCompleted = ({
     <TouchableHighlight
       style={styles.touchable}
       underlayColor={classDescription.color}
-      onPress={itemPressHandler}>
+      onPress={itemPressHandler}
+      onLongPress={itemLongPressHandler}>
       <View
         style={[styles.mainContainer, {borderColor: classDescription.color}]}>
         <View

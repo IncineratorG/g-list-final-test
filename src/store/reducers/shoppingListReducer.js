@@ -139,8 +139,6 @@ export const shoppingListReducer = (state = initialState, action) => {
         return {...state};
       }
 
-      // console.log('SET_PRODUCT_STATUS_BEGIN');
-
       const updatedProducts = state.currentShoppingList.products.map(
         product => {
           let updatedProduct = {...product};
@@ -370,16 +368,12 @@ export const shoppingListReducer = (state = initialState, action) => {
         ...state.currentShoppingList.products,
         ...products,
       ].sort(productsComparator);
-      // const newProducts = [
-      //   ...state.currentShoppingList.products,
-      //   ...products,
-      // ].sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
 
       return {
         ...state,
         currentShoppingList: {
           ...state.currentShoppingList,
-          products: [...newProducts],
+          products: newProducts,
         },
       };
     }
@@ -405,19 +399,12 @@ export const shoppingListReducer = (state = initialState, action) => {
             : product;
         })
         .sort(productsComparator);
-      // let updatedProducts = state.currentShoppingList.products
-      //   .map(product => {
-      //     return updatedProductsMap.has(product.id)
-      //       ? updatedProductsMap.get(product.id)
-      //       : product;
-      //   })
-      //   .sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
 
       return {
         ...state,
         currentShoppingList: {
           ...state.currentShoppingList,
-          products: [...updatedProducts],
+          products: updatedProducts,
         },
       };
     }
@@ -426,10 +413,24 @@ export const shoppingListReducer = (state = initialState, action) => {
       const shoppingListId = action.payload.shoppingListId;
       const products = action.payload.products;
 
-      console.log(
-        'DELETE_PRODUCTS_REDUCER: ' + shoppingListId + ' - ' + products.length,
+      const deletedProductsIdsSet = new Set();
+      products.forEach(product => deletedProductsIdsSet.add(product.id));
+
+      if (shoppingListId !== state.currentShoppingList.id) {
+        return {...state};
+      }
+
+      const updatedProducts = state.currentShoppingList.products.filter(
+        product => !deletedProductsIdsSet.has(product.id),
       );
-      return {...state};
+
+      return {
+        ...state,
+        currentShoppingList: {
+          ...state.currentShoppingList,
+          products: updatedProducts,
+        },
+      };
     }
     // ===
 
