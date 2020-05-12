@@ -19,6 +19,7 @@ export const listOfShoppingListsItemStylesGeneral = StyleSheet.create({
   },
   listNameContainer: {
     flex: 1,
+    justifyContent: 'center',
   },
   listName: {
     fontSize: 18,

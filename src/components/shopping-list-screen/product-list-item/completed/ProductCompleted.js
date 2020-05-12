@@ -36,6 +36,8 @@ const ProductCompleted = ({
     mustRender = true;
   } else if (selectedCategory === ProductCategories.types.COMPLETED) {
     mustRender = true;
+  } else if (selectedCategory === itemToRender.classId) {
+    mustRender = true;
   }
 
   if (!mustRender) {
