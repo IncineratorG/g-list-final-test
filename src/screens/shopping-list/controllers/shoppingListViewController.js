@@ -3,6 +3,7 @@ import {
   addProduct,
   removeProduct,
   setProductStatus,
+  updateProduct,
 } from '../../../store/actions/shoppingListActions';
 
 export const useShoppingListScreenController = model => {
@@ -19,6 +20,8 @@ export const useShoppingListScreenController = model => {
   };
 
   const addProductButtonHandler = () => {
+    model.setters.setInputAreaEditMode(false);
+    model.setters.setInputAreaEditModeData(undefined);
     model.setters.setInputAreaVisible(true);
   };
 
@@ -27,18 +30,44 @@ export const useShoppingListScreenController = model => {
   };
 
   const inputAreaSubmitValuesHandler = values => {
-    model.dispatch(
-      addProduct({
-        editor: model.data.currentId,
-        shoppingListId: model.data.shoppingListId,
-        name: values.productName,
-        quantity: values.quantityValue,
-        unitId: values.quantityUnit,
-        note: values.note,
-        classId: 1,
-      }),
-    );
+    if (model.data.inputAreaEditMode) {
+      model.dispatch(
+        updateProduct({
+          editor: model.data.currentId,
+          shoppingListId: model.data.shoppingListId,
+          productId: model.data.inputAreaEditModeData.id,
+          name: values.productName,
+          quantity: values.quantityValue,
+          unitId: values.quantityUnit,
+          note: values.note,
+          classId: values.classId,
+          status: model.data.inputAreaEditModeData.completionStatus,
+        }),
+      );
+      model.setters.setInputAreaVisible(false);
+    } else {
+      model.dispatch(
+        addProduct({
+          editor: model.data.currentId,
+          shoppingListId: model.data.shoppingListId,
+          name: values.productName,
+          quantity: values.quantityValue,
+          unitId: values.quantityUnit,
+          note: values.note,
+          classId: values.classId,
+        }),
+      );
+    }
   };
+
+  const productPressHandler = useCallback(
+    product => {
+      model.setters.setInputAreaEditMode(true);
+      model.setters.setInputAreaEditModeData(product);
+      model.setters.setInputAreaVisible(true);
+    },
+    [model.setters],
+  );
 
   // const statusPressHandler = (productId, status) => {
   //   console.log('statusPressHandler: ' + productId + ' - ' + status);
@@ -76,11 +105,6 @@ export const useShoppingListScreenController = model => {
     [model],
   );
 
-  //   const statusPressHandler = useCallback(
-  // ,
-  //     [model],
-  //   );
-
   const productRemoveHandler = (product, row) => {
     model.setters.setRemoveProductName(product.name);
     model.setters.setRemoveProductId(product.id);
@@ -110,15 +134,26 @@ export const useShoppingListScreenController = model => {
     model.setters.setProductRow(null);
   };
 
+  const shadedBackgroundPressHandler = () => {
+    model.setters.setInputAreaVisible(!model.data.inputAreaVisible);
+  };
+
+  const selectCategoryHandler = category => {
+    model.setters.setSelectedProductClass(category.id);
+  };
+
   return {
     addProductButtonHandler,
     inputAreaSubmitValuesHandler,
     inputAreaHideHandler,
     statusPressHandler,
+    productPressHandler,
     navigationButtonHandler,
     productRemoveHandler,
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogTouchOutsideHandler,
     removeConfirmationDialogCancelRemoveHandler,
+    shadedBackgroundPressHandler,
+    selectCategoryHandler,
   };
 };

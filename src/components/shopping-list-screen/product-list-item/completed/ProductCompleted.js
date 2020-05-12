@@ -8,8 +8,14 @@ import {
 } from 'react-native';
 import {icons} from '../../../../assets/icons';
 import {PRODUCT_NOT_COMPLETED} from '../../../../services/storage/data/productStatus';
+import {ProductCategories} from '../../ProductCategories';
 
-const ProductCompleted = ({styles, itemToRender, onStatusPress}) => {
+const ProductCompleted = ({
+  styles,
+  itemToRender,
+  onStatusPress,
+  selectedCategory,
+}) => {
   const statusPressHandler = () => {
     onStatusPress(itemToRender.id, PRODUCT_NOT_COMPLETED);
   };
@@ -24,6 +30,19 @@ const ProductCompleted = ({styles, itemToRender, onStatusPress}) => {
 
   const noteComponent =
     itemToRender.note.length > 0 ? noteExistComponent : noteNotExistComponent;
+
+  let mustRender = false;
+  if (selectedCategory === ProductCategories.types.ALL) {
+    mustRender = true;
+  } else if (selectedCategory === ProductCategories.types.COMPLETED) {
+    mustRender = true;
+  } else if (selectedCategory === itemToRender.classId) {
+    mustRender = true;
+  }
+
+  if (!mustRender) {
+    return null;
+  }
 
   return (
     <TouchableHighlight
@@ -69,13 +88,13 @@ const ProductCompleted = ({styles, itemToRender, onStatusPress}) => {
   );
 };
 
-const comparator = (prevProps, currProps) => {
-  return (
-    prevProps.itemToRender.completionStatus ===
-      currProps.itemToRender.completionStatus ||
-    prevProps.itemToRender.updateTimestamp ===
-      currProps.itemToRender.updateTimestamp
-  );
-};
+// const comparator = (prevProps, currProps) => {
+//   return (
+//     prevProps.itemToRender.completionStatus ===
+//       currProps.itemToRender.completionStatus ||
+//     prevProps.itemToRender.updateTimestamp ===
+//       currProps.itemToRender.updateTimestamp
+//   );
+// };
 
-export default React.memo(ProductCompleted, comparator);
+export default React.memo(ProductCompleted);

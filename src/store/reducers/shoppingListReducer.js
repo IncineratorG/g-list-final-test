@@ -28,9 +28,11 @@ import {
   UNSUBSCRIBE_FROM_LIST_OF_SHOPPING_LISTS,
   UNSUBSCRIBE_FROM_SHARED_LISTS_OF_SHOPPING_LISTS_LOADING_STATUS,
   UPDATE_LIST_OF_SHOPPING_LISTS,
+  UPDATE_PRODUCT,
   UPDATE_PRODUCTS,
   UPDATE_SHOPPING_LIST,
 } from '../types/shoppingListTypes';
+import {productsComparator} from '../helpers/productsComparator';
 
 const initialState = {
   units: [],
@@ -121,6 +123,10 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case ADD_PRODUCT: {
+      return {...state};
+    }
+
+    case UPDATE_PRODUCT: {
       return {...state};
     }
 
@@ -363,7 +369,11 @@ export const shoppingListReducer = (state = initialState, action) => {
       const newProducts = [
         ...state.currentShoppingList.products,
         ...products,
-      ].sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
+      ].sort(productsComparator);
+      // const newProducts = [
+      //   ...state.currentShoppingList.products,
+      //   ...products,
+      // ].sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
 
       return {
         ...state,
@@ -394,7 +404,14 @@ export const shoppingListReducer = (state = initialState, action) => {
             ? updatedProductsMap.get(product.id)
             : product;
         })
-        .sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
+        .sort(productsComparator);
+      // let updatedProducts = state.currentShoppingList.products
+      //   .map(product => {
+      //     return updatedProductsMap.has(product.id)
+      //       ? updatedProductsMap.get(product.id)
+      //       : product;
+      //   })
+      //   .sort((p1, p2) => p1.createTimestamp < p2.createTimestamp);
 
       return {
         ...state,
@@ -480,8 +497,11 @@ export const shoppingListReducer = (state = initialState, action) => {
             ? action.payload.shoppingList.creator
             : '',
           products: [...action.payload.shoppingList.productsList].sort(
-            (p1, p2) => p1.createTimestamp < p2.createTimestamp,
+            productsComparator,
           ),
+          // products: [...action.payload.shoppingList.productsList].sort(
+          //   (p1, p2) => p1.createTimestamp < p2.createTimestamp,
+          // ),
           receivers: action.payload.shoppingList.receivers
             ? [...action.payload.shoppingList.receivers]
             : [],

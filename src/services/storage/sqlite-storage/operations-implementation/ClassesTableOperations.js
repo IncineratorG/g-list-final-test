@@ -1,22 +1,25 @@
 import {
   CLASSES_TABLE,
+  CLASSES_TABLE_CLASS_COLOR,
   CLASSES_TABLE_CLASS_NAME,
 } from '../tables-description/classesTableDescription';
 
 export class ClassesTableOperations {
-  static addClass(db, className) {
+  static addClass(db, className, classColor) {
     const addClassStatement =
       'INSERT INTO ' +
       CLASSES_TABLE +
       ' (' +
       CLASSES_TABLE_CLASS_NAME +
-      ') VALUES (?)';
+      ', ' +
+      CLASSES_TABLE_CLASS_COLOR +
+      ') VALUES (?, ?)';
 
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
           addClassStatement,
-          [className],
+          [className, classColor],
           (_, result) => resolve(result.insertId),
           (_, error) => reject(error),
         );

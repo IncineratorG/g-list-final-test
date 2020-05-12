@@ -2,6 +2,7 @@ import {
   CLASSES_TABLE,
   CLASSES_TABLE_ID,
   CLASSES_TABLE_CLASS_NAME,
+  CLASSES_TABLE_CLASS_COLOR,
 } from './tables-description/classesTableDescription';
 import {
   UNITS_TABLE,
@@ -57,6 +58,8 @@ export class SqliteStorage {
       CLASSES_TABLE_ID +
       ' INTEGER PRIMARY KEY NOT NULL, ' +
       CLASSES_TABLE_CLASS_NAME +
+      ' TEXT NOT NULL, ' +
+      CLASSES_TABLE_CLASS_COLOR +
       ' TEXT NOT NULL)';
 
     const createUnitsTableStatement =
@@ -149,8 +152,8 @@ export class SqliteStorage {
     return units;
   }
 
-  static addClass(className) {
-    return ClassesTableOperations.addClass(db, className);
+  static addClass({className, classColor}) {
+    return ClassesTableOperations.addClass(db, className, classColor);
   }
 
   static async getClasses() {
@@ -260,20 +263,61 @@ export class SqliteStorage {
       event: SqliteStorage.events.LOCAL_PRODUCTS_ADDED,
       data: {shoppingListId, products: [addedProduct]},
     });
-    // SqliteStorage.notifier.notify({
-    //   event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
-    //   data: {
-    //     shoppingListId,
-    //     productId: insertedId,
-    //     name,
-    //     quantity,
-    //     unitId,
-    //     note,
-    //     classId,
-    //   },
-    // });
 
     return insertedId;
+  }
+
+  static async updateProduct({
+    shoppingListId,
+    productId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+    status,
+  }) {
+    await ShoppingListItemsTableOperations.updateItem(
+      db,
+      shoppingListId,
+      productId,
+      name,
+      quantity,
+      unitId,
+      note,
+      classId,
+      status,
+    );
+
+    const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+      db,
+      shoppingListId,
+    );
+
+    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+      db,
+      shoppingListId,
+    );
+
+    await ShoppingListsTableOperations.updateShoppingList(
+      db,
+      shoppingListId,
+      totalShoppingListItems.length,
+      completedShoppingListItems.length,
+    );
+
+    let updatedProduct;
+    for (let i = 0; i < totalShoppingListItems.length; ++i) {
+      if (totalShoppingListItems.item(i).id === productId) {
+        updatedProduct = totalShoppingListItems.item(i);
+        break;
+      }
+    }
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_PRODUCTS_UPDATED,
+      data: {shoppingListId, products: [updatedProduct]},
+    });
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
@@ -315,11 +359,6 @@ export class SqliteStorage {
       event: SqliteStorage.events.LOCAL_PRODUCTS_UPDATED,
       data: {shoppingListId, products: [updatedProduct]},
     });
-    // SqliteStorage.notifier.notify({
-    //   event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-    //   data: {shoppingListId, productId},
-    //   // data: {shoppingListId, productId, status},
-    // });
 
     return shoppingListId;
   }

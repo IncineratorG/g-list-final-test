@@ -51,10 +51,11 @@ export const useMainScreenModel = () => {
     const localListsTypeTitle = 'Локальные';
     const sharedListsTypeTitle = 'Совместные';
     const listTypesArr = [];
+
     if (localShoppingLists.length && sharedShoppingLists.length) {
       listTypesArr.push({type: ListTypes.type.ALL, title: allListsTypeTitle});
     }
-    if (localShoppingLists.length && sharedShoppingLists.length) {
+    if (localShoppingLists.length) {
       listTypesArr.push({
         type: ListTypes.type.LOCAL,
         title: localListsTypeTitle,
@@ -146,6 +147,45 @@ export const useMainScreenModel = () => {
     dispatch,
   };
 };
+
+// useEffect(() => {
+//   setListProcessed(false);
+//   if (selectedListType === ListTypes.type.ALL) {
+//     if (allShoppingLists.length) {
+//       setSelectedShoppingLists([
+//         ...allShoppingLists,
+//         {id: 'MAX_VALUE', extra: true},
+//       ]);
+//     } else {
+//       setSelectedShoppingLists(allShoppingLists);
+//     }
+//   } else if (selectedListType === ListTypes.type.LOCAL) {
+//     if (localShoppingLists.length) {
+//       setSelectedShoppingLists([
+//         ...localShoppingLists,
+//         {id: 'MAX_VALUE', extra: true},
+//       ]);
+//     } else {
+//       setSelectedShoppingLists(localShoppingLists);
+//     }
+//   } else if (selectedListType === ListTypes.type.SHARED) {
+//     if (sharedShoppingLists.length) {
+//       setSelectedShoppingLists([
+//         ...sharedShoppingLists,
+//         {id: 'MAX_VALUE', extra: true},
+//       ]);
+//     } else {
+//       setSelectedShoppingLists(sharedShoppingLists);
+//     }
+//   }
+//   setListProcessed(true);
+// }, [
+//   localShoppingLists,
+//   sharedShoppingLists,
+//   selectedListType,
+//   allShoppingLists,
+// ]);
+
 // export const useMainScreenModel = () => {
 //   const navigation = useNavigation();
 //

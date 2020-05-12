@@ -1,15 +1,19 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, TouchableWithoutFeedback} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {EmptyShoppingListScreen} from '../../../components/shopping-list-screen/EmptyShoppingListScreen';
 import {ProductsList} from '../../../components/shopping-list-screen/ProductsList';
 import ProductInputArea from '../../../components/shopping-list-screen/input-area/ProductInputArea';
 import {AddButton} from '../../../components/common/AddButton';
 import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
+import BusyIndicator from '../../../components/main-screen/BusyIndicator';
+import {ProductCategoriesList} from '../../../components/shopping-list-screen/ProductCategoriesList';
 
 const ShoppingListView = ({styles, model, controller}) => {
   const {
     inputAreaVisible,
+    inputAreaEditMode,
+    inputAreaEditModeData,
     listLoading,
     products,
     units,
@@ -18,6 +22,8 @@ const ShoppingListView = ({styles, model, controller}) => {
     removeProductName,
     removeConfirmationDialogVisible,
     sharedListLoading,
+    usedProductsClasses,
+    selectedProductClass,
   } = model;
 
   const {
@@ -25,10 +31,13 @@ const ShoppingListView = ({styles, model, controller}) => {
     inputAreaSubmitValuesHandler,
     inputAreaHideHandler,
     statusPressHandler,
+    productPressHandler,
     productRemoveHandler,
     removeConfirmationDialogTouchOutsideHandler,
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
+    shadedBackgroundPressHandler,
+    selectCategoryHandler,
   } = controller;
 
   const removeConfirmationDialog = (
@@ -76,16 +85,22 @@ const ShoppingListView = ({styles, model, controller}) => {
       <ProductsList
         editable={editable}
         list={products}
+        onItemPress={productPressHandler}
         onStatusPress={statusPressHandler}
         onRemovePress={productRemoveHandler}
         units={units}
         classes={classes}
+        selectedCategory={selectedProductClass}
       />
     </View>
   );
 
   const shadedBackgroundComponent = inputAreaVisible ? (
-    <View style={styles.shadedBackground} />
+    <TouchableWithoutFeedback
+      onPress={shadedBackgroundPressHandler}
+      behavior={'position'}>
+      <View style={styles.shadedBackground} />
+    </TouchableWithoutFeedback>
   ) : null;
 
   const inputAreaComponent = inputAreaVisible ? (
@@ -93,7 +108,10 @@ const ShoppingListView = ({styles, model, controller}) => {
       <ProductInputArea
         onInputAreaHide={inputAreaHideHandler}
         onSubmitValues={inputAreaSubmitValuesHandler}
+        editMode={inputAreaEditMode}
+        editModeData={inputAreaEditModeData}
         units={units}
+        classes={classes}
       />
     </View>
   ) : null;
@@ -111,21 +129,26 @@ const ShoppingListView = ({styles, model, controller}) => {
     />
   ) : null;
 
-  // ===
-  const sharedListLoadingComponent = (
-    <View style={{height: 20, width: 200, backgroundColor: 'green'}} />
+  const loadingIndicatorComponent = (
+    <View style={styles.loadingIndicatorContainer}>
+      <BusyIndicator busy={sharedListLoading} />
+    </View>
   );
-  const sharedListLoadedComponent = (
-    <View style={{height: 20, width: 200, backgroundColor: 'grey'}} />
+
+  const productCategoriesComponent = (
+    <View style={styles.productCategoriesContainer}>
+      <ProductCategoriesList
+        categories={usedProductsClasses}
+        onCategoryPress={selectCategoryHandler}
+        selectedCategory={selectedProductClass}
+      />
+    </View>
   );
-  const sharedListLoadingStatusComponent = sharedListLoading
-    ? sharedListLoadingComponent
-    : sharedListLoadedComponent;
-  // ===
 
   return (
     <View style={styles.mainContainer}>
-      {sharedListLoadingStatusComponent}
+      {loadingIndicatorComponent}
+      {productCategoriesComponent}
       {shoppingListScreenContent}
       {removeConfirmationDialog}
       <View style={styles.addShoppingListItemButtonContainer}>

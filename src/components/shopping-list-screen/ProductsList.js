@@ -7,11 +7,13 @@ import GeneralProduct from './product-list-item/GeneralProduct';
 
 export const ProductsList = ({
   list,
+  onItemPress,
   onStatusPress,
   onRemovePress,
   editable,
   units,
   classes,
+  selectedCategory,
 }) => {
   const removeOptionHandler = (listItem, row) => {
     if (onRemovePress) {
@@ -23,9 +25,11 @@ export const ProductsList = ({
     return (
       <GeneralProduct
         product={item}
+        onItemPress={onItemPress}
         onStatusPress={onStatusPress}
         units={units}
         classes={classes}
+        selectedCategory={selectedCategory}
       />
     );
   };

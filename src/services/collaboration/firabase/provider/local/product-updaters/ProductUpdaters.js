@@ -21,6 +21,24 @@ export class ProductUpdaters {
         };
       }
 
+      case ProductUpdaters.types.UPDATE_PRODUCT: {
+        let strategyData = {
+          updates: undefined,
+          productPath: undefined,
+          product: undefined,
+        };
+        const updateProductStrategy = () => {
+          const {updates, productPath, product} = strategyData;
+          updates[productPath] = product;
+        };
+
+        return {
+          run: updateProductStrategy,
+          data: strategyData,
+          type: ProductUpdaters.types.UPDATE_PRODUCT,
+        };
+      }
+
       case ProductUpdaters.types.REMOVE_PRODUCT: {
         let strategyData = {updates: undefined, productPath: undefined};
         const removeProductStrategy = () => {
@@ -70,6 +88,7 @@ export class ProductUpdaters {
 
 ProductUpdaters.types = {
   ADD_PRODUCT: 'ADD_PRODUCT',
+  UPDATE_PRODUCT: 'UPDATE_PRODUCT',
   REMOVE_PRODUCT: 'REMOVE_PRODUCT',
   UPDATE_STATUS: 'UPDATE_STATUS',
 };

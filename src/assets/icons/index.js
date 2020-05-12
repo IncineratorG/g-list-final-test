@@ -20,6 +20,7 @@ const icons = {
   warning: require('./warning_2.png'),
   check_progress: require('./check_progress.png'),
   menu_vertical: require('./menu_vertical.png'),
+  category: require('./category.png'),
 };
 
 export {icons};

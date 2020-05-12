@@ -8,6 +8,7 @@ import {setProductStatusHandler} from './handlers/setProductStatusHandler';
 import {addProductHandler} from './handlers/addProductHandler';
 import {removeProductHandler} from './handlers/removeProductHandler';
 import {FirebaseResponse} from '../../response/FirebaseResponse';
+import {updateProductHandler} from './handlers/updateProductHandler';
 
 export class FirebaseLocalProvider {
   static async checkUser({email}) {
@@ -116,6 +117,30 @@ export class FirebaseLocalProvider {
       completedItemsCount,
       totalItemsCount,
     });
+
+    if (status === 'SUCCESS') {
+      return FirebaseResponse.type.SUCCESS;
+    } else {
+      return FirebaseResponse.type.ERROR;
+    }
+  }
+
+  static async updateProduct({
+    editor,
+    shoppingListId,
+    product,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    const status = await updateProductHandler({
+      editor,
+      shoppingListId,
+      product,
+      completedItemsCount,
+      totalItemsCount,
+    });
+
+    console.log(status);
 
     if (status === 'SUCCESS') {
       return FirebaseResponse.type.SUCCESS;

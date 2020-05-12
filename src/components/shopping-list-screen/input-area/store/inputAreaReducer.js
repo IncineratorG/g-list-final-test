@@ -10,6 +10,10 @@ import {
   PLACEHOLDER_PRODUCT_NAME,
   PLACEHOLDER_QUANTITY_VALUE,
   PLACEHOLDER_NOTE,
+  INPUT_CATEGORY,
+  PLACEHOLDER_CATEGORY,
+  INITIAL_CATEGORY_ID,
+  INITIAL_CATEGORY,
 } from './inputAreaTypes';
 import {
   HIDE_INPUT_AREA,
@@ -20,6 +24,10 @@ import {
   SUBMIT_VALUES,
   SET_UNITS,
   SET_UNIT,
+  SELECT_CATEGORY,
+  SET_CLASSES,
+  SET_CLASS,
+  SET_EDIT_PRODUCT,
 } from './inputAreaActions';
 
 export function reducer(state, action) {
@@ -49,6 +57,7 @@ export function reducer(state, action) {
         inputAreaVisible: false,
         keyboardType: 'default',
         textInputIcon: icons.title,
+        categoriesVisible: false,
         textInputOptionsVisible: false,
         currentInput: INPUT_PRODUCT_NAME,
         values: {
@@ -63,12 +72,38 @@ export function reducer(state, action) {
       };
     }
 
+    case SET_EDIT_PRODUCT: {
+      const getClassDescription = classId => {
+        const filteredClasses = state.values.classes.filter(
+          cl => cl.id === classId,
+        );
+        return filteredClasses.length ? filteredClasses[0] : undefined;
+      };
+
+      const classDesc = getClassDescription(action.payload.classId);
+
+      return {
+        ...state,
+        values: {
+          ...state.values,
+          acceptable: true,
+          productName: action.payload.name,
+          category: classDesc ? classDesc.name : '',
+          categoryId: classDesc ? classDesc.id : '',
+          quantityValue: action.payload.quantity.toString(),
+          quantityUnit: action.payload.unitId,
+          note: action.payload.note,
+        },
+      };
+    }
+
     case SELECT_PRODUCT_NAME: {
       return {
         ...state,
         keyboardType: 'default',
         textInputIcon: icons.title,
         textInputOptionsVisible: false,
+        categoriesVisible: false,
         currentInput: INPUT_PRODUCT_NAME,
         values: {...state.values, placeholder: PLACEHOLDER_PRODUCT_NAME},
       };
@@ -80,8 +115,26 @@ export function reducer(state, action) {
         keyboardType: 'numeric',
         textInputIcon: icons.weight,
         textInputOptionsVisible: true,
+        categoriesVisible: false,
         currentInput: INPUT_QUANTITY,
         values: {...state.values, placeholder: PLACEHOLDER_QUANTITY_VALUE},
+      };
+    }
+
+    case SELECT_CATEGORY: {
+      console.log('SELECT_CATEGORY');
+
+      return {
+        ...state,
+        keyboardType: 'default',
+        textInputIcon: icons.category,
+        currentInput: INPUT_CATEGORY,
+        textInputOptionsVisible: false,
+        categoriesVisible: true,
+        values: {
+          ...state.values,
+          placeholder: PLACEHOLDER_CATEGORY,
+        },
       };
     }
 
@@ -91,6 +144,7 @@ export function reducer(state, action) {
         keyboardType: 'default',
         textInputIcon: icons.note,
         textInputOptionsVisible: false,
+        categoriesVisible: false,
         currentInput: INPUT_NOTE,
         values: {...state.values, placeholder: PLACEHOLDER_NOTE},
       };
@@ -119,6 +173,22 @@ export function reducer(state, action) {
         case INPUT_NOTE: {
           return {...state, values: {...state.values, note: action.payload}};
         }
+
+        case INPUT_CATEGORY: {
+          let categoryId;
+          if (state.values.classesMap.has(action.payload)) {
+            categoryId = state.values.classesMap.get(action.payload);
+          }
+
+          return {
+            ...state,
+            values: {
+              ...state.values,
+              category: action.payload,
+              categoryId: categoryId ? categoryId : INITIAL_CATEGORY_ID,
+            },
+          };
+        }
       }
 
       return {...state};
@@ -133,6 +203,8 @@ export function reducer(state, action) {
           productName: INITIAL_PRODUCT_NAME,
           quantityValue: INITIAL_QUANTITY_VALUE,
           note: INITIAL_NOTE,
+          category: INITIAL_CATEGORY,
+          categoryId: INITIAL_CATEGORY_ID,
         },
       };
     }
@@ -146,6 +218,28 @@ export function reducer(state, action) {
       return {
         ...state,
         values: {...state.values, quantityUnit: action.payload},
+      };
+    }
+
+    case SET_CLASSES: {
+      const classes = action.payload ? action.payload : [];
+      const classesMap = new Map();
+      classes.forEach(cl => classesMap.set(cl.name, cl));
+
+      return {
+        ...state,
+        values: {...state.values, classes: classes, classesMap: classesMap},
+      };
+    }
+
+    case SET_CLASS: {
+      return {
+        ...state,
+        values: {
+          ...state.values,
+          categoryId: action.payload.id,
+          category: action.payload.name,
+        },
       };
     }
 

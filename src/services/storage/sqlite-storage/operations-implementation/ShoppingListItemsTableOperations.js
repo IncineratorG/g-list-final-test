@@ -17,7 +17,16 @@ import {
 } from '../../data/productStatus';
 
 export class ShoppingListItemsTableOperations {
-  static addItem(db, shoppingListId, name, quantity, unitId, note, classId, status) {
+  static addItem(
+    db,
+    shoppingListId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+    status,
+  ) {
     const addProductStatement =
       'INSERT INTO ' +
       SHOPPING_LIST_ITEM_TABLE +
@@ -60,6 +69,62 @@ export class ShoppingListItemsTableOperations {
             timestamp,
           ],
           (_, result) => resolve(result.insertId),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
+  static updateItem(
+    db,
+    shoppingListId,
+    productId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+    status,
+  ) {
+    const updateItemStatement =
+      'UPDATE ' +
+      SHOPPING_LIST_ITEM_TABLE +
+      ' SET ' +
+      SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
+      ' = ? , ' +
+      SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
+      ' = ?, ' +
+      SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
+      ' = ?, ' +
+      SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
+      ' = ?, ' +
+      SHOPPING_LIST_ITEM_TABLE_NOTE +
+      ' = ?, ' +
+      SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+      ' = ?, ' +
+      SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP +
+      ' = ? WHERE ' +
+      SHOPPING_LIST_ITEM_TABLE_ID +
+      ' = ?';
+
+    const timestamp = Date.now();
+    const productStatus = status ? status : PRODUCT_NOT_COMPLETED;
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          updateItemStatement,
+          [
+            name,
+            quantity,
+            unitId,
+            classId,
+            note,
+            productStatus,
+            timestamp,
+            productId,
+          ],
+          (_, result) => resolve(result.rowsAffected),
           (_, error) => reject(error),
         );
       });
