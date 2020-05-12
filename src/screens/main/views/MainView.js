@@ -79,7 +79,7 @@ const MainView = ({styles, model, controller}) => {
     </View>
   );
 
-  const listTypesComponent = listTypes.length ? (
+  const listTypesComponent = (
     <View style={styles.listTypesContainer}>
       <ListTypesList
         types={listTypes}
@@ -87,7 +87,16 @@ const MainView = ({styles, model, controller}) => {
         onSelectListType={selectListTypeHandler}
       />
     </View>
-  ) : null;
+  );
+  // const listTypesComponent = listTypes.length ? (
+  //   <View style={styles.listTypesContainer}>
+  //     <ListTypesList
+  //       types={listTypes}
+  //       selectedListType={selectedListType}
+  //       onSelectListType={selectListTypeHandler}
+  //     />
+  //   </View>
+  // ) : null;
 
   const loadingIndicatorComponent = (
     <View style={styles.loadingIndicatorContainer}>

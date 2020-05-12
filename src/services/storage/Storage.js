@@ -124,6 +124,45 @@ export class Storage {
     return {listType, firebaseUpdateData};
   }
 
+  static async updateProduct({
+    shoppingListId,
+    productId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+    status,
+  }) {
+    const listType = StorageIdResolver.resolve(shoppingListId);
+    let firebaseUpdateData;
+
+    if (listType === StorageIdResolver.listTypes.LOCAL) {
+      await SqliteStorage.updateProduct({
+        shoppingListId,
+        productId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+        status,
+      });
+    } else if (listType === StorageIdResolver.listTypes.FIREBASE) {
+      firebaseUpdateData = await FirebaseStorage.updateProduct({
+        shoppingListId,
+        productId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+        status,
+      });
+    }
+    return {listType, firebaseUpdateData};
+  }
+
   static async setProductStatus({shoppingListId, productId, status}) {
     const listType = StorageIdResolver.resolve(shoppingListId);
     let firebaseUpdateData;

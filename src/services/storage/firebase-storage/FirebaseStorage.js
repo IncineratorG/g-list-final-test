@@ -222,6 +222,72 @@ export class FirebaseStorage {
     return {completedItemsCount, totalItemsCount, product: newProduct};
   }
 
+  static async updateProduct({
+    shoppingListId,
+    productId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+    status,
+  }) {
+    // Получаем данные списка покупок.
+    const listData = FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)
+      ? FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+      : FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
+
+    // Получаем соответсвующий продукт.
+    const {shoppingList, shoppingListCard} = listData;
+    const {productsList} = shoppingList;
+    const productData = productsList.filter(
+      product => product.id === productId,
+    );
+    if (!productData.length) {
+      console.log(
+        'FirebaseStorage->updateProduct()=>UNABLE_TO_FIND_PRODUCT_WITH_ID: ' +
+          productId,
+      );
+      return;
+    }
+
+    const updateTimestamp = Date.now();
+
+    // Обновляем продукт.
+    const product = productData[0];
+    product.completionStatus = status;
+    product.name = name;
+    product.note = note;
+    product.quantity = quantity;
+    product.unitId = unitId;
+    product.classId = classId;
+    product.updateTimestamp = updateTimestamp;
+
+    // Устанавливаем статистические параметры спсика и карточки списка.
+    let completedItemsCount = 0;
+    productsList.forEach(p => {
+      if (p.completionStatus === PRODUCT_COMPLETED) {
+        ++completedItemsCount;
+      }
+    });
+    const totalItemsCount = productsList.length;
+
+    shoppingList.completedItemsCount = completedItemsCount;
+    shoppingList.totalItemsCount = totalItemsCount;
+    shoppingList.updateTimestamp = updateTimestamp;
+
+    shoppingListCard.completedItemsCount = completedItemsCount;
+    shoppingListCard.totalItemsCount = totalItemsCount;
+    shoppingListCard.updateTimestamp = updateTimestamp;
+
+    FirebaseStorage.notifier.notify({
+      event: FirebaseStorage.events.SHARED_PRODUCTS_UPDATED,
+      data: {shoppingListId, products: [product]},
+    });
+
+    return {completedItemsCount, totalItemsCount, product};
+  }
+
   static async setProductStatus({shoppingListId, productId, status}) {
     if (status !== PRODUCT_COMPLETED && status !== PRODUCT_NOT_COMPLETED) {
       console.log(
@@ -270,16 +336,6 @@ export class FirebaseStorage {
     shoppingListCard.completedItemsCount = completedItemsCount;
     shoppingListCard.totalItemsCount = totalItemsCount;
     shoppingListCard.updateTimestamp = updateTimestamp;
-
-    // FirebaseStorage.notifier.notify({
-    //   event: FirebaseStorage.events.SHARED_PRODUCTS_UPDATED,
-    //   data: {shoppingListId, products: [product]},
-    // });
-    // // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
-    // FirebaseStorage.notifier.notify({
-    //   event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-    //   data: shoppingList,
-    // });
 
     return {completedItemsCount, totalItemsCount};
   }
@@ -337,11 +393,6 @@ export class FirebaseStorage {
       event: FirebaseStorage.events.SHARED_PRODUCTS_DELETED,
       data: {shoppingListId, products: [removedProduct]},
     });
-    // // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
-    // FirebaseStorage.notifier.notify({
-    //   event: FirebaseStorage.events.SHARED_PRODUCT_UPDATED,
-    //   data: shoppingList,
-    // });
 
     return {completedItemsCount, totalItemsCount};
   }
@@ -397,8 +448,6 @@ FirebaseStorage.events = {
   SHARED_RECEIVED_LISTS_CHANGED: 'SHARED_RECEIVED_LISTS_CHANGED',
   SHARED_RECEIVED_LISTS_LOADING: 'SHARED_RECEIVED_LISTS_LOADING',
   SHARED_RECEIVED_LISTS_LOADED: 'SHARED_RECEIVED_LISTS_LOADED',
-
-  // SHARED_PRODUCT_UPDATED: 'SHARED_PRODUCT_UPDATED',
 
   SHARED_PRODUCTS_UPDATED: 'SHARED_PRODUCTS_UPDATED',
   SHARED_PRODUCTS_ADDED: 'SHARED_PRODUCTS_ADDED',

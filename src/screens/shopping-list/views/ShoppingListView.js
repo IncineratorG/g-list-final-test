@@ -6,10 +6,14 @@ import {ProductsList} from '../../../components/shopping-list-screen/ProductsLis
 import ProductInputArea from '../../../components/shopping-list-screen/input-area/ProductInputArea';
 import {AddButton} from '../../../components/common/AddButton';
 import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
+import BusyIndicator from '../../../components/main-screen/BusyIndicator';
+import {ProductCategoriesList} from '../../../components/shopping-list-screen/ProductCategoriesList';
 
 const ShoppingListView = ({styles, model, controller}) => {
   const {
     inputAreaVisible,
+    inputAreaEditMode,
+    inputAreaEditModeData,
     listLoading,
     products,
     units,
@@ -18,6 +22,8 @@ const ShoppingListView = ({styles, model, controller}) => {
     removeProductName,
     removeConfirmationDialogVisible,
     sharedListLoading,
+    usedProductsClasses,
+    selectedProductClass,
   } = model;
 
   const {
@@ -31,6 +37,7 @@ const ShoppingListView = ({styles, model, controller}) => {
     removeConfirmationDialogRemoveHandler,
     removeConfirmationDialogCancelRemoveHandler,
     shadedBackgroundPressHandler,
+    selectCategoryHandler,
   } = controller;
 
   const removeConfirmationDialog = (
@@ -83,6 +90,7 @@ const ShoppingListView = ({styles, model, controller}) => {
         onRemovePress={productRemoveHandler}
         units={units}
         classes={classes}
+        selectedCategory={selectedProductClass}
       />
     </View>
   );
@@ -100,6 +108,8 @@ const ShoppingListView = ({styles, model, controller}) => {
       <ProductInputArea
         onInputAreaHide={inputAreaHideHandler}
         onSubmitValues={inputAreaSubmitValuesHandler}
+        editMode={inputAreaEditMode}
+        editModeData={inputAreaEditModeData}
         units={units}
         classes={classes}
       />
@@ -119,21 +129,26 @@ const ShoppingListView = ({styles, model, controller}) => {
     />
   ) : null;
 
-  // ===
-  const sharedListLoadingComponent = (
-    <View style={{height: 20, width: 200, backgroundColor: 'green'}} />
+  const loadingIndicatorComponent = (
+    <View style={styles.loadingIndicatorContainer}>
+      <BusyIndicator busy={sharedListLoading} />
+    </View>
   );
-  const sharedListLoadedComponent = (
-    <View style={{height: 20, width: 200, backgroundColor: 'grey'}} />
+
+  const productCategoriesComponent = (
+    <View style={styles.productCategoriesContainer}>
+      <ProductCategoriesList
+        categories={usedProductsClasses}
+        onCategoryPress={selectCategoryHandler}
+        selectedCategory={selectedProductClass}
+      />
+    </View>
   );
-  const sharedListLoadingStatusComponent = sharedListLoading
-    ? sharedListLoadingComponent
-    : sharedListLoadedComponent;
-  // ===
 
   return (
     <View style={styles.mainContainer}>
-      {sharedListLoadingStatusComponent}
+      {loadingIndicatorComponent}
+      {productCategoriesComponent}
       {shoppingListScreenContent}
       {removeConfirmationDialog}
       <View style={styles.addShoppingListItemButtonContainer}>

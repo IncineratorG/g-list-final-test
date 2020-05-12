@@ -12,7 +12,8 @@ import {
   PLACEHOLDER_NOTE,
   INPUT_CATEGORY,
   PLACEHOLDER_CATEGORY,
-  INITIAL_CATEGORY_ID, INITIAL_CATEGORY,
+  INITIAL_CATEGORY_ID,
+  INITIAL_CATEGORY,
 } from './inputAreaTypes';
 import {
   HIDE_INPUT_AREA,
@@ -26,6 +27,7 @@ import {
   SELECT_CATEGORY,
   SET_CLASSES,
   SET_CLASS,
+  SET_EDIT_PRODUCT,
 } from './inputAreaActions';
 
 export function reducer(state, action) {
@@ -66,6 +68,31 @@ export function reducer(state, action) {
           quantityValue: INITIAL_QUANTITY_VALUE,
           quantityUnit: INITIAL_QUANTITY_UNIT,
           note: INITIAL_NOTE,
+        },
+      };
+    }
+
+    case SET_EDIT_PRODUCT: {
+      const getClassDescription = classId => {
+        const filteredClasses = state.values.classes.filter(
+          cl => cl.id === classId,
+        );
+        return filteredClasses.length ? filteredClasses[0] : undefined;
+      };
+
+      const classDesc = getClassDescription(action.payload.classId);
+
+      return {
+        ...state,
+        values: {
+          ...state.values,
+          acceptable: true,
+          productName: action.payload.name,
+          category: classDesc ? classDesc.name : '',
+          categoryId: classDesc ? classDesc.id : '',
+          quantityValue: action.payload.quantity.toString(),
+          quantityUnit: action.payload.unitId,
+          note: action.payload.note,
         },
       };
     }
@@ -197,7 +224,7 @@ export function reducer(state, action) {
     case SET_CLASSES: {
       const classes = action.payload ? action.payload : [];
       const classesMap = new Map();
-      classes.forEach(cl => classesMap.set(cl.name, cl.id));
+      classes.forEach(cl => classesMap.set(cl.name, cl));
 
       return {
         ...state,

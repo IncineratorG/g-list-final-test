@@ -25,6 +25,7 @@ import {
   SELECT_CATEGORY,
   SET_CLASSES,
   SET_CLASS,
+  SET_EDIT_PRODUCT,
 } from './store/inputAreaActions';
 import {
   INPUT_CATEGORY,
@@ -36,6 +37,8 @@ import {CategoriesList} from './CategoriesList';
 const ProductInputArea = ({
   onInputAreaHide,
   onSubmitValues,
+  editMode,
+  editModeData,
   units,
   classes,
 }) => {
@@ -99,11 +102,11 @@ const ProductInputArea = ({
   useEffect(() => {
     if (units) {
       dispatch({type: SET_UNITS, payload: units});
-      if (state.values.units.length) {
+      if (state.values.units.length && !editMode) {
         dispatch({type: SET_UNIT, payload: state.values.units[0].id});
       }
     }
-  }, [state.values.units, units]);
+  }, [state.values.units, units, editMode]);
 
   useEffect(() => {
     if (classes) {
@@ -114,6 +117,13 @@ const ProductInputArea = ({
   const pickerItems = state.values.units.map(unit => {
     return <Picker.Item label={unit.name} value={unit.id} key={unit.id} />;
   });
+
+  useEffect(() => {
+    if (editMode) {
+      dispatch({type: SET_EDIT_PRODUCT, payload: editModeData});
+      unitsChangeHandler(editModeData.unitId);
+    }
+  }, [editMode, editModeData]);
 
   const textInputOptionsComponent = state.textInputOptionsVisible ? (
     <Picker

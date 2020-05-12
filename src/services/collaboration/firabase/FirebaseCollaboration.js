@@ -184,6 +184,27 @@ export class FirebaseCollaboration {
     }
   }
 
+  static async updateProduct({
+    editor,
+    shoppingListId,
+    product,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    try {
+      return await FirebaseCollaboration.provider.updateProduct({
+        editor,
+        shoppingListId,
+        product,
+        completedItemsCount,
+        totalItemsCount,
+      });
+    } catch (e) {
+      console.log('FirebaseCollaboration.updateProduct()->ERROR: ' + e);
+      return FirebaseResponse.type.ERROR;
+    }
+  }
+
   static async removeProduct({
     editor,
     shoppingListId,

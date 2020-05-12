@@ -17,6 +17,7 @@ const GeneralProduct = ({
   onStatusPress,
   units,
   classes,
+  selectedCategory,
 }) => {
   const getUnitName = unitId => {
     const filteredUnits = units.filter(unit => unit.id === unitId);
@@ -37,6 +38,7 @@ const GeneralProduct = ({
       styles={productStylesCompleted}
       itemToRender={productItem}
       onStatusPress={onStatusPress}
+      selectedCategory={selectedCategory}
     />
   );
 
@@ -47,6 +49,7 @@ const GeneralProduct = ({
       onItemPress={onItemPress}
       onStatusPress={onStatusPress}
       classes={classes}
+      selectedCategory={selectedCategory}
     />
   );
 

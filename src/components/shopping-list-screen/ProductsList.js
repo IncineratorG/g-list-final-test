@@ -13,6 +13,7 @@ export const ProductsList = ({
   editable,
   units,
   classes,
+  selectedCategory,
 }) => {
   const removeOptionHandler = (listItem, row) => {
     if (onRemovePress) {
@@ -28,6 +29,7 @@ export const ProductsList = ({
         onStatusPress={onStatusPress}
         units={units}
         classes={classes}
+        selectedCategory={selectedCategory}
       />
     );
   };

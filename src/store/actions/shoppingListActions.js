@@ -28,6 +28,7 @@ import {
   SET_PRODUCT_STATUS_BEGIN,
   SET_PRODUCT_STATUS_FINISHED,
   SET_PRODUCT_STATUS_ERROR,
+  UPDATE_PRODUCT,
 } from '../types/shoppingListTypes';
 import {Storage} from '../../services/storage/Storage';
 import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
@@ -361,6 +362,58 @@ export const addProduct = ({
       }
     } catch (e) {
       console.log('shoppingListActions->addProduct() ERROR: ' + e);
+    }
+  };
+};
+
+export const updateProduct = ({
+  editor,
+  shoppingListId,
+  productId,
+  name,
+  quantity,
+  unitId,
+  note,
+  classId,
+  status,
+}) => {
+  return async dispatch => {
+    try {
+      const {listType, firebaseUpdateData} = await Storage.updateProduct({
+        shoppingListId,
+        productId,
+        name,
+        quantity,
+        unitId,
+        note,
+        classId,
+        status,
+      });
+
+      dispatch({type: UPDATE_PRODUCT});
+
+      if (listType === StorageIdResolver.listTypes.FIREBASE) {
+        const {
+          completedItemsCount,
+          totalItemsCount,
+          product,
+        } = firebaseUpdateData;
+
+        const successful = await Collaboration.updateProduct({
+          editor,
+          shoppingListId,
+          product,
+          completedItemsCount,
+          totalItemsCount,
+        });
+        // if (!successful) {
+        //   console.log('shoppingListActions->updateProduct() NOT_SUCCESSFUL');
+        // } else {
+        //   console.log('shoppingListActions->updateProduct() SUCCESSFUL');
+        // }
+      }
+    } catch (e) {
+      console.log('shoppingListActions->updateProduct() ERROR: ' + e);
     }
   };
 };

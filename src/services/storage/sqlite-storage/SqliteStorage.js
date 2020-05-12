@@ -263,20 +263,61 @@ export class SqliteStorage {
       event: SqliteStorage.events.LOCAL_PRODUCTS_ADDED,
       data: {shoppingListId, products: [addedProduct]},
     });
-    // SqliteStorage.notifier.notify({
-    //   event: SqliteStorage.events.LOCAL_PRODUCT_ADDED,
-    //   data: {
-    //     shoppingListId,
-    //     productId: insertedId,
-    //     name,
-    //     quantity,
-    //     unitId,
-    //     note,
-    //     classId,
-    //   },
-    // });
 
     return insertedId;
+  }
+
+  static async updateProduct({
+    shoppingListId,
+    productId,
+    name,
+    quantity,
+    unitId,
+    note,
+    classId,
+    status,
+  }) {
+    await ShoppingListItemsTableOperations.updateItem(
+      db,
+      shoppingListId,
+      productId,
+      name,
+      quantity,
+      unitId,
+      note,
+      classId,
+      status,
+    );
+
+    const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
+      db,
+      shoppingListId,
+    );
+
+    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+      db,
+      shoppingListId,
+    );
+
+    await ShoppingListsTableOperations.updateShoppingList(
+      db,
+      shoppingListId,
+      totalShoppingListItems.length,
+      completedShoppingListItems.length,
+    );
+
+    let updatedProduct;
+    for (let i = 0; i < totalShoppingListItems.length; ++i) {
+      if (totalShoppingListItems.item(i).id === productId) {
+        updatedProduct = totalShoppingListItems.item(i);
+        break;
+      }
+    }
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_PRODUCTS_UPDATED,
+      data: {shoppingListId, products: [updatedProduct]},
+    });
   }
 
   static async setProductStatus({shoppingListId, productId, status}) {
@@ -318,11 +359,6 @@ export class SqliteStorage {
       event: SqliteStorage.events.LOCAL_PRODUCTS_UPDATED,
       data: {shoppingListId, products: [updatedProduct]},
     });
-    // SqliteStorage.notifier.notify({
-    //   event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-    //   data: {shoppingListId, productId},
-    //   // data: {shoppingListId, productId, status},
-    // });
 
     return shoppingListId;
   }

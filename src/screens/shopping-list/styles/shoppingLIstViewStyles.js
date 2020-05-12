@@ -7,6 +7,19 @@ export const shoppingLIstViewStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#edeef1',
   },
+  productCategoriesContainer: {
+    alignSelf: 'stretch',
+    height: 40,
+    marginTop: 4,
+    marginLeft: 4,
+    marginRight: 4,
+    flexDirection: 'row-reverse',
+  },
+  loadingIndicatorContainer: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    height: 10,
+  },
   addShoppingListItemButtonContainer: {
     position: 'absolute',
     bottom: 0,

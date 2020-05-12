@@ -255,6 +255,28 @@ export class Collaboration {
     }
   }
 
+  static async updateProduct({
+    editor,
+    shoppingListId,
+    product,
+    completedItemsCount,
+    totalItemsCount,
+  }) {
+    try {
+      const status = await FirebaseCollaboration.updateProduct({
+        editor,
+        shoppingListId,
+        product,
+        completedItemsCount,
+        totalItemsCount,
+      });
+
+      return status === 'SUCCESS';
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
   static async removeProduct({
     editor,
     shoppingListId,

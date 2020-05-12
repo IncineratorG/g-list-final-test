@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import {PRODUCT_COMPLETED} from '../../../../services/storage/data/productStatus';
+import {ProductCategories} from '../../ProductCategories';
 
 const ProductNotCompleted = ({
   styles,
@@ -13,6 +14,7 @@ const ProductNotCompleted = ({
   classes,
   onStatusPress,
   onItemPress,
+  selectedCategory,
 }) => {
   const getClassDescription = classId => {
     const filteredClasses = classes.filter(cl => cl.id === classId);
@@ -41,6 +43,19 @@ const ProductNotCompleted = ({
 
   const noteComponent =
     itemToRender.note.length > 0 ? noteExistComponent : noteNotExistComponent;
+
+  let mustRender = false;
+  if (selectedCategory === ProductCategories.types.ALL) {
+    mustRender = true;
+  } else if (selectedCategory === ProductCategories.types.NOT_COMPLETED) {
+    mustRender = true;
+  } else if (selectedCategory === itemToRender.classId) {
+    mustRender = true;
+  }
+
+  if (!mustRender) {
+    return null;
+  }
 
   return (
     <TouchableHighlight

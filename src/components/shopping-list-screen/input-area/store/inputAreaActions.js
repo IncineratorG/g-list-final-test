@@ -10,3 +10,4 @@ export const SET_UNITS = 'SET_UNITS';
 export const SET_UNIT = 'SET_UNIT';
 export const SET_CLASSES = 'SET_CLASSES';
 export const SET_CLASS = 'SET_CLASS';
+export const SET_EDIT_PRODUCT = 'SET_EDIT_PRODUCT';
