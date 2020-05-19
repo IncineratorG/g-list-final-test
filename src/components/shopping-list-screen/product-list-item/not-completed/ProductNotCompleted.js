@@ -23,6 +23,7 @@ const ProductNotCompleted = ({
   };
 
   const classDescription = getClassDescription(itemToRender.classId);
+  const classColor = classDescription ? classDescription.color : 'lightgrey';
 
   const itemPressHandler = () => {
     if (onItemPress) {
@@ -67,17 +68,11 @@ const ProductNotCompleted = ({
   return (
     <TouchableHighlight
       style={styles.touchable}
-      underlayColor={classDescription.color}
+      underlayColor={classColor}
       onPress={itemPressHandler}
       onLongPress={itemLongPressHandler}>
-      <View
-        style={[styles.mainContainer, {borderColor: classDescription.color}]}>
-        <View
-          style={[
-            styles.colorComponent,
-            {backgroundColor: classDescription.color},
-          ]}
-        />
+      <View style={[styles.mainContainer, {borderColor: classColor}]}>
+        <View style={[styles.colorComponent, {backgroundColor: classColor}]} />
         <View style={styles.infoContainer}>
           <View style={styles.majorInfoContainer}>
             <View style={styles.productNameContainer}>

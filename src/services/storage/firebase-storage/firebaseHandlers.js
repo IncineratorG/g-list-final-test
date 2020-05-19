@@ -2,7 +2,6 @@ import database from '@react-native-firebase/database';
 import {FirebasePaths} from './FirebasePaths';
 import {FirebaseConverter} from './list-converter/FirebaseConverter';
 import {FirebaseStorage} from './FirebaseStorage';
-import {add} from 'react-native-reanimated';
 
 export const sendPathHandler = async snapshot => {
   await processSharedPathSnapshot({
@@ -75,7 +74,7 @@ export const sharedListChangedHandler = async snapshot => {
   }
   if (deletedProducts.length > 0) {
     FirebaseStorage.notifier.notify({
-      event: FirebaseStorage.events.SHARED_PRODUCTS_UPDATED,
+      event: FirebaseStorage.events.SHARED_PRODUCTS_DELETED,
       data: {shoppingListId: shoppingList.id, products: deletedProducts},
     });
   }

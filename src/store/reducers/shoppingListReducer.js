@@ -413,6 +413,8 @@ export const shoppingListReducer = (state = initialState, action) => {
       const shoppingListId = action.payload.shoppingListId;
       const products = action.payload.products;
 
+      console.log('DELETE_PRODUCTS');
+
       const deletedProductsIdsSet = new Set();
       products.forEach(product => deletedProductsIdsSet.add(product.id));
 

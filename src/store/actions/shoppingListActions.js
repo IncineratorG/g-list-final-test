@@ -509,3 +509,32 @@ export const removeProduct = ({editor, shoppingListId, productId}) => {
     }
   };
 };
+// export const removeProduct = ({editor, shoppingListId, productId}) => {
+//   return async dispatch => {
+//     dispatch({type: REMOVE_PRODUCT_BEGIN});
+//
+//     try {
+//       const {listType, firebaseUpdateData} = await Storage.removeProduct({
+//         shoppingListId,
+//         productId,
+//       });
+//
+//       dispatch({type: REMOVE_PRODUCT_FINISHED});
+//
+//       if (listType === StorageIdResolver.listTypes.FIREBASE) {
+//         const {completedItemsCount, totalItemsCount} = firebaseUpdateData;
+//
+//         await Collaboration.removeProduct({
+//           editor,
+//           shoppingListId,
+//           productId,
+//           completedItemsCount,
+//           totalItemsCount,
+//         });
+//       }
+//     } catch (e) {
+//       console.log('shoppingListActions->removeProduct() ERROR: ' + e);
+//       dispatch({type: REMOVE_PRODUCT_ERROR});
+//     }
+//   };
+// };
