@@ -5,9 +5,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import {AddButton} from '../../../components/common/AddButton';
 import CollaboratorInputArea from '../../../components/collaborators/collaborator-input-area/CollaboratorInputArea';
 import {EmptyCollaboratorsScreen} from '../../../components/collaborators/EmptyCollaboratorsScreen';
+import {ProgressDialog} from 'react-native-simple-dialogs';
 
 const CollaboratorsView_V2 = ({styles, model, controller}) => {
-  const {collaboratorInputAreaVisible, contacts} = model;
+  const {collaboratorInputAreaVisible, contacts, serviceBusy} = model;
 
   const {
     addCollaboratorButtonHandler,
@@ -16,6 +17,14 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
     collaboratorInputSubmitEmailHandler,
     selectContactButtonPressHandler,
   } = controller;
+
+  const serviceBusyDialog = (
+    <ProgressDialog
+      visible={serviceBusy}
+      title="Обновление списка"
+      message="Пожалуйста, подождите..."
+    />
+  );
 
   const contactsListComponent = (
     <View style={styles.contactsListContainer}>
@@ -75,6 +84,7 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
   return (
     <View style={styles.mainContainer}>
       {collaboratorsScreenContent}
+      {serviceBusyDialog}
       <View style={styles.addContactButtonContainer}>
         {addContactButtonComponent}
       </View>

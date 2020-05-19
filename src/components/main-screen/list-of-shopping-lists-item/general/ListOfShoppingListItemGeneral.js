@@ -7,6 +7,7 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
+import {icon} from 'reinput/src/Icon/styles';
 
 const ListOfShoppingListsItemGeneral = ({
   styles,
@@ -38,6 +39,7 @@ const ListOfShoppingListsItemGeneral = ({
   }
 
   const [menuVisible, setMenuVisible] = useState(false);
+  const currentUserIsListAuthor = !creator || creator === currentEmail;
 
   const onItemPressHandler = () => {
     if (onItemPress) {
@@ -69,11 +71,30 @@ const ListOfShoppingListsItemGeneral = ({
       <View style={styles.footerSeparationLine} />
     ) : null;
 
+  const collaboratorsIconComponent =
+    collaborators.length > 0 ? (
+      <View
+        style={{
+          width: 30,
+          alignSelf: 'stretch',
+          marginTop: 4,
+          marginBottom: 4,
+        }}>
+        <Image
+          style={{transform: [{scale: 0.8}]}}
+          source={currentUserIsListAuthor ? icons.outgoing : icons.incoming}
+        />
+      </View>
+    ) : null;
+
+  const shareListMenuOption = currentUserIsListAuthor ? (
+    <MenuOption onSelect={onSharePressHandler} text="Поделиться" />
+  ) : null;
   const menuComponent = (
     <Menu opened={menuVisible} onBackdropPress={onMenuPressHandler}>
       <MenuTrigger text="" />
       <MenuOptions>
-        <MenuOption onSelect={onSharePressHandler} text="Поделиться" />
+        {shareListMenuOption}
         <MenuOption onSelect={onRemovePressHandler} text="Удалить" />
       </MenuOptions>
     </Menu>
@@ -108,6 +129,7 @@ const ListOfShoppingListsItemGeneral = ({
       <View style={styles.footerContainer}>
         {footerSeparatorLineComponent}
         <View style={styles.collaboratorsContainer}>
+          {collaboratorsIconComponent}
           <FlatList
             data={collaborators}
             horizontal={true}
@@ -118,8 +140,12 @@ const ListOfShoppingListsItemGeneral = ({
                 <View
                   style={{
                     backgroundColor: 'lightgrey',
-                    margin: 4,
+                    marginTop: 4,
+                    marginBottom: 4,
+                    marginRight: 4,
                     borderRadius: 5,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}>
                   <Text style={{marginLeft: 4, marginRight: 4}}>{item}</Text>
                 </View>

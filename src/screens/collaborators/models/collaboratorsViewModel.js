@@ -1,12 +1,13 @@
 import {useState, useCallback, useEffect} from 'react';
 import {useFocusEffect, useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
-import {loadCollaborators} from '../../../store/actions/collaborationActions';
+import {
+  loadCollaborators,
+  subscribeToCurrentShoppingListReceivers,
+} from '../../../store/actions/collaborationActions';
 
 export const useCollaboratorsScreenModel = () => {
   const navigation = useNavigation();
-  const navigationShoppingListId = navigation.getParam('shoppingListId');
-
   const dispatch = useDispatch();
 
   const [
@@ -15,17 +16,15 @@ export const useCollaboratorsScreenModel = () => {
   ] = useState(false);
   const [contacts, setContacts] = useState([]);
 
+  const serviceBusy = useSelector(state => state.collaboration.busy);
   let localCollaborators = useSelector(
     state => state.collaboration.localCollaborators,
   );
+  const shoppingListReceivers = useSelector(
+    state => state.collaboration.receivers,
+  );
   const currentShoppingListId = useSelector(
     state => state.shoppingList.currentShoppingList.id,
-  );
-  const shoppingListCreator = useSelector(
-    state => state.shoppingList.currentShoppingList.creator,
-  );
-  const shoppingListReceivers = useSelector(
-    state => state.shoppingList.currentShoppingList.receivers,
   );
   const currentEmail = useSelector(
     state => state.authentication.currentUser.email,
@@ -33,43 +32,29 @@ export const useCollaboratorsScreenModel = () => {
 
   useFocusEffect(
     useCallback(() => {
+      dispatch(subscribeToCurrentShoppingListReceivers());
       dispatch(loadCollaborators());
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
 
   useEffect(() => {
-    let listCollaborators = [];
-    if (shoppingListCreator && shoppingListReceivers) {
-      if (shoppingListCreator !== currentEmail) {
-        listCollaborators.push(shoppingListCreator);
-      }
-      shoppingListReceivers.forEach(receiver => {
-        if (receiver !== currentEmail) {
-          listCollaborators.push(receiver);
-        }
-      });
-    }
+    let contactsList = [...localCollaborators];
+    contactsList.sort((c1, c2) => c1.id < c2.id);
 
-    let contactsList = localCollaborators.slice(0);
     if (contactsList.length) {
       contactsList = contactsList.filter(contact => contact.id !== 'MAX_VALUE');
       contactsList.push({id: 'MAX_VALUE', extra: true, email: '', status: ''});
     }
+
     contactsList = contactsList.map(contact => {
       if (
-        listCollaborators.filter(selectedId => selectedId === contact.email)
-          .length
+        shoppingListReceivers.filter(
+          receiverEmail => receiverEmail === contact.email,
+        ).length
       ) {
         contact.selected = true;
       } else {
-        contact.selected = false;
-      }
-
-      if (contact.forceSelected) {
-        contact.selected = true;
-      }
-      if (contact.forceUnselected) {
         contact.selected = false;
       }
 
@@ -77,17 +62,12 @@ export const useCollaboratorsScreenModel = () => {
     });
 
     setContacts(contactsList);
-  }, [
-    shoppingListCreator,
-    shoppingListReceivers,
-    localCollaborators,
-    currentEmail,
-  ]);
+  }, [localCollaborators, shoppingListReceivers]);
 
   return {
     data: {
+      serviceBusy,
       currentShoppingListId,
-      navigationShoppingListId,
       currentEmail,
       collaboratorInputAreaVisible,
       contacts,

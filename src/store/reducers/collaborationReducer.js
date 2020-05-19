@@ -1,21 +1,81 @@
 import {
   ADD_COLLABORATOR,
   LOAD_COLLABORATORS,
+  SET_BUSY,
   SET_COLLABORATOR_ERROR,
   SET_COLLABORATOR_EXIST_STATUS,
   SET_COLLABORATOR_PENDING,
   SET_COLLABORATOR_SELECTED,
   SET_COLLABORATOR_UNSELECTED,
+  SUBSCRIBE_TO_CURRENT_SHOPPING_LIST_RECEIVERS,
+  UNSUBSCRIBE_FROM_CURRENT_SHOPPING_LIST_RECEIVERS,
+  UPDATE_RECEIVERS,
 } from '../types/collaborationTypes';
 import {Collaboration} from '../../services/collaboration/Collaboration';
 
 const initialState = {
   localCollaborators: [],
-  // selectedCollaboratorsIds: [],
+  receivers: [],
+  receiversUnsubscribeHandler: undefined,
+  busy: false,
 };
 
 export const collaborationReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SUBSCRIBE_TO_CURRENT_SHOPPING_LIST_RECEIVERS: {
+      if (state.receiversUnsubscribeHandler) {
+        state.receiversUnsubscribeHandler();
+      }
+
+      const listData = action.payload.listOfShoppingLists.filter(
+        list => list.id === action.payload.id,
+      );
+
+      let listReceivers = [];
+      if (listData.length) {
+        const {receivers} = listData[0];
+        if (receivers && receivers.length) {
+          listReceivers = [...receivers];
+        }
+      }
+
+      return {
+        ...state,
+        receivers: [...listReceivers],
+        receiversUnsubscribeHandler: action.payload.unsubscribe,
+      };
+    }
+
+    case UNSUBSCRIBE_FROM_CURRENT_SHOPPING_LIST_RECEIVERS: {
+      if (state.receiversUnsubscribeHandler) {
+        state.receiversUnsubscribeHandler();
+      }
+
+      return {
+        ...state,
+        receiversUnsubscribeHandler: undefined,
+      };
+    }
+
+    case UPDATE_RECEIVERS: {
+      const listData = action.payload.listOfShoppingLists.filter(
+        list => list.id === action.payload.id,
+      );
+
+      let listReceivers = [];
+      if (listData.length) {
+        const {receivers} = listData[0];
+        if (receivers && receivers.length) {
+          listReceivers = [...receivers];
+        }
+      }
+
+      return {
+        ...state,
+        receivers: [...listReceivers],
+      };
+    }
+
     case ADD_COLLABORATOR: {
       const collaborators = state.localCollaborators.slice(0);
       collaborators.push(action.payload);
@@ -53,34 +113,6 @@ export const collaborationReducer = (state = initialState, action) => {
         localCollaborators: action.payload,
       };
     }
-
-    // case CLEAR_SELECTED_COLLABORATORS: {
-    //   return {
-    //     ...state,
-    //     // selectedCollaboratorsIds: [],
-    //   };
-    // }
-
-    // case SELECT_COLLABORATOR: {
-    //   const selectedCollaborators = state.selectedCollaboratorsIds.slice(0);
-    //   selectedCollaborators.push(action.payload);
-    //
-    //   return {
-    //     ...state,
-    //     // selectedCollaboratorsIds: selectedCollaborators,
-    //   };
-    // }
-
-    // case UNSELECT_COLLABORATOR: {
-    //   const selectedCollaborators = state.selectedCollaboratorsIds.filter(
-    //     collaboratorId => collaboratorId !== action.payload,
-    //   );
-    //
-    //   return {
-    //     ...state,
-    //     // selectedCollaboratorsIds: selectedCollaborators,
-    //   };
-    // }
 
     case SET_COLLABORATOR_PENDING: {
       const collaboratorId = action.payload;
@@ -161,6 +193,13 @@ export const collaborationReducer = (state = initialState, action) => {
       return {
         ...state,
         localCollaborators: collaborators,
+      };
+    }
+
+    case SET_BUSY: {
+      return {
+        ...state,
+        busy: action.payload,
       };
     }
 

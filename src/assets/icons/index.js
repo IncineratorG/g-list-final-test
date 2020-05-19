@@ -21,6 +21,8 @@ const icons = {
   check_progress: require('./check_progress.png'),
   menu_vertical: require('./menu_vertical.png'),
   category: require('./category.png'),
+  outgoing: require('./outgoing_3.png'),
+  incoming: require('./incoming.png'),
 };
 
 export {icons};

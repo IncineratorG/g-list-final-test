@@ -43,14 +43,14 @@ export const useMainScreenController = model => {
   };
 
   const shareListHandler = listId => {
+    model.dispatch(unsubscribeFromListOfShoppingLists());
+    model.dispatch(subscribeToShoppingList(listId));
+
     if (model.data.signedIn) {
-      model.navigation.navigate('Collaborators', {
-        shoppingListId: listId,
-      });
+      model.navigation.navigate('Collaborators');
     } else {
       model.navigation.navigate('Authentication', {
         destinationScreen: 'Collaborators',
-        shoppingListId: listId,
       });
     }
   };

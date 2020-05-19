@@ -152,12 +152,12 @@ export class FirebaseStorage {
     status,
   }) {
     // Получаем данные списка покупок.
-    const listData = FirebaseStorage.sendSharedShoppingLists.get(
-      shoppingListId,
-    );
+    const listData = FirebaseStorage.sendSharedShoppingLists.has(shoppingListId)
+      ? FirebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+      : FirebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
     if (!listData) {
       console.log(
-        'FirebaseStorage->addShoppingListItem(): UNABLE_TO_FIND_SEND_LIST_DATA_WITH_ID: ' +
+        'FirebaseStorage->addProduct(): UNABLE_TO_FIND_LIST_DATA_WITH_ID: ' +
           shoppingListId,
       );
       return;
@@ -467,3 +467,83 @@ FirebaseStorage.events = {
   SHARED_LIST_LOADED: 'SHARED_LIST_LOADED',
 };
 FirebaseStorage.localSubscrtiptions = [];
+
+// static async addProduct({
+//   shoppingListId,
+//   name,
+//   quantity,
+//   unitId,
+//   note,
+//   classId,
+//   status,
+// }) {
+//   // Получаем данные списка покупок.
+//   const listData = FirebaseStorage.sendSharedShoppingLists.get(
+//     shoppingListId,
+//   );
+//   if (!listData) {
+//     console.log(
+//       'FirebaseStorage->addShoppingListItem(): UNABLE_TO_FIND_SEND_LIST_DATA_WITH_ID: ' +
+//         shoppingListId,
+//     );
+//     return;
+//   }
+//
+//   // Получаем текущее время и статус нового продукта.
+//   const currentDate = Date.now();
+//   const completionStatus = PRODUCT_NOT_COMPLETED;
+//
+//   // Получаем путь в firebase до списка продуктов.
+//   const productsListPath = FirebasePaths.getPath({
+//     pathType: FirebasePaths.paths.PRODUCTS_LIST,
+//     shoppingListId,
+//   });
+//
+//   // Получаем ID нового продукта.
+//   const productKey = database()
+//     .ref(productsListPath)
+//     .push().key;
+//
+//   // Получаем список покупок и карточку списка покупок.
+//   const {shoppingList, shoppingListCard} = listData;
+//
+//   // Добавляем продукт в локальный список покупок.
+//   const newProduct = {
+//     id: productKey,
+//     parentId: shoppingListId,
+//     name: name,
+//     unitId: unitId,
+//     quantity: quantity,
+//     classId: classId,
+//     note: note,
+//     completionStatus: completionStatus,
+//     createTimestamp: currentDate,
+//     updateTimestamp: currentDate,
+//   };
+//   shoppingList.productsList.push(newProduct);
+//
+//   // Устанавливаем статистические параметры спсика и карточки списка.
+//   let completedItemsCount = 0;
+//   shoppingList.productsList.forEach(p => {
+//     if (p.completionStatus === PRODUCT_COMPLETED) {
+//       ++completedItemsCount;
+//     }
+//   });
+//   const totalItemsCount = shoppingList.productsList.length;
+//
+//   shoppingList.completedItemsCount = completedItemsCount;
+//   shoppingList.totalItemsCount = totalItemsCount;
+//   shoppingList.updateTimestamp = currentDate;
+//
+//   shoppingListCard.completedItemsCount = completedItemsCount;
+//   shoppingListCard.totalItemsCount = totalItemsCount;
+//   shoppingListCard.updateTimestamp = currentDate;
+//
+//   // Уведомляем обновлённым списком покупок всех слушателей текущего списка.
+//   FirebaseStorage.notifier.notify({
+//     event: FirebaseStorage.events.SHARED_PRODUCTS_ADDED,
+//     data: {shoppingListId, products: [newProduct]},
+//   });
+//
+//   return {completedItemsCount, totalItemsCount, product: newProduct};
+// }
