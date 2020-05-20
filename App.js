@@ -7,6 +7,7 @@ import {Storage} from './src/services/storage/Storage';
 import {Authentication} from './src/services/authentication/Authentication';
 import {Collaboration} from './src/services/collaboration/Collaboration';
 import {MenuProvider} from 'react-native-popup-menu';
+import messaging from '@react-native-firebase/messaging';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -29,6 +30,17 @@ export default function App() {
     return () => {
       AppState.removeEventListener('change', appStateHandler);
     };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log(
+        'Message handled in the FOREGROUND!',
+        JSON.stringify(remoteMessage.data),
+      );
+    });
+
+    return unsubscribe;
   }, []);
 
   if (!isReady) {

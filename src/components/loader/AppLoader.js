@@ -22,25 +22,25 @@ export default function AppLoader() {
     }
   }, [dispatch, signedIn]);
 
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Messaging.processMessage(remoteMessage);
-
-      // const data = remoteMessage.data;
-      // const payload = JSON.parse(data.serializedPayload);
-      //
-      // console.log('TYPE: ' + payload.type);
-      //
-      // console.log(
-      //   'PHONE: ' + currentPhone + ' FCM Message Data:',
-      //   JSON.stringify(remoteMessage.data),
-      // );
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [currentPhone]);
+  // useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     Messaging.processMessage(remoteMessage);
+  //
+  //     // const data = remoteMessage.data;
+  //     // const payload = JSON.parse(data.serializedPayload);
+  //     //
+  //     // console.log('TYPE: ' + payload.type);
+  //     //
+  //     // console.log(
+  //     //   'PHONE: ' + currentPhone + ' FCM Message Data:',
+  //     //   JSON.stringify(remoteMessage.data),
+  //     // );
+  //   });
+  //
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, [currentPhone]);
 
   return <AppNavigation />;
 }

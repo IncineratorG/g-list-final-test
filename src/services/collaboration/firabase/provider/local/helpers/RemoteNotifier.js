@@ -2,6 +2,8 @@ import {FirebaseResponse} from '../../../response/FirebaseResponse';
 
 export class RemoteNotifier {
   static async notify({receivers}) {
+    console.log('RemoteNotifier->notify()');
+
     const data = {receivers};
     const serializedData = JSON.stringify(data);
 
@@ -28,6 +30,7 @@ export class RemoteNotifier {
         return FirebaseResponse.type.ERROR;
       }
     } catch (e) {
+      console.log('RemoteNotifier->notify()->ERROR: ' + e);
       throw new Error(e);
     }
   }

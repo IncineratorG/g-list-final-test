@@ -8,6 +8,8 @@ import {name as appName} from './app.json';
 import messaging from '@react-native-firebase/messaging';
 import {Messaging} from './src/services/messaging/Messaging';
 
+AppRegistry.registerComponent(appName, () => App);
+// AppRegistry.registerHeadlessTask('RNFirebaseBackgroundMessage', () => task());
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   // Messaging.processMessage(remoteMessage);
 
@@ -17,4 +19,6 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   );
 });
 
-AppRegistry.registerComponent(appName, () => App);
+// const task = () => {
+//   console.log('HEADLESS_TASK');
+// };
