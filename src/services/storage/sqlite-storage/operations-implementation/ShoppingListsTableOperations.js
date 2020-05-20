@@ -28,7 +28,13 @@ export class ShoppingListsTableOperations {
     });
   }
 
-  static addShoppingList(db, name, creator) {
+  static addShoppingList({
+    db,
+    name,
+    creator,
+    createTimestamp,
+    updateTimestamp,
+  }) {
     const addShoppingListStatement =
       'INSERT INTO ' +
       SHOPPING_LISTS_TABLE +
@@ -46,14 +52,21 @@ export class ShoppingListsTableOperations {
       SHOPPING_LISTS_TABLE_CREATOR +
       ') VALUES (?, ?, ?, ?, ?, ?)';
 
-    const timestamp = Date.now();
+    const currentTimestamp = Date.now();
+
     const listCreator = creator ? creator : '';
+    const listCreateTimestamp = createTimestamp
+      ? createTimestamp
+      : currentTimestamp;
+    const listUpdateTimestamp = updateTimestamp
+      ? updateTimestamp
+      : currentTimestamp;
 
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
           addShoppingListStatement,
-          [name, 0, 0, timestamp, timestamp, listCreator],
+          [name, 0, 0, listCreateTimestamp, listUpdateTimestamp, listCreator],
           (_, result) => resolve(result.insertId),
           (_, error) => reject(error),
         );

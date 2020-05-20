@@ -241,6 +241,8 @@ export const cancelShareShoppingListWithUser = ({
       if (receivers.length <= 0) {
         const copiedShoppingListId = await Storage.makeShoppingListLocalCopy({
           shoppingListId,
+          useListTimestamps: true,
+          useListCompletionStatus: true,
         });
         await dispatch(subscribeToShoppingList(copiedShoppingListId));
         dispatch(removeShoppingList(shoppingListId));
