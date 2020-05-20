@@ -2,6 +2,7 @@ import {FirebaseResponse} from '../../../response/FirebaseResponse';
 import {FirebasePaths} from '../../../../../storage/firebase-storage/FirebasePaths';
 import database from '@react-native-firebase/database';
 import {IdManager} from '../../../../../storage/firebase-storage/id-manager/IdManager';
+import {RemoteNotifier} from '../helpers/RemoteNotifier';
 
 export const shareShoppingListHandler = async ({
   receivers,
@@ -167,8 +168,17 @@ export const shareShoppingListHandler = async ({
     .ref()
     .update(secondUpdates);
 
+  try {
+    await RemoteNotifier.notify({receivers});
+  } catch (e) {
+    console.log(
+      'shareShoppingListHandler()->NOTIFY_USERS_ERROR: ' + JSON.stringify(e),
+    );
+  }
+
   return {
     status: FirebaseResponse.type.SUCCESS,
     sharedListKey: sharedListRef.key,
   };
 };
+

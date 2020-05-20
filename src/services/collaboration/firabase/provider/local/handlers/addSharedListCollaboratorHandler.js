@@ -2,6 +2,7 @@ import {FirebaseResponse} from '../../../response/FirebaseResponse';
 import {FirebasePaths} from '../../../../../storage/firebase-storage/FirebasePaths';
 import database from '@react-native-firebase/database';
 import {IdManager} from '../../../../../storage/firebase-storage/id-manager/IdManager';
+import {RemoteNotifier} from '../helpers/RemoteNotifier';
 
 export const addSharedListCollaboratorHandler = async ({
   shoppingListId,
@@ -116,6 +117,15 @@ export const addSharedListCollaboratorHandler = async ({
   await database()
     .ref()
     .update(updates);
+
+  try {
+    await RemoteNotifier.notify({receivers: [collaborator]});
+  } catch (e) {
+    console.log(
+      'addSharedListCollaboratorHandler()->NOTIFY_USERS_ERROR: ' +
+        JSON.stringify(e),
+    );
+  }
 
   return FirebaseResponse.type.SUCCESS;
 };
