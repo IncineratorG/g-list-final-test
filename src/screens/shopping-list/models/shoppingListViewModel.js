@@ -15,7 +15,7 @@ export const useShoppingListScreenModel = () => {
   const [editable, setEditable] = useState(false);
   const [removeProductName, setRemoveProductName] = useState('');
   const [removeProductId, setRemoveProductId] = useState(-1);
-  const [productRow, setProductRow] = useState(null);
+  // const [productRow, setProductRow] = useState(null);
   const [
     removeConfirmationDialogVisible,
     setRemoveConfirmationDialogVisible,
@@ -181,7 +181,7 @@ export const useShoppingListScreenModel = () => {
       currentId,
       removeProductName,
       removeProductId,
-      productRow,
+      // productRow,
       removeConfirmationDialogVisible,
       usedProductsClasses,
       selectedProductClass,
@@ -192,7 +192,7 @@ export const useShoppingListScreenModel = () => {
       setInputAreaEditModeData,
       setRemoveProductName,
       setRemoveProductId,
-      setProductRow,
+      // setProductRow,
       setRemoveConfirmationDialogVisible,
       setSelectedProductClass,
     },

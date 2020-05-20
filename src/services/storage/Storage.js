@@ -63,7 +63,11 @@ export class Storage {
     return {listType, currentUserIsOwner};
   }
 
-  static async makeShoppingListLocalCopy({shoppingListId}) {
+  static async makeShoppingListLocalCopy({
+    shoppingListId,
+    useListTimestamps = false,
+    useListCompletionStatus = false,
+  }) {
     console.log('Storage.makeShoppingListLocalCopy(): ' + shoppingListId);
 
     const shoppingList = await StorageDataExtractor.getShoppingList(
@@ -71,24 +75,11 @@ export class Storage {
       true,
     );
 
-    const copiedShoppingListId = await SqliteStorage.addShoppingList(
-      shoppingList.name,
-    );
-
-    await Promise.all(
-      shoppingList.productsList.map(async product => {
-        await SqliteStorage.addProduct({
-          shoppingListId: copiedShoppingListId,
-          name: product.name,
-          unitId: product.unitId,
-          classId: product.classId,
-          note: product.note,
-          status: product.completionStatus,
-        });
-      }),
-    );
-
-    return copiedShoppingListId;
+    return await SqliteStorage.copyShoppingList({
+      shoppingList,
+      useListTimestamps,
+      useListCompletionStatus,
+    });
   }
 
   static async addProduct({
@@ -446,6 +437,35 @@ Storage.events = {
 };
 Storage.notifier = new StorageNotifier({});
 Storage.localSubscriptions = [];
+
+// static async makeShoppingListLocalCopy({shoppingListId}) {
+//   console.log('Storage.makeShoppingListLocalCopy(): ' + shoppingListId);
+//
+//   const shoppingList = await StorageDataExtractor.getShoppingList(
+//     shoppingListId,
+//     true,
+//   );
+//
+//   const copiedShoppingListId = await SqliteStorage.addShoppingList(
+//     shoppingList.name,
+//   );
+//
+//   await Promise.all(
+//     shoppingList.productsList.map(async product => {
+//       await SqliteStorage.addProduct({
+//         shoppingListId: copiedShoppingListId,
+//         name: product.name,
+//         quantity: product.quantity,
+//         unitId: product.unitId,
+//         classId: product.classId,
+//         note: product.note,
+//         status: product.completionStatus,
+//       });
+//     }),
+//   );
+//
+//   return copiedShoppingListId;
+// }
 
 // static setStorageSubscriptions() {
 //   Storage.localSubscriptions.push(

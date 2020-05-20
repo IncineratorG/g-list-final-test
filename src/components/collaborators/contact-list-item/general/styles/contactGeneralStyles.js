@@ -6,8 +6,11 @@ export const contactGeneralStyles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     marginTop: 7,
+    marginLeft: 8,
+    marginRight: 8,
     backgroundColor: 'white',
     alignItems: 'center',
+    elevation: 3,
   },
   emailContainer: {
     alignSelf: 'stretch',

@@ -4,11 +4,11 @@ import {StorageIdResolver} from './StorageIdResolver';
 
 export class StorageDataExtractor {
   static async getShoppingLists() {
-    const localShoppingLists = await SqliteStorage.getShoppingLists();
+    const allShoppingLists = await SqliteStorage.getShoppingLists();
     const sharedShoppingLists = await FirebaseStorage.getShoppingLists();
-    localShoppingLists.push(...sharedShoppingLists);
+    allShoppingLists.push(...sharedShoppingLists);
 
-    return localShoppingLists;
+    return allShoppingLists;
   }
 
   static async getShoppingList(shoppingListId, once) {

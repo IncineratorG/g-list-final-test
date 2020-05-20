@@ -80,6 +80,7 @@ const ProductInputArea = ({
     }
 
     dispatch({type: SUBMIT_VALUES});
+    productNameButtonHandler();
   };
   const acceptInputButtonHandler = () => submitValues();
   const submitEditingHandler = () => submitValues();

@@ -17,7 +17,7 @@ import {
 } from '../../data/productStatus';
 
 export class ShoppingListItemsTableOperations {
-  static addItem(
+  static addItem({
     db,
     shoppingListId,
     name,
@@ -26,7 +26,7 @@ export class ShoppingListItemsTableOperations {
     note,
     classId,
     status,
-  ) {
+  }) {
     const addProductStatement =
       'INSERT INTO ' +
       SHOPPING_LIST_ITEM_TABLE +
@@ -69,6 +69,84 @@ export class ShoppingListItemsTableOperations {
             timestamp,
           ],
           (_, result) => resolve(result.insertId),
+          (_, error) => reject(error),
+        );
+      });
+    });
+  }
+
+  static addItems({
+    db,
+    shoppingListId,
+    items,
+    useItemsTimestamps = false,
+    useItemsCompletionStatus = false,
+  }) {
+    if (!items || !items.length) {
+      console.log('ShoppingListItemsTableOperations->addItems(): NO_ITEMS');
+      return;
+    }
+
+    const currentTimestamp = Date.now();
+    const defaultItemStatus = PRODUCT_NOT_COMPLETED;
+
+    let addProductsStatement =
+      'INSERT INTO ' +
+      SHOPPING_LIST_ITEM_TABLE +
+      ' (' +
+      SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_NOTE +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP +
+      ', ' +
+      SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP +
+      ') VALUES ';
+
+    const valuesArray = [];
+    for (let i = 0; i < items.length; ++i) {
+      let values = '(?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      if (i !== items.length - 1) {
+        values = values + ',';
+      }
+      addProductsStatement = addProductsStatement + values;
+
+      valuesArray.push(shoppingListId);
+      valuesArray.push(items[i].name);
+      valuesArray.push(items[i].quantity);
+      valuesArray.push(items[i].unitId);
+      valuesArray.push(items[i].classId);
+      valuesArray.push(items[i].note);
+      if (useItemsCompletionStatus) {
+        valuesArray.push(items[i].completionStatus);
+      } else {
+        valuesArray.push(defaultItemStatus);
+      }
+      if (useItemsTimestamps) {
+        valuesArray.push(items[i].createTimestamp);
+        valuesArray.push(items[i].updateTimestamp);
+      } else {
+        valuesArray.push(currentTimestamp);
+        valuesArray.push(currentTimestamp);
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          addProductsStatement,
+          valuesArray,
+          (_, result) => resolve(result.rowsAffected),
           (_, error) => reject(error),
         );
       });
@@ -257,3 +335,239 @@ export class ShoppingListItemsTableOperations {
     });
   }
 }
+
+// static addItems({
+//   db,
+//   shoppingListId,
+//   items,
+//   useItemsTimestamps = false,
+//   useItemsCompletionStatus = false,
+// }) {
+//   if (!items || !items.length) {
+//     console.log('ShoppingListItemsTableOperations->addItems(): NO_ITEMS');
+//     return;
+//   }
+//
+//   const currentTimestamp = Date.now();
+//   const defaultItemStatus = PRODUCT_NOT_COMPLETED;
+//
+//   let addProductsStatement = 'BEGIN TRANSACTION;';
+//   for (let i = 0; i < items.length; ++i) {
+//     const addStatement =
+//       ' INSERT INTO ' +
+//       SHOPPING_LIST_ITEM_TABLE +
+//       ' (' +
+//       SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_NOTE +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP +
+//       ', ' +
+//       SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP +
+//       ')' +
+//       ' VALUES (' +
+//       shoppingListId +
+//       ', ' +
+//       items[i].name.toString() +
+//       ', ' +
+//       items[i].unitId +
+//       ', ' +
+//       items[i].quantity +
+//       ', ' +
+//       items[i].classId +
+//       ', ' +
+//       items[i].note.toString() +
+//       ', ' +
+//       defaultItemStatus +
+//       ', ' +
+//       currentTimestamp +
+//       ', ' +
+//       currentTimestamp +
+//       ');';
+//     addProductsStatement = addProductsStatement + addStatement;
+//   }
+//   addProductsStatement = addProductsStatement + ' COMMIT;';
+//
+//   // let addProductsStatement =
+//   //   'INSERT INTO ' +
+//   //   SHOPPING_LIST_ITEM_TABLE +
+//   //   ' SELECT ' +
+//   //   shoppingListId +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+//   //   ', ' +
+//   //   items[0].name +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
+//   //   ', ' +
+//   //   items[0].quantity +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
+//   //   ', ' +
+//   //   items[0].unitId +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
+//   //   ', ' +
+//   //   items[0].classId +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
+//   //   ', ' +
+//   //   items[0].note +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_NOTE +
+//   //   ', ' +
+//   //   (useItemsCompletionStatus
+//   //     ? items[0].completionStatus
+//   //     : defaultItemStatus) +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+//   //   ', ' +
+//   //   (useItemsTimestamps ? items[0].createTimestamp : currentTimestamp) +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP +
+//   //   ', ' +
+//   //   (useItemsTimestamps ? items[0].updateTimestamp : currentTimestamp) +
+//   //   ' AS ' +
+//   //   SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP;
+//   //
+//   // for (let i = 1; i < items.length; ++i) {
+//   //   const nextItemStatement =
+//   //     ' UNION ALL SELECT ' +
+//   //     shoppingListId +
+//   //     ', ' +
+//   //     items[i].name +
+//   //     ', ' +
+//   //     items[i].quantity +
+//   //     ', ' +
+//   //     items[i].unitId +
+//   //     ', ' +
+//   //     items[i].classId +
+//   //     ', ' +
+//   //     items[i].note +
+//   //     ', ' +
+//   //     (useItemsCompletionStatus
+//   //       ? items[i].completionStatus
+//   //       : defaultItemStatus) +
+//   //     ', ' +
+//   //     (useItemsTimestamps ? items[i].createTimestamp : currentTimestamp) +
+//   //     ', ' +
+//   //     (useItemsTimestamps ? items[i].updateTimestamp : currentTimestamp);
+//   //
+//   //   addProductsStatement = addProductsStatement + nextItemStatement;
+//   // }
+//
+//   return new Promise((resolve, reject) => {
+//     db.transaction(tx => {
+//       tx.executeSql(
+//         addProductsStatement,
+//         [],
+//         (_, result) => resolve(result),
+//         (_, error) => reject(error),
+//       );
+//     });
+//   });
+// }
+// static addItems({
+//   db,
+//   shoppingListId,
+//   items,
+//   useItemsTimestamps = false,
+//   useItemsCompletionStatus = false,
+// }) {
+//   if (!items || !items.length) {
+//     console.log('ShoppingListItemsTableOperations->addItems(): NO_ITEMS');
+//     return;
+//   }
+//
+//   const currentTimestamp = Date.now();
+//   const defaultItemStatus = PRODUCT_NOT_COMPLETED;
+//
+//   let addProductsStatement =
+//     'INSERT INTO ' +
+//     SHOPPING_LIST_ITEM_TABLE +
+//     ' SELECT ' +
+//     shoppingListId +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_PARENT_LIST_ID +
+//     ', ' +
+//     items[0].name.toString() +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_PRODUCT_NAME +
+//     ', ' +
+//     items[0].quantity +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_PRODUCT_COUNT +
+//     ', ' +
+//     items[0].unitId +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_UNIT_ID +
+//     ', ' +
+//     items[0].classId +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_CLASS_ID +
+//     ', ' +
+//     items[0].note.toString() +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_NOTE +
+//     ', ' +
+//     (useItemsCompletionStatus
+//       ? items[0].completionStatus
+//       : defaultItemStatus) +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_COMPLETION_STATUS +
+//     ', ' +
+//     (useItemsTimestamps ? items[0].createTimestamp : currentTimestamp) +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_CREATE_TIMESTAMP +
+//     ', ' +
+//     (useItemsTimestamps ? items[0].updateTimestamp : currentTimestamp) +
+//     ' AS ' +
+//     SHOPPING_LIST_ITEM_TABLE_UPDATE_TIMESTAMP;
+//
+//   for (let i = 1; i < items.length; ++i) {
+//     const nextItemStatement =
+//       ' UNION ALL SELECT ' +
+//       shoppingListId +
+//       ', ' +
+//       items[i].name.toString() +
+//       ', ' +
+//       items[i].quantity +
+//       ', ' +
+//       items[i].unitId +
+//       ', ' +
+//       items[i].classId +
+//       ', ' +
+//       items[i].note.toString() +
+//       ', ' +
+//       (useItemsCompletionStatus
+//         ? items[i].completionStatus
+//         : defaultItemStatus) +
+//       ', ' +
+//       (useItemsTimestamps ? items[i].createTimestamp : currentTimestamp) +
+//       ', ' +
+//       (useItemsTimestamps ? items[i].updateTimestamp : currentTimestamp);
+//
+//     addProductsStatement = addProductsStatement + nextItemStatement;
+//   }
+//
+//   return new Promise((resolve, reject) => {
+//     db.transaction(tx => {
+//       tx.executeSql(
+//         addProductsStatement,
+//         [],
+//         (_, result) => resolve(),
+//         (_, error) => reject(error),
+//       );
+//     });
+//   });
+// }

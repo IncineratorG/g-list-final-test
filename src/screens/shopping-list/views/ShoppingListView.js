@@ -122,12 +122,18 @@ const ShoppingListView = ({styles, model, controller}) => {
     ? shoppingListComponent
     : emptyShoppingListScreenComponent;
 
-  const addButtonComponent = editable ? (
+  const addButtonComponent = (
     <AddButton
       style={[styles.addShoppingListItemButton, {zIndex: 20}]}
       onClick={addProductButtonHandler}
     />
-  ) : null;
+  );
+  // const addButtonComponent = editable ? (
+  //   <AddButton
+  //     style={[styles.addShoppingListItemButton, {zIndex: 20}]}
+  //     onClick={addProductButtonHandler}
+  //   />
+  // ) : null;
 
   const loadingIndicatorComponent = (
     <View style={styles.loadingIndicatorContainer}>

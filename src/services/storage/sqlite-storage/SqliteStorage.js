@@ -168,11 +168,11 @@ export class SqliteStorage {
   }
 
   static async addShoppingList(name, creator) {
-    const shoppingListId = await ShoppingListsTableOperations.addShoppingList(
+    const shoppingListId = await ShoppingListsTableOperations.addShoppingList({
       db,
       name,
       creator,
-    );
+    });
 
     SqliteStorage.notifier.notify({
       event: SqliteStorage.events.LOCAL_SHOPPING_LIST_ADDED,
@@ -201,6 +201,67 @@ export class SqliteStorage {
     return {removedShoppingListsCount, removedProductsCount};
   }
 
+  static async copyShoppingList({
+    shoppingList,
+    useListTimestamps = false,
+    useListCompletionStatus = false,
+  }) {
+    let copiedShoppingListId = -1;
+    if (useListTimestamps) {
+      copiedShoppingListId = await ShoppingListsTableOperations.addShoppingList(
+        {
+          db,
+          name: shoppingList.name,
+          updateTimestamp: shoppingList.updateTimestamp,
+          createTimestamp: shoppingList.createTimestamp,
+        },
+      );
+    } else {
+      copiedShoppingListId = await ShoppingListsTableOperations.addShoppingList(
+        {db, name: shoppingList.name},
+      );
+    }
+
+    if (copiedShoppingListId < 0) {
+      console.log('SqliteStorage->copyShoppingList(): ERROR');
+      return copiedShoppingListId;
+    }
+
+    try {
+      await ShoppingListItemsTableOperations.addItems({
+        db,
+        shoppingListId: copiedShoppingListId,
+        items: shoppingList.productsList,
+        useItemsTimestamps: useListTimestamps,
+        useItemsCompletionStatus: useListCompletionStatus,
+      });
+    } catch (e) {
+      console.log(
+        'SqliteStorage->copyShoppingList()->EXCEPTION: ' + JSON.stringify(e),
+      );
+    }
+
+    const totalShoppingListItems = shoppingList.productsList.length;
+    const completedShoppingListItems = await ShoppingListItemsTableOperations.getCompletedItems(
+      db,
+      copiedShoppingListId,
+    );
+
+    await ShoppingListsTableOperations.updateShoppingList(
+      db,
+      copiedShoppingListId,
+      totalShoppingListItems,
+      completedShoppingListItems.length,
+    );
+
+    SqliteStorage.notifier.notify({
+      event: SqliteStorage.events.LOCAL_SHOPPING_LIST_ADDED,
+      data: {shoppingListId: copiedShoppingListId, name: shoppingList.name},
+    });
+
+    return copiedShoppingListId;
+  }
+
   static async getShoppingLists() {
     const shoppingListsTableData = await ShoppingListsTableOperations.getShoppingLists(
       db,
@@ -223,7 +284,7 @@ export class SqliteStorage {
     classId,
     status,
   }) {
-    const insertedId = await ShoppingListItemsTableOperations.addItem(
+    const insertedId = await ShoppingListItemsTableOperations.addItem({
       db,
       shoppingListId,
       name,
@@ -232,7 +293,7 @@ export class SqliteStorage {
       note,
       classId,
       status,
-    );
+    });
 
     const totalShoppingListItems = await ShoppingListItemsTableOperations.getItems(
       db,

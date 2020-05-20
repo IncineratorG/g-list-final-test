@@ -2,11 +2,15 @@ import {Collaboration} from '../../services/collaboration/Collaboration';
 import {
   ADD_COLLABORATOR,
   LOAD_COLLABORATORS,
+  SET_BUSY,
   SET_COLLABORATOR_ERROR,
   SET_COLLABORATOR_EXIST_STATUS,
   SET_COLLABORATOR_PENDING,
   SET_COLLABORATOR_SELECTED,
   SET_COLLABORATOR_UNSELECTED,
+  SUBSCRIBE_TO_CURRENT_SHOPPING_LIST_RECEIVERS,
+  UNSUBSCRIBE_FROM_CURRENT_SHOPPING_LIST_RECEIVERS,
+  UPDATE_RECEIVERS,
 } from '../types/collaborationTypes';
 import {Storage} from '../../services/storage/Storage';
 import {
@@ -14,6 +18,35 @@ import {
   subscribeToShoppingList,
 } from './shoppingListActions';
 import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
+
+export const subscribeToCurrentShoppingListReceivers = () => {
+  return async (dispatch, getState) => {
+    const receiversChangeHandler = listOfShoppingLists => {
+      const {id} = getState().shoppingList.currentShoppingList;
+      dispatch({type: UPDATE_RECEIVERS, payload: {id, listOfShoppingLists}});
+    };
+
+    const subscription = await Storage.subscribe({
+      event: Storage.events.LIST_OF_SHOPPING_LISTS_CHANGED,
+      handler: receiversChangeHandler,
+    });
+
+    dispatch({
+      type: SUBSCRIBE_TO_CURRENT_SHOPPING_LIST_RECEIVERS,
+      payload: {
+        id: getState().shoppingList.currentShoppingList.id,
+        listOfShoppingLists: subscription.data,
+        unsubscribe: subscription.unsubscribe,
+      },
+    });
+  };
+};
+
+export const unsubscribeFromCurrentShoppingListReceivers = () => {
+  return async (dispatch, getState) => {
+    dispatch({type: UNSUBSCRIBE_FROM_CURRENT_SHOPPING_LIST_RECEIVERS});
+  };
+};
 
 export const loadCollaborators = () => {
   return async dispatch => {
@@ -73,8 +106,15 @@ export const shareShoppingListWithUser = ({
   collaborator,
   shoppingListId,
 }) => {
-  return async (dispatch, getState) => {
-    console.log('shareShoppingListWithUser()_ACTION');
+  return async dispatch => {
+    console.log(
+      'shareShoppingListWithUser()_ACTION: ' +
+        sender +
+        ' - ' +
+        collaborator.email +
+        ' - ' +
+        shoppingListId,
+    );
 
     if (!sender || !collaborator || !shoppingListId) {
       console.log('shareShoppingListWithUser(): BAD_DATA');
@@ -87,10 +127,8 @@ export const shareShoppingListWithUser = ({
       return;
     }
 
+    dispatch({type: SET_BUSY, payload: true});
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
-
-    const {id} = getState().shoppingList.currentShoppingList;
-    const needSubscribe = shoppingListId === id;
 
     const listShared = listType === StorageIdResolver.listTypes.FIREBASE;
     if (listShared) {
@@ -120,9 +158,7 @@ export const shareShoppingListWithUser = ({
         console.log('ACTION_WAS: SHARE_SHOPPING_LIST: ' + sharedListId);
 
         if (result.success) {
-          if (needSubscribe) {
-            await dispatch(subscribeToShoppingList(sharedListId));
-          }
+          await dispatch(subscribeToShoppingList(sharedListId));
           await dispatch(removeShoppingList(shoppingListId));
           dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
         } else {
@@ -142,6 +178,7 @@ export const shareShoppingListWithUser = ({
     }
 
     dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
+    dispatch({type: SET_BUSY, payload: false});
   };
 };
 
@@ -176,10 +213,23 @@ export const cancelShareShoppingListWithUser = ({
   shoppingListId,
 }) => {
   return async (dispatch, getState) => {
+    console.log(
+      'cancelShareShoppingListWithUser_ACTION: ' +
+        sender +
+        ' - ' +
+        collaborator.email +
+        shoppingListId,
+    );
+
+    dispatch({type: SET_BUSY, payload: true});
     dispatch({type: SET_COLLABORATOR_PENDING, payload: collaborator.id});
 
-    const {id, receivers} = getState().shoppingList.currentShoppingList;
-    const needSubscribe = shoppingListId === id;
+    const {receivers} = getState().collaboration;
+
+    console.log(
+      'cancelShareShoppingListWithUser_ACTION->RECEIVERS_LENGTH: ' +
+        receivers.length,
+    );
 
     const result = await Collaboration.removeSharedListCollaborator({
       shoppingListId,
@@ -191,10 +241,10 @@ export const cancelShareShoppingListWithUser = ({
       if (receivers.length <= 0) {
         const copiedShoppingListId = await Storage.makeShoppingListLocalCopy({
           shoppingListId,
+          useListTimestamps: true,
+          useListCompletionStatus: true,
         });
-        if (needSubscribe) {
-          await dispatch(subscribeToShoppingList(copiedShoppingListId));
-        }
+        await dispatch(subscribeToShoppingList(copiedShoppingListId));
         dispatch(removeShoppingList(shoppingListId));
       }
 
@@ -202,6 +252,7 @@ export const cancelShareShoppingListWithUser = ({
     } else {
       dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
     }
+    dispatch({type: SET_BUSY, payload: false});
   };
 };
 

@@ -109,18 +109,6 @@ export class Collaboration {
     return await CollaborationStorage.getCollaborators();
   }
 
-  static async sendMessage({receiverPhone, senderPhone, messageText}) {
-    try {
-      const result = await FirebaseCollaboration.sendTextMessage({
-        receiverPhone,
-        senderPhone,
-        messageText,
-      });
-    } catch (e) {
-      throw new Error(e);
-    }
-  }
-
   static async shareShoppingList({
     receivers,
     sender,
@@ -129,21 +117,6 @@ export class Collaboration {
     units,
     classes,
   }) {
-    console.log('Collaboration.shareShoppingList(): ' + receivers[0]);
-
-    if (Collaboration.pendingIdsMap.has(shoppingList.id)) {
-      return await addSharedListCollaboratorPended({
-        shoppingList,
-        collaborator: receivers[0],
-        collaborationService: this,
-      });
-    }
-
-    Collaboration.pendingIdsMap.clear();
-    Collaboration.pendingIdsMap.set(shoppingList.id, undefined);
-
-    Collaboration.pendedActionsCounter.clear();
-
     const {
       status,
       sharedListKey,
@@ -156,14 +129,55 @@ export class Collaboration {
       classes,
     });
 
-    Collaboration.pendingIdsMap.set(shoppingList.id, {status, sharedListKey});
-
     return {
       success: status === FirebaseCollaboration.status.SUCCESS,
       action: Collaboration.actions.SHARE_SHOPPING_LIST,
       sharedListId: sharedListKey,
     };
   }
+  // static async shareShoppingList({
+  //   receivers,
+  //   sender,
+  //   shoppingList,
+  //   shoppingListCard,
+  //   units,
+  //   classes,
+  // }) {
+  //   console.log('Collaboration.shareShoppingList(): ' + receivers[0]);
+  //
+  //   if (Collaboration.pendingIdsMap.has(shoppingList.id)) {
+  //     return await addSharedListCollaboratorPended({
+  //       shoppingList,
+  //       collaborator: receivers[0],
+  //       collaborationService: this,
+  //     });
+  //   }
+  //
+  //   Collaboration.pendingIdsMap.clear();
+  //   Collaboration.pendingIdsMap.set(shoppingList.id, undefined);
+  //
+  //   Collaboration.pendedActionsCounter.clear();
+  //
+  //   const {
+  //     status,
+  //     sharedListKey,
+  //   } = await FirebaseCollaboration.shareShoppingList({
+  //     receivers,
+  //     sender,
+  //     shoppingList,
+  //     shoppingListCard,
+  //     units,
+  //     classes,
+  //   });
+  //
+  //   Collaboration.pendingIdsMap.set(shoppingList.id, {status, sharedListKey});
+  //
+  //   return {
+  //     success: status === FirebaseCollaboration.status.SUCCESS,
+  //     action: Collaboration.actions.SHARE_SHOPPING_LIST,
+  //     sharedListId: sharedListKey,
+  //   };
+  // }
 
   static async addSharedListCollaborator({shoppingListId, collaborator}) {
     const result = await FirebaseCollaboration.addSharedListCollaborator({
@@ -181,17 +195,6 @@ export class Collaboration {
     });
 
     return result === 'SUCCESS';
-  }
-
-  static testShareTimeout() {
-    return new Promise(resolve =>
-      setTimeout(() => {
-        const id = Date.now();
-        const result = 'SUCCESS';
-
-        resolve({id, result});
-      }, 2000),
-    );
   }
 
   static async removeSharedShoppingList({shoppingListId}) {
@@ -339,3 +342,26 @@ Collaboration.pendedActionsCounter = new Map();
 //     }
 //   }
 // });
+
+// static testShareTimeout() {
+//   return new Promise(resolve =>
+//     setTimeout(() => {
+//       const id = Date.now();
+//       const result = 'SUCCESS';
+//
+//       resolve({id, result});
+//     }, 2000),
+//   );
+// }
+
+// static async sendMessage({receiverPhone, senderPhone, messageText}) {
+//   try {
+//     const result = await FirebaseCollaboration.sendTextMessage({
+//       receiverPhone,
+//       senderPhone,
+//       messageText,
+//     });
+//   } catch (e) {
+//     throw new Error(e);
+//   }
+// }

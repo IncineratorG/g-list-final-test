@@ -62,7 +62,7 @@ export const CategoriesList = ({
       <TouchableHighlight
         style={styles.categoryTouchable}
         onPress={categoryPressHandler}>
-        <View style={styles.categoryContainer}>
+        <View style={[styles.categoryContainer, {borderColor: item.color}]}>
           <Text style={styles.categoryName}>{item.name}</Text>
         </View>
       </TouchableHighlight>
@@ -102,6 +102,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
+    borderWidth: 2,
+    borderColor: 'lightgrey',
   },
   categoryTouchable: {
     height: 30,

@@ -16,15 +16,9 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const collaboratorInputSubmitEmailHandler = email => {
-    // const currentMillis = Date.now();
-    // const contact = {id: currentMillis, email};
-    //
-    // const contacts = model.data.contacts;
-    // contacts.push(contact);
-    //
-    // model.setters.setContacts(contacts);
-
-    model.dispatch(addCollaborator({email}));
+    if (email !== model.data.currentEmail) {
+      model.dispatch(addCollaborator({email}));
+    }
   };
 
   const shadedBackgroundPressHandler = () => {
@@ -34,19 +28,8 @@ export const useCollaboratorsScreenController = model => {
   };
 
   const selectContactButtonPressHandler = ({contact}) => {
-    const shoppingListId = model.data.navigationShoppingListId
-      ? model.data.navigationShoppingListId
-      : model.data.currentShoppingListId;
+    const shoppingListId = model.data.currentShoppingListId;
     const sender = model.data.currentEmail;
-
-    console.log(
-      'selectContactButtonPressHandler()->SHOPPING_LIST_ID: ' +
-        shoppingListId +
-        ' - ' +
-        sender +
-        ' - ' +
-        contact.email,
-    );
 
     if (contact.selected) {
       model.dispatch(

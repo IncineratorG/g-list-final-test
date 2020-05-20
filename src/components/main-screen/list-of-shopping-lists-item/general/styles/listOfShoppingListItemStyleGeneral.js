@@ -62,6 +62,9 @@ export const listOfShoppingListsItemStylesGeneral = StyleSheet.create({
     marginRight: 4,
   },
   collaboratorsContainer: {
+    flexDirection: 'row',
+    marginLeft: 4,
+    marginRight: 4,
     flex: 1,
   },
   menuComponent: {

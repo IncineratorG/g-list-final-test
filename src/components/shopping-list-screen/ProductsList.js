@@ -26,6 +26,7 @@ export const ProductsList = ({
       <GeneralProduct
         product={item}
         onItemPress={onItemPress}
+        onItemLongPress={onRemovePress}
         onStatusPress={onStatusPress}
         units={units}
         classes={classes}
