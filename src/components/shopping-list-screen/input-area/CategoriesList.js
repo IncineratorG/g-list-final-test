@@ -32,8 +32,6 @@ export const CategoriesList = ({
     }
   }
 
-  validCategories.forEach(c => console.log(JSON.stringify(c)));
-
   // let validCategories = [];
   // if (!userInput) {
   //   validCategories = [...categories];
