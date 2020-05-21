@@ -32,16 +32,16 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log(
-        'Message handled in the FOREGROUND!',
-        JSON.stringify(remoteMessage.data),
-      );
-    });
-
-    return unsubscribe;
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     console.log(
+  //       'Message handled in the FOREGROUND!',
+  //       JSON.stringify(remoteMessage.data),
+  //     );
+  //   });
+  //
+  //   return unsubscribe;
+  // }, []);
 
   if (!isReady) {
     return <View style={{backgroundColor: 'black'}} />;

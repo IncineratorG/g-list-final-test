@@ -3,6 +3,7 @@ import {FirebasePaths} from '../../../../../storage/firebase-storage/FirebasePat
 import database from '@react-native-firebase/database';
 import {IdManager} from '../../../../../storage/firebase-storage/id-manager/IdManager';
 import {RemoteNotifier} from '../helpers/RemoteNotifier';
+import {RemoteMessage} from '../helpers/RemoteMessage';
 
 export const shareShoppingListHandler = async ({
   receivers,
@@ -168,8 +169,15 @@ export const shareShoppingListHandler = async ({
     .ref()
     .update(secondUpdates);
 
+  // Составляем сообщение получателю.
+  const message = RemoteMessage.create({
+    senderEmail,
+    shoppingListName: shoppingList.name,
+  });
+
+  // Уведомляем получателя.
   try {
-    await RemoteNotifier.notify({receivers});
+    await RemoteNotifier.notify({receivers, message});
   } catch (e) {
     console.log(
       'shareShoppingListHandler()->NOTIFY_USERS_ERROR: ' + JSON.stringify(e),
@@ -181,4 +189,3 @@ export const shareShoppingListHandler = async ({
     sharedListKey: sharedListRef.key,
   };
 };
-

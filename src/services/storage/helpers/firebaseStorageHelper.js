@@ -10,7 +10,6 @@ export const wait = async milliseconds => {
 export const getShoppingListPended = async (
   shoppingListId,
   firebaseStorage,
-  once = false,
 ) => {
   const pendedFunc = async listData => {
     // Уведомляем списком покупок из запрошенных данных всех слушателей текущего списка.
@@ -92,16 +91,52 @@ export const getShoppingListOnce = async (shoppingListId, firebaseStorage) => {
     shoppingListId,
   });
 
+  const shoppingListPathRef = database().ref(shoppingListPath);
+  if (
+    firebaseStorage.shoppingListPathHandler.path &&
+    firebaseStorage.shoppingListPathHandler.path.toString() ===
+      shoppingListPathRef.toString()
+  ) {
+    // Получаем данные соответсвующего списка покупок.
+    const listData = firebaseStorage.sendSharedShoppingLists.has(shoppingListId)
+      ? firebaseStorage.sendSharedShoppingLists.get(shoppingListId)
+      : firebaseStorage.receivedSharedShoppingLists.get(shoppingListId);
+
+    if (listData) {
+      return listData.shoppingList;
+    } else {
+      return undefined;
+    }
+  }
+
   const shoppingListSnapshot = await database()
     .ref(shoppingListPath)
     .once('value');
 
-  const shoppingList = FirebaseConverter.listFromFirebase({
+  return FirebaseConverter.listFromFirebase({
     shoppingListId,
     receiversSnapshot: undefined,
     shoppingListCardSnapshot: shoppingListSnapshot,
     productsSnapshot: shoppingListSnapshot.child('productsList'),
   });
-
-  return shoppingList;
 };
+
+// export const getShoppingListOnce = async (shoppingListId, firebaseStorage) => {
+//   const shoppingListPath = FirebasePaths.getPath({
+//     pathType: FirebasePaths.paths.SHOPPING_LIST,
+//     shoppingListId,
+//   });
+//
+//   const shoppingListSnapshot = await database()
+//     .ref(shoppingListPath)
+//     .once('value');
+//
+//   const shoppingList = FirebaseConverter.listFromFirebase({
+//     shoppingListId,
+//     receiversSnapshot: undefined,
+//     shoppingListCardSnapshot: shoppingListSnapshot,
+//     productsSnapshot: shoppingListSnapshot.child('productsList'),
+//   });
+//
+//   return shoppingList;
+// };

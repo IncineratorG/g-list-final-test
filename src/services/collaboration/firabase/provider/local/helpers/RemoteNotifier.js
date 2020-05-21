@@ -1,10 +1,10 @@
 import {FirebaseResponse} from '../../../response/FirebaseResponse';
 
 export class RemoteNotifier {
-  static async notify({receivers}) {
+  static async notify({receivers, message}) {
     console.log('RemoteNotifier->notify()');
 
-    const data = {receivers};
+    const data = {receivers, message};
     const serializedData = JSON.stringify(data);
 
     try {
