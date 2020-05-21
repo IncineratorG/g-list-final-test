@@ -2,6 +2,9 @@ import {FirebaseResponse} from '../../../response/FirebaseResponse';
 import {FirebasePaths} from '../../../../../storage/firebase-storage/FirebasePaths';
 import database from '@react-native-firebase/database';
 import {IdManager} from '../../../../../storage/firebase-storage/id-manager/IdManager';
+import {RemoteNotifier} from '../helpers/RemoteNotifier';
+import {Storage} from '../../../../../storage/Storage';
+import {RemoteMessage} from '../helpers/RemoteMessage';
 
 export const addSharedListCollaboratorHandler = async ({
   shoppingListId,
@@ -32,7 +35,8 @@ export const addSharedListCollaboratorHandler = async ({
     .once('value');
 
   // Получаем ID создателя и получателей списка.
-  const senderId = IdManager.getId(senderData.val());
+  const senderEmail = senderData.val();
+  const senderId = IdManager.getId(senderEmail);
   const receiversIds = [];
   receiversData.forEach(child => {
     receiversIds.push(IdManager.getId(child.val()));
@@ -116,6 +120,25 @@ export const addSharedListCollaboratorHandler = async ({
   await database()
     .ref()
     .update(updates);
+
+  // Составляем сообщение получателю.
+  const {data} = await Storage.subscribe({
+    shoppingListId,
+    event: Storage.events.SHOPPING_LIST_CHANGED,
+    once: true,
+  });
+  const shoppingListName = data ? data.name : undefined;
+  const message = RemoteMessage.create({senderEmail, shoppingListName})
+
+  // Уведомляем получателя.
+  try {
+    await RemoteNotifier.notify({receivers: [collaborator], message});
+  } catch (e) {
+    console.log(
+      'addSharedListCollaboratorHandler()->NOTIFY_USERS_ERROR: ' +
+        JSON.stringify(e),
+    );
+  }
 
   return FirebaseResponse.type.SUCCESS;
 };
