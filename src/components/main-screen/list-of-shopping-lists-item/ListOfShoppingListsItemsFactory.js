@@ -14,6 +14,7 @@ import ListOfShoppingListsItemGeneral from './general/ListOfShoppingListItemGene
 
 export default class ListOfShoppingListsItemsFactory {
   static get({
+    online,
     listItem,
     onItemPress,
     onRemovePress,
@@ -31,6 +32,7 @@ export default class ListOfShoppingListsItemsFactory {
       <ListOfShoppingListsItemGeneral
         styles={generalItemStyles}
         listItem={listItem}
+        online={online}
         onItemPress={onItemPress}
         onRemovePress={onRemovePress}
         onSharedPress={onSharePress}

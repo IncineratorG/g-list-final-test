@@ -24,6 +24,8 @@ const ShoppingListView = ({styles, model, controller}) => {
     sharedListLoading,
     usedProductsClasses,
     selectedProductClass,
+    online,
+    shared,
   } = model;
 
   const {

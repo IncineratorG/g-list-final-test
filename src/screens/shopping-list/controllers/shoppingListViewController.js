@@ -20,6 +20,10 @@ export const useShoppingListScreenController = model => {
   };
 
   const addProductButtonHandler = () => {
+    if (model.data.shared && !model.data.online) {
+      return;
+    }
+
     model.setters.setInputAreaEditMode(false);
     model.setters.setInputAreaEditModeData(undefined);
     model.setters.setInputAreaVisible(true);
@@ -30,6 +34,10 @@ export const useShoppingListScreenController = model => {
   };
 
   const inputAreaSubmitValuesHandler = values => {
+    if (model.data.shared && !model.data.online) {
+      return;
+    }
+
     if (model.data.inputAreaEditMode) {
       model.dispatch(
         updateProduct({
@@ -93,6 +101,10 @@ export const useShoppingListScreenController = model => {
           status,
       );
 
+      if (model.data.shared && !model.data.online) {
+        return;
+      }
+
       model.dispatch(
         setProductStatus({
           editor: model.data.currentId,
@@ -106,6 +118,10 @@ export const useShoppingListScreenController = model => {
   );
 
   const productRemoveHandler = product => {
+    if (model.data.shared && !model.data.online) {
+      return;
+    }
+
     model.setters.setRemoveProductName(product.name);
     model.setters.setRemoveProductId(product.id);
     model.setters.setRemoveConfirmationDialogVisible(true);

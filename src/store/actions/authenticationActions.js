@@ -67,6 +67,8 @@ export const signUp = ({phone, email, password}) => {
 
 export const signIn = ({phone, email, password}) => {
   return async dispatch => {
+    console.log('signIn_ACTION');
+
     dispatch({type: SIGN_IN_BEGIN});
 
     try {
