@@ -56,6 +56,7 @@ export const useShoppingListScreenModel = () => {
     state => state.authentication.currentUser.phone,
   );
   const currentId = useSelector(state => state.authentication.currentUser.id);
+  const online = useSelector(state => state.system.online);
 
   let products = [...productsList];
   if (products.length > 0) {
@@ -68,8 +69,9 @@ export const useShoppingListScreenModel = () => {
   useEffect(() => {
     navigation.setParams({shoppingListName});
     navigation.setParams({editable});
+    navigation.setParams({online});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shoppingListName, editable]);
+  }, [shoppingListName, editable, online]);
 
   useEffect(() => {
     if (creator.length <= 0 || creator === currentId) {
@@ -181,10 +183,10 @@ export const useShoppingListScreenModel = () => {
       currentId,
       removeProductName,
       removeProductId,
-      // productRow,
       removeConfirmationDialogVisible,
       usedProductsClasses,
       selectedProductClass,
+      online,
     },
     setters: {
       setInputAreaVisible,
@@ -192,7 +194,6 @@ export const useShoppingListScreenModel = () => {
       setInputAreaEditModeData,
       setRemoveProductName,
       setRemoveProductId,
-      // setProductRow,
       setRemoveConfirmationDialogVisible,
       setSelectedProductClass,
     },

@@ -45,6 +45,7 @@ export const useMainScreenModel = () => {
   const sharedShoppingListsLoading = useSelector(
     state => state.shoppingList.allShoppingLists.sharedListsLoading,
   );
+  const online = useSelector(state => state.system.online);
 
   useEffect(() => {
     const allListsTypeTitle = 'Все';
@@ -136,6 +137,7 @@ export const useMainScreenModel = () => {
       selectedShoppingLists,
       busy,
       signedIn,
+      online,
     },
     setters: {
       setRemoveConfirmationDialogVisible,

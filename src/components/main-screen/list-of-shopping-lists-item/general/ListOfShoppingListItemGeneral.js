@@ -7,11 +7,11 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {icon} from 'reinput/src/Icon/styles';
 
 const ListOfShoppingListsItemGeneral = ({
   styles,
   listItem,
+  online,
   onItemPress,
   onRemovePress,
   onSharedPress,
@@ -87,9 +87,10 @@ const ListOfShoppingListsItemGeneral = ({
       </View>
     ) : null;
 
-  const shareListMenuOption = currentUserIsListAuthor ? (
-    <MenuOption onSelect={onSharePressHandler} text="Поделиться" />
-  ) : null;
+  const shareListMenuOption =
+    currentUserIsListAuthor && online ? (
+      <MenuOption onSelect={onSharePressHandler} text="Поделиться" />
+    ) : null;
   const menuComponent = (
     <Menu opened={menuVisible} onBackdropPress={onMenuPressHandler}>
       <MenuTrigger text="" />

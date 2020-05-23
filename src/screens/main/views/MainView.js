@@ -17,6 +17,7 @@ const MainView = ({styles, model, controller}) => {
     selectedListType,
     selectedShoppingLists,
     busy,
+    online,
   } = model;
 
   const {
@@ -69,6 +70,7 @@ const MainView = ({styles, model, controller}) => {
   const listOfShoppingListsComponent = (
     <View style={styles.listOfShoppingListContainer}>
       <ListOfShoppingLists
+        online={online}
         currentEmail={currentEmail}
         list={selectedShoppingLists}
         sectionList={[]}

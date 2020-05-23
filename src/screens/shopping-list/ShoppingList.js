@@ -28,10 +28,12 @@ ShoppingList.navigationOptions = ({navigation}) => {
   const shoppingListName = navigation.getParam('shoppingListName');
   const editable = navigation.getParam('editable');
   const controller = navigation.getParam('controller');
+  const online = navigation.getParam('online');
 
-  const collaborationButton = editable ? (
-    <CollaborationButton onPress={controller.navigationButtonHandler} />
-  ) : null;
+  const collaborationButton =
+    editable && online ? (
+      <CollaborationButton onPress={controller.navigationButtonHandler} />
+    ) : null;
 
   return {
     headerTitle: shoppingListName ? shoppingListName : '',

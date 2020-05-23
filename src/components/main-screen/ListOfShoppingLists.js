@@ -6,6 +6,7 @@ import {View, StyleSheet, FlatList} from 'react-native';
 import ListOfShoppingListsItemsFactory from './list-of-shopping-lists-item/ListOfShoppingListsItemsFactory';
 
 export const ListOfShoppingLists = ({
+  online,
   currentEmail,
   list,
   sectionList,
@@ -15,6 +16,7 @@ export const ListOfShoppingLists = ({
 }) => {
   const renderItem = ({item}) => {
     return ListOfShoppingListsItemsFactory.get({
+      online,
       listItem: item,
       onItemPress,
       onRemovePress,

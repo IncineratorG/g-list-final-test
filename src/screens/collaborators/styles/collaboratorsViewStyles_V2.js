@@ -4,9 +4,16 @@ export const collaboratorsViewStyles_V2 = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: '#edeef1',
-
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  sendOptionsContainer: {
+    alignSelf: 'stretch',
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row-reverse',
+    marginTop: 14,
   },
   contactsListContainer: {
     flex: 1,
