@@ -6,6 +6,7 @@ import {AddButton} from '../../../components/common/AddButton';
 import CollaboratorInputArea from '../../../components/collaborators/collaborator-input-area/CollaboratorInputArea';
 import {EmptyCollaboratorsScreen} from '../../../components/collaborators/EmptyCollaboratorsScreen';
 import {ProgressDialog} from 'react-native-simple-dialogs';
+import {SendOptionsPanel} from '../../../components/collaborators/SendOptionsPanel';
 
 const CollaboratorsView_V2 = ({styles, model, controller}) => {
   const {collaboratorInputAreaVisible, contacts, serviceBusy} = model;
@@ -16,6 +17,8 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
     collaboratorInputAreaHideHandler,
     collaboratorInputSubmitEmailHandler,
     selectContactButtonPressHandler,
+    smsButtonHandler,
+    whatsAppButtonHandler,
   } = controller;
 
   const serviceBusyDialog = (
@@ -81,8 +84,20 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
       ? contactsListComponent
       : emptyCollaboratorsScreenComponent;
 
+  // ===
+  const shareOptionsComponent = (
+    <View style={styles.sendOptionsContainer}>
+      <SendOptionsPanel
+        onSmsPress={smsButtonHandler}
+        onWhatsAppPress={whatsAppButtonHandler}
+      />
+    </View>
+  );
+  // ===
+
   return (
     <View style={styles.mainContainer}>
+      {shareOptionsComponent}
       {collaboratorsScreenContent}
       {serviceBusyDialog}
       <View style={styles.addContactButtonContainer}>

@@ -3,12 +3,29 @@ import {
   cancelShareShoppingListWithUser,
   shareShoppingListWithUser,
 } from '../../../store/actions/collaborationActions';
+import {Linking} from 'react-native';
 
 export const useCollaboratorsScreenController = model => {
   const addCollaboratorButtonHandler = () => {
+    // Linking.openURL('sms:?body=test1234?');
+
     model.setters.setCollaboratorInputAreaVisible(
       !model.data.collaboratorInputAreaVisible,
     );
+  };
+
+  const smsButtonHandler = () => {
+    console.log('smsButtonHandler()');
+    Linking.openURL('sms:?body=test1234');
+  };
+
+  const whatsAppButtonHandler = () => {
+    console.log('whatsAppButtonHandler()');
+    Linking.openURL('whatsapp://send?text=hello')
+      .then(data => {})
+      .catch(() => {
+        console.log('NO_WHATSAPP_INSTALLED');
+      });
   };
 
   const collaboratorInputAreaHideHandler = () => {
@@ -56,6 +73,8 @@ export const useCollaboratorsScreenController = model => {
     collaboratorInputSubmitEmailHandler,
     shadedBackgroundPressHandler,
     selectContactButtonPressHandler,
+    smsButtonHandler,
+    whatsAppButtonHandler,
   };
 };
 
