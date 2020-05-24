@@ -34,6 +34,8 @@ export const useShoppingListScreenController = model => {
   };
 
   const inputAreaSubmitValuesHandler = values => {
+    console.log('inputAreaSubmitValuesHandler(): ' + JSON.stringify(values));
+
     if (model.data.shared && !model.data.online) {
       return;
     }
