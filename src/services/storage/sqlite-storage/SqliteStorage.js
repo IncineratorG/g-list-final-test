@@ -450,10 +450,6 @@ export class SqliteStorage {
       event: SqliteStorage.events.LOCAL_PRODUCTS_DELETED,
       data: {shoppingListId, products: [removedProduct]},
     });
-    // SqliteStorage.notifier.notify({
-    //   event: SqliteStorage.events.LOCAL_PRODUCT_UPDATED,
-    //   data: {shoppingListId, productId},
-    // });
 
     return shoppingListId;
   }
@@ -498,8 +494,6 @@ export class SqliteStorage {
 SqliteStorage.events = {
   LOCAL_SHOPPING_LIST_ADDED: 'LOCAL_SHOPPING_LIST_ADDED',
   LOCAL_SHOPPING_LIST_REMOVED: 'LOCAL_SHOPPING_LIST_REMOVED',
-  // LOCAL_PRODUCT_ADDED: 'LOCAL_PRODUCT_ADDED',
-  // LOCAL_PRODUCT_UPDATED: 'LOCAL_PRODUCT_UPDATED',
 
   LOCAL_PRODUCTS_ADDED: 'LOCAL_PRODUCTS_ADDED',
   LOCAL_PRODUCTS_UPDATED: 'LOCAL_PRODUCTS_UPDATED',

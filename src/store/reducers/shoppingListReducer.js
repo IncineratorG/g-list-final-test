@@ -40,9 +40,12 @@ const initialState = {
   allShoppingLists: {
     unsubscribeHandler: undefined,
     sharedListsLoadingStatusUnsubscribeHandlers: [],
-    sendListsLoading: true,
-    receivedListsLoading: true,
-    sharedListsLoading: true,
+    sendListsLoading: false,
+    receivedListsLoading: false,
+    sharedListsLoading: false,
+    // sendListsLoading: true,
+    // receivedListsLoading: true,
+    // sharedListsLoading: true,
     localListsLoading: true,
     removing: false,
     error: '',
@@ -321,8 +324,8 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case SET_RECEIVED_LISTS_LOADING: {
-      const receivedListsLoading = state.allShoppingLists.receivedListsLoading;
-      const sendListsLoading = action.payload;
+      const sendListsLoading = state.allShoppingLists.sendListsLoading;
+      const receivedListsLoading = action.payload;
       const sharedListsLoading = receivedListsLoading || sendListsLoading;
 
       return {
@@ -334,6 +337,22 @@ export const shoppingListReducer = (state = initialState, action) => {
         },
       };
     }
+    // case SET_RECEIVED_LISTS_LOADING: {
+    //   const receivedListsLoading = state.allShoppingLists.receivedListsLoading;
+    //   const sendListsLoading = action.payload;
+    //   const sharedListsLoading = receivedListsLoading || sendListsLoading;
+    //
+    //   console.log('SET_RECEIVED_LISTS_LOADING: ' + sendListsLoading);
+    //
+    //   return {
+    //     ...state,
+    //     allShoppingLists: {
+    //       ...state.allShoppingLists,
+    //       receivedListsLoading: action.payload,
+    //       sharedListsLoading: sharedListsLoading,
+    //     },
+    //   };
+    // }
 
     case UNSUBSCRIBE_FROM_SHARED_LISTS_OF_SHOPPING_LISTS_LOADING_STATUS: {
       if (state.allShoppingLists.sharedListsLoadingStatusUnsubscribeHandlers) {

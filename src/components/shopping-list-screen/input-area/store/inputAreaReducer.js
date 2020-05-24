@@ -177,7 +177,7 @@ export function reducer(state, action) {
         case INPUT_CATEGORY: {
           let categoryId;
           if (state.values.classesMap.has(action.payload)) {
-            categoryId = state.values.classesMap.get(action.payload);
+            categoryId = state.values.classesMap.get(action.payload).id;
           }
 
           return {

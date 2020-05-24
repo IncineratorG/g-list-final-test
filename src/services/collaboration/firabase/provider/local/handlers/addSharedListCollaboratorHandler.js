@@ -128,11 +128,11 @@ export const addSharedListCollaboratorHandler = async ({
     once: true,
   });
   const shoppingListName = data ? data.name : undefined;
-  const message = RemoteMessage.create({senderEmail, shoppingListName})
+  const message = RemoteMessage.create({senderEmail, shoppingListName});
 
   // Уведомляем получателя.
   try {
-    await RemoteNotifier.notify({receivers: [collaborator], message});
+    RemoteNotifier.notify({receivers: [collaborator], message});
   } catch (e) {
     console.log(
       'addSharedListCollaboratorHandler()->NOTIFY_USERS_ERROR: ' +

@@ -21,6 +21,9 @@ export const mainViewStyles = StyleSheet.create({
     alignItems: 'center',
     height: 10,
   },
+  loadingComponentContainer: {
+    flex: 1,
+  },
   addShoppingListButton: {},
   addShoppingListButtonContainer: {
     position: 'absolute',

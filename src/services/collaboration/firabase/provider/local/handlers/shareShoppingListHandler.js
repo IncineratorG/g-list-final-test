@@ -177,7 +177,7 @@ export const shareShoppingListHandler = async ({
 
   // Уведомляем получателя.
   try {
-    await RemoteNotifier.notify({receivers, message});
+    RemoteNotifier.notify({receivers, message});
   } catch (e) {
     console.log(
       'shareShoppingListHandler()->NOTIFY_USERS_ERROR: ' + JSON.stringify(e),

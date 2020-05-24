@@ -96,6 +96,15 @@ export class FirebaseStorage {
     FirebaseStorage.notifier.notify({
       event: FirebaseStorage.events.SHARED_SEND_LISTS_CHANGED,
     });
+
+    // ===
+    // FirebaseStorage.notifier.notify({
+    //   event: FirebaseStorage.events.SHARED_SEND_LISTS_LOADED,
+    // });
+    // FirebaseStorage.notifier.notify({
+    //   event: FirebaseStorage.events.SHARED_RECEIVED_LISTS_LOADED,
+    // });
+    // ===
   }
 
   static off() {
