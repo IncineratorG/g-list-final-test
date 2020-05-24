@@ -36,7 +36,9 @@ import {productsComparator} from '../helpers/productsComparator';
 
 const initialState = {
   units: [],
+  unitsMap: new Map(),
   classes: [],
+  classesMap: new Map(),
   allShoppingLists: {
     unsubscribeHandler: undefined,
     sharedListsLoadingStatusUnsubscribeHandlers: [],
@@ -118,11 +120,29 @@ export const shoppingListReducer = (state = initialState, action) => {
     }
 
     case LOAD_UNITS: {
-      return {...state, units: action.payload};
+      const units = [...action.payload];
+      const unitsMap = new Map();
+
+      units.forEach(u => unitsMap.set(u.id, u));
+
+      return {
+        ...state,
+        units: units,
+        unitsMap: unitsMap,
+      };
     }
 
     case LOAD_CLASSES: {
-      return {...state, classes: action.payload};
+      const classes = [...action.payload];
+      const classesMap = new Map();
+
+      classes.forEach(cl => classesMap.set(cl.id, cl));
+
+      return {
+        ...state,
+        classes: classes,
+        classesMap: classesMap,
+      };
     }
 
     case ADD_PRODUCT: {

@@ -1,7 +1,12 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableHighlight} from 'react-native';
 
-export const SendOptionsPanel = ({onSmsPress, onWhatsAppPress}) => {
+export const SendOptionsPanel = ({
+  onSmsPress,
+  onWhatsAppPress,
+  smsAvailable,
+  whatsAppAvailable,
+}) => {
   const smsPressHandler = () => {
     if (onSmsPress) {
       onSmsPress();
@@ -14,22 +19,47 @@ export const SendOptionsPanel = ({onSmsPress, onWhatsAppPress}) => {
     }
   };
 
+  const smsButton = smsAvailable ? (
+    <TouchableHighlight style={styles.smsTouchable} onPress={smsPressHandler}>
+      <View style={styles.smsButton}>
+        <Text>Sms</Text>
+      </View>
+    </TouchableHighlight>
+  ) : null;
+
+  const whatsAppButton = whatsAppAvailable ? (
+    <TouchableHighlight
+      style={styles.whatsAppTouchable}
+      onPress={whatsAppPressHandler}>
+      <View style={styles.whatsAppButton}>
+        <Text>WhatsApp</Text>
+      </View>
+    </TouchableHighlight>
+  ) : null;
+
   return (
     <View style={styles.mainContainer}>
-      <TouchableHighlight style={styles.smsTouchable} onPress={smsPressHandler}>
-        <View style={styles.smsButton}>
-          <Text>Sms</Text>
-        </View>
-      </TouchableHighlight>
-      <TouchableHighlight
-        style={styles.whatsAppTouchable}
-        onPress={whatsAppPressHandler}>
-        <View style={styles.whatsAppButton}>
-          <Text>WhatsApp</Text>
-        </View>
-      </TouchableHighlight>
+      {smsButton}
+      {whatsAppButton}
     </View>
   );
+
+  // return (
+  //   <View style={styles.mainContainer}>
+  //     <TouchableHighlight style={styles.smsTouchable} onPress={smsPressHandler}>
+  //       <View style={styles.smsButton}>
+  //         <Text>Sms</Text>
+  //       </View>
+  //     </TouchableHighlight>
+  //     <TouchableHighlight
+  //       style={styles.whatsAppTouchable}
+  //       onPress={whatsAppPressHandler}>
+  //       <View style={styles.whatsAppButton}>
+  //         <Text>WhatsApp</Text>
+  //       </View>
+  //     </TouchableHighlight>
+  //   </View>
+  // );
 };
 
 const styles = StyleSheet.create({

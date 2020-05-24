@@ -4,11 +4,10 @@ import {
   shareShoppingListWithUser,
 } from '../../../store/actions/collaborationActions';
 import {Linking} from 'react-native';
+import {CollaboratorsHelper} from '../helpers/CollaboratorsHelper';
 
 export const useCollaboratorsScreenController = model => {
   const addCollaboratorButtonHandler = () => {
-    // Linking.openURL('sms:?body=test1234?');
-
     model.setters.setCollaboratorInputAreaVisible(
       !model.data.collaboratorInputAreaVisible,
     );
@@ -16,7 +15,16 @@ export const useCollaboratorsScreenController = model => {
 
   const smsButtonHandler = () => {
     console.log('smsButtonHandler()');
-    Linking.openURL('sms:?body=test1234');
+    const stringifiedList = CollaboratorsHelper.listToText({
+      shoppingList: model.data.currentShoppingList,
+      classesMap: model.data.classesMap,
+      unitsMap: model.data.unitsMap,
+    });
+    Linking.openURL('sms:?body=' + stringifiedList)
+      .then(data => {})
+      .catch(() => {
+        console.log('collaboratorScreenController(): SMS_SENDER_ERROR');
+      });
   };
 
   const whatsAppButtonHandler = () => {
@@ -24,7 +32,7 @@ export const useCollaboratorsScreenController = model => {
     Linking.openURL('whatsapp://send?text=hello')
       .then(data => {})
       .catch(() => {
-        console.log('NO_WHATSAPP_INSTALLED');
+        console.log('collaboratorScreenController(): NO_WHATSAPP_INSTALLED');
       });
   };
 

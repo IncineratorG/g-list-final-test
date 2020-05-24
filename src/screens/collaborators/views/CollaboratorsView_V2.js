@@ -9,7 +9,13 @@ import {ProgressDialog} from 'react-native-simple-dialogs';
 import {SendOptionsPanel} from '../../../components/collaborators/SendOptionsPanel';
 
 const CollaboratorsView_V2 = ({styles, model, controller}) => {
-  const {collaboratorInputAreaVisible, contacts, serviceBusy} = model;
+  const {
+    collaboratorInputAreaVisible,
+    contacts,
+    serviceBusy,
+    smsAvailable,
+    whatsAppAvailable,
+  } = model;
 
   const {
     addCollaboratorButtonHandler,
@@ -85,14 +91,17 @@ const CollaboratorsView_V2 = ({styles, model, controller}) => {
       : emptyCollaboratorsScreenComponent;
 
   // ===
-  const shareOptionsComponent = (
-    <View style={styles.sendOptionsContainer}>
-      <SendOptionsPanel
-        onSmsPress={smsButtonHandler}
-        onWhatsAppPress={whatsAppButtonHandler}
-      />
-    </View>
-  );
+  const shareOptionsComponent =
+    smsAvailable || whatsAppAvailable ? (
+      <View style={styles.sendOptionsContainer}>
+        <SendOptionsPanel
+          onSmsPress={smsButtonHandler}
+          onWhatsAppPress={whatsAppButtonHandler}
+          smsAvailable={smsAvailable}
+          whatsAppAvailable={whatsAppAvailable}
+        />
+      </View>
+    ) : null;
   // ===
 
   return (
