@@ -20,6 +20,7 @@ export const useMainScreenModel = () => {
   const [selectedShoppingLists, setSelectedShoppingLists] = useState([]);
   const [listProcessed, setListProcessed] = useState(false);
   const [busy, setBusy] = useState(true);
+  const [listsLoading, setListsLoading] = useState(true);
 
   const signedIn = useSelector(
     state => state.authentication.currentUser.signedIn,
@@ -42,10 +43,20 @@ export const useMainScreenModel = () => {
   const sharedShoppingLists = useSelector(
     state => state.shoppingList.allShoppingLists.sharedLists,
   );
-  const sharedShoppingListsLoading = useSelector(
-    state => state.shoppingList.allShoppingLists.sharedListsLoading,
-  );
+  // const sharedShoppingListsLoading = useSelector(
+  //   state => state.shoppingList.allShoppingLists.sharedListsLoading,
+  // );
   const online = useSelector(state => state.system.online);
+
+  // ===
+  // useEffect(() => {
+  //   if (localListsLoading || sharedListsLoading) {
+  //     console.log('LOADING: ' + localListsLoading + ' - ' + sharedListsLoading);
+  //   } else {
+  //     console.log('LOADED_SUCCESSFULLY');
+  //   }
+  // }, [localListsLoading, sharedListsLoading]);
+  // ===
 
   useEffect(() => {
     const allListsTypeTitle = 'Все';
@@ -110,12 +121,24 @@ export const useMainScreenModel = () => {
   ]);
 
   useEffect(() => {
-    if (!sharedShoppingListsLoading && listProcessed) {
+    if (!sharedListsLoading && listProcessed) {
       setBusy(false);
     } else {
       setBusy(true);
     }
-  }, [sharedShoppingListsLoading, listProcessed]);
+  }, [sharedListsLoading, listProcessed]);
+
+  // ===
+  useEffect(() => {
+    if (localListsLoading || sharedListsLoading) {
+      console.log('LOADING');
+      setListsLoading(true);
+    } else {
+      console.log('LOADED_SUCCESSFULLY');
+      setListsLoading(false);
+    }
+  }, [localListsLoading, sharedListsLoading])
+  // ===
 
   useFocusEffect(
     useCallback(() => {
@@ -138,6 +161,7 @@ export const useMainScreenModel = () => {
       busy,
       signedIn,
       online,
+      listsLoading,
     },
     setters: {
       setRemoveConfirmationDialogVisible,

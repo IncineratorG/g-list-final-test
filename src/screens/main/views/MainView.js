@@ -7,6 +7,7 @@ import {ListOfShoppingLists} from '../../../components/main-screen/ListOfShoppin
 import {AddButton} from '../../../components/common/AddButton';
 import {ListTypesList} from '../../../components/main-screen/ListTypesList';
 import BusyIndicator from '../../../components/main-screen/BusyIndicator';
+import {LoadingMainScreen} from '../../../components/main-screen/LoadingMainScreen';
 
 const MainView = ({styles, model, controller}) => {
   const {
@@ -18,6 +19,7 @@ const MainView = ({styles, model, controller}) => {
     selectedShoppingLists,
     busy,
     online,
+    listsLoading,
   } = model;
 
   const {
@@ -116,7 +118,7 @@ const MainView = ({styles, model, controller}) => {
   //   ? listOfShoppingListsComponent
   //   : emptyMainScreenComponent;
 
-  return (
+  const listLoadedComponent = (
     <View style={styles.mainContainer}>
       {loadingIndicatorComponent}
       {listTypesComponent}
@@ -134,6 +136,38 @@ const MainView = ({styles, model, controller}) => {
       {bottomGradientComponent}
     </View>
   );
+
+  const listLoadingComponent = (
+    <View style={styles.loadingComponentContainer}>
+      <LoadingMainScreen />
+    </View>
+  );
+
+  const activeComponent =
+    listsLoading && !selectedShoppingLists.length
+      ? listLoadingComponent
+      : listLoadedComponent;
+
+  return activeComponent;
+
+  // return (
+  //   <View style={styles.mainContainer}>
+  //     {loadingIndicatorComponent}
+  //     {listTypesComponent}
+  //     {mainScreenContent}
+  //     {removeConfirmationDialog}
+  //     <View
+  //       style={styles.addShoppingListButtonContainer}
+  //       enabled={false}
+  //       behavior={'position'}>
+  //       <AddButton
+  //         style={styles.addShoppingListButton}
+  //         onClick={addButtonHandler}
+  //       />
+  //     </View>
+  //     {bottomGradientComponent}
+  //   </View>
+  // );
 };
 
 export default MainView;
