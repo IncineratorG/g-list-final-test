@@ -1,6 +1,6 @@
 import React from 'react';
 import CollaboratorsView_V2 from './views/CollaboratorsView_V2';
-import {useCollaboratorsScreenModel} from './models/collaboratorsViewModel';
+import {useCollaboratorsScreenModel} from './models/collaboratorsViewModel_V2';
 import {useCollaboratorsScreenController} from './controllers/collaboratorsViewController';
 import {collaboratorsViewStyles_V2} from './styles/collaboratorsViewStyles_V2';
 
