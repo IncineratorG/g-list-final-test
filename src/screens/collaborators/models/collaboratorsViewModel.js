@@ -20,7 +20,11 @@ export const useCollaboratorsScreenModel = () => {
   ] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [smsAvailable, setSmsAvailable] = useState(true);
-  const [whatsAppAvailable, setWahtsAppAvailable] = useState(false);
+  const [whatsAppAvailable, setWhatsAppAvailable] = useState(false);
+  const [validSmsUrl, setValidSmsUrl] = useState('sms:?body=');
+  const [validWhatsAppUrl, setValidWhatsAppUrl] = useState(
+    'whatsapp://send?text=',
+  );
 
   const serviceBusy = useSelector(state => state.collaboration.busy);
   let localCollaborators = useSelector(
@@ -78,7 +82,7 @@ export const useCollaboratorsScreenModel = () => {
 
       try {
         const supported = await Linking.canOpenURL(defaultWhatsAppUrl);
-        setWahtsAppAvailable(supported);
+        setWhatsAppAvailable(supported);
       } catch (e) {
         console.log(
           'collaborationViewModel: ERROR_CHECKING_WHATSAPP_AVAILABILITY',
@@ -109,6 +113,8 @@ export const useCollaboratorsScreenModel = () => {
       whatsAppAvailable,
       classesMap,
       unitsMap,
+      validSmsUrl,
+      validWhatsAppUrl,
     },
     setters: {
       setCollaboratorInputAreaVisible,

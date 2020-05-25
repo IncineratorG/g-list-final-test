@@ -48,8 +48,6 @@ export class CollaboratorsHelper {
 
     listString = listString + productsArr.join('');
 
-    console.log(listString);
-
     return listString;
   }
 }
