@@ -5,8 +5,12 @@ import {
   loadCollaborators,
   subscribeToCurrentShoppingListReceivers,
 } from '../../../store/actions/collaborationActions';
+import {Linking} from 'react-native';
 
 export const useCollaboratorsScreenModel = () => {
+  const defaultSmsUrl = 'sms:?body=t';
+  const defaultWhatsAppUrl = 'whatsapp://send?text=t';
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -15,6 +19,12 @@ export const useCollaboratorsScreenModel = () => {
     setCollaboratorInputAreaVisible,
   ] = useState(false);
   const [contacts, setContacts] = useState([]);
+  const [smsAvailable, setSmsAvailable] = useState(true);
+  const [whatsAppAvailable, setWhatsAppAvailable] = useState(false);
+  const [validSmsUrl, setValidSmsUrl] = useState('sms:?body=');
+  const [validWhatsAppUrl, setValidWhatsAppUrl] = useState(
+    'whatsapp://send?text=',
+  );
 
   const serviceBusy = useSelector(state => state.collaboration.busy);
   let localCollaborators = useSelector(
@@ -29,14 +39,11 @@ export const useCollaboratorsScreenModel = () => {
   const currentEmail = useSelector(
     state => state.authentication.currentUser.email,
   );
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(subscribeToCurrentShoppingListReceivers());
-      dispatch(loadCollaborators());
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []),
+  const currentShoppingList = useSelector(
+    state => state.shoppingList.currentShoppingList,
   );
+  const classesMap = useSelector(state => state.shoppingList.classesMap);
+  const unitsMap = useSelector(state => state.shoppingList.unitsMap);
 
   useEffect(() => {
     let contactsList = [...localCollaborators];
@@ -64,13 +71,50 @@ export const useCollaboratorsScreenModel = () => {
     setContacts(contactsList);
   }, [localCollaborators, shoppingListReceivers]);
 
+  useEffect(() => {
+    const checkWhatsAppAndSms = async () => {
+      try {
+        const supported = await Linking.canOpenURL(defaultSmsUrl);
+        setSmsAvailable(supported);
+      } catch (e) {
+        console.log('collaborationViewModel: ERROR_CHECKING_SMS_AVAILABILITY');
+      }
+
+      try {
+        const supported = await Linking.canOpenURL(defaultWhatsAppUrl);
+        setWhatsAppAvailable(supported);
+      } catch (e) {
+        console.log(
+          'collaborationViewModel: ERROR_CHECKING_WHATSAPP_AVAILABILITY',
+        );
+      }
+    };
+
+    checkWhatsAppAndSms();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(subscribeToCurrentShoppingListReceivers());
+      dispatch(loadCollaborators());
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
+
   return {
     data: {
       serviceBusy,
+      currentShoppingList,
       currentShoppingListId,
       currentEmail,
       collaboratorInputAreaVisible,
       contacts,
+      smsAvailable,
+      whatsAppAvailable,
+      classesMap,
+      unitsMap,
+      validSmsUrl,
+      validWhatsAppUrl,
     },
     setters: {
       setCollaboratorInputAreaVisible,

@@ -23,6 +23,8 @@ const icons = {
   category: require('./category.png'),
   outgoing: require('./outgoing_3.png'),
   incoming: require('./incoming.png'),
+  whatsapp: require('./whatsapp_2.png'),
+  sms: require('./sms_2.png'),
 };
 
 export {icons};
