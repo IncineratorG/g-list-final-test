@@ -25,6 +25,9 @@ export const useCollaboratorsScreenModel = () => {
   const [validWhatsAppUrl, setValidWhatsAppUrl] = useState(
     'whatsapp://send?text=',
   );
+  const [appLink, setAppLink] = useState(
+    'https://play.google.com/store/apps/details?id=com.gllistfinaltest',
+  );
 
   const serviceBusy = useSelector(state => state.collaboration.busy);
   let localCollaborators = useSelector(
@@ -115,6 +118,7 @@ export const useCollaboratorsScreenModel = () => {
       unitsMap,
       validSmsUrl,
       validWhatsAppUrl,
+      appLink,
     },
     setters: {
       setCollaboratorInputAreaVisible,

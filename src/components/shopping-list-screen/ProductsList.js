@@ -11,8 +11,8 @@ export const ProductsList = ({
   onStatusPress,
   onRemovePress,
   editable,
-  units,
-  classes,
+  unitsMap,
+  classesMap,
   selectedCategory,
 }) => {
   const removeOptionHandler = (listItem, row) => {
@@ -28,8 +28,8 @@ export const ProductsList = ({
         onItemPress={onItemPress}
         onItemLongPress={onRemovePress}
         onStatusPress={onStatusPress}
-        units={units}
-        classes={classes}
+        unitsMap={unitsMap}
+        classesMap={classesMap}
         selectedCategory={selectedCategory}
       />
     );

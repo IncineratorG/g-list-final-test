@@ -11,18 +11,21 @@ import {ProductCategories} from '../../ProductCategories';
 const ProductNotCompleted = ({
   styles,
   itemToRender,
-  classes,
+  classesMap,
   onStatusPress,
   onItemPress,
   onItemLongPress,
   selectedCategory,
 }) => {
-  const getClassDescription = classId => {
-    const filteredClasses = classes.filter(cl => cl.id === classId);
-    return filteredClasses.length ? filteredClasses[0] : undefined;
-  };
+  // const getClassDescription = classId => {
+  //   const filteredClasses = classes.filter(cl => cl.id === classId);
+  //   return filteredClasses.length ? filteredClasses[0] : undefined;
+  // };
+  //
+  // const classDescription = getClassDescription(itemToRender.classId);
+  // const classColor = classDescription ? classDescription.color : 'lightgrey';
 
-  const classDescription = getClassDescription(itemToRender.classId);
+  const classDescription = classesMap.get(itemToRender.classId);
   const classColor = classDescription ? classDescription.color : 'lightgrey';
 
   const itemPressHandler = () => {
