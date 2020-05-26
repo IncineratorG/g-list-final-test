@@ -17,7 +17,9 @@ const ShoppingListView = ({styles, model, controller}) => {
     listLoading,
     products,
     units,
+    unitsMap,
     classes,
+    classesMap,
     editable,
     removeProductName,
     removeConfirmationDialogVisible,
@@ -90,8 +92,8 @@ const ShoppingListView = ({styles, model, controller}) => {
         onItemPress={productPressHandler}
         onStatusPress={statusPressHandler}
         onRemovePress={productRemoveHandler}
-        units={units}
-        classes={classes}
+        unitsMap={unitsMap}
+        classesMap={classesMap}
         selectedCategory={selectedProductClass}
       />
     </View>

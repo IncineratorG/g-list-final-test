@@ -19,7 +19,9 @@ export const useCollaboratorsScreenController = model => {
       classesMap: model.data.classesMap,
       unitsMap: model.data.unitsMap,
     });
-    Linking.openURL(model.data.validSmsUrl + stringifiedList)
+    Linking.openURL(
+      model.data.validSmsUrl + stringifiedList + '\n\n' + model.data.appLink,
+    )
       .then(data => {})
       .catch(() => {
         console.log('collaboratorScreenController(): SMS_SENDER_ERROR');
@@ -37,7 +39,12 @@ export const useCollaboratorsScreenController = model => {
       classesMap: model.data.classesMap,
       unitsMap: model.data.unitsMap,
     });
-    Linking.openURL(model.data.validWhatsAppUrl + stringifiedList)
+    Linking.openURL(
+      model.data.validWhatsAppUrl +
+        stringifiedList +
+        '\n\n' +
+        model.data.appLink,
+    )
       .then(data => {})
       .catch(() => {
         console.log('collaboratorScreenController(): WHATSAPP_SENDER_ERROR');

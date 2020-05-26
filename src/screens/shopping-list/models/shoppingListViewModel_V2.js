@@ -26,7 +26,9 @@ export const useShoppingListScreenModel = () => {
   );
 
   const units = useSelector(state => state.currentShoppingList.units);
+  const unitsMap = useSelector(state => state.currentShoppingList.unitsMap);
   const classes = useSelector(state => state.currentShoppingList.classes);
+  const classesMap = useSelector(state => state.currentShoppingList.classesMap);
   const shoppingListId = useSelector(
     state => state.currentShoppingList.currentShoppingList.id,
   );
@@ -174,7 +176,9 @@ export const useShoppingListScreenModel = () => {
       sharedListLoading,
       products,
       units,
+      unitsMap,
       classes,
+      classesMap,
       signedIn,
       editable,
       shared,

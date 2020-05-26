@@ -16,23 +16,17 @@ const GeneralProduct = ({
   onItemPress,
   onItemLongPress,
   onStatusPress,
-  units,
-  classes,
+  unitsMap,
+  classesMap,
   selectedCategory,
 }) => {
-  const getUnitName = unitId => {
-    const filteredUnits = units.filter(unit => unit.id === unitId);
-    return filteredUnits.length ? filteredUnits[0].name : '';
-  };
-
-  const getCategoryName = classId => {
-    const filteredClasses = classes.filter(cl => cl.id === classId);
-    return filteredClasses.length ? filteredClasses[0].name : '';
-  };
-
   let productItem = {...product};
-  productItem.unit = getUnitName(product.unitId);
-  productItem.category = getCategoryName(product.classId);
+  productItem.unit = unitsMap.get(product.unitId)
+    ? unitsMap.get(product.unitId).name
+    : '';
+  productItem.category = classesMap.get(product.classId)
+    ? classesMap.get(product.classId).name
+    : '';
 
   const completedProduct = (
     <ProductCompleted
@@ -50,7 +44,7 @@ const GeneralProduct = ({
       onItemPress={onItemPress}
       onItemLongPress={onItemLongPress}
       onStatusPress={onStatusPress}
-      classes={classes}
+      classesMap={classesMap}
       selectedCategory={selectedCategory}
     />
   );
