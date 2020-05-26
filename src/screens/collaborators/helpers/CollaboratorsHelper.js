@@ -7,15 +7,42 @@ export class CollaboratorsHelper {
       return '';
     }
 
+    const groupBy = (objectArray, property) => {
+      const reduced = objectArray.reduce((acc, obj) => {
+        const key = obj[property];
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        // Add object to list for given key's value
+        acc[key].push(obj);
+        return acc;
+      }, {});
+
+      let arr = [];
+      for (let [key, value] of Object.entries(reduced)) {
+        // arr = arr.concat(value);
+        arr.push(...value);
+      }
+
+      return arr;
+    };
+
     const listName = shoppingList.name;
 
     let listString = listName + '\n';
 
-    let productsArr = [];
+    if (!shoppingList.products) {
+      return listString;
+    }
+
+    let products = [...shoppingList.products];
+    products = groupBy(products, 'classId');
+
+    let productsStringsArr = [];
     let counter = 1;
 
-    for (let i = 0; i < shoppingList.products.length; ++i) {
-      const product = shoppingList.products[i];
+    for (let i = 0; i < products.length; ++i) {
+      const product = products[i];
       if (product.completionStatus === PRODUCT_COMPLETED) {
         continue;
       }
@@ -32,7 +59,7 @@ export class CollaboratorsHelper {
         counter.toString() +
         '. ' +
         category +
-        ' ' +
+        ' - ' +
         productName +
         ' ' +
         quantity.toString() +
@@ -41,12 +68,12 @@ export class CollaboratorsHelper {
         ' ' +
         noteString;
 
-      productsArr.push(productDescription + '\n');
+      productsStringsArr.push(productDescription + '\n');
 
       ++counter;
     }
 
-    listString = listString + productsArr.join('');
+    listString = listString + productsStringsArr.join('');
 
     return listString;
   }
