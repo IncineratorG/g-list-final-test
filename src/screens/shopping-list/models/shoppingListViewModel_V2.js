@@ -59,6 +59,10 @@ export const useShoppingListScreenModel = () => {
   const currentId = useSelector(state => state.authentication.currentUser.id);
   const online = useSelector(state => state.system.online);
 
+  // ===
+  // console.log(currentId + ' - UPDATED_LIST');
+  // ===
+
   let products = [...productsList];
   if (products.length > 0) {
     products.push({

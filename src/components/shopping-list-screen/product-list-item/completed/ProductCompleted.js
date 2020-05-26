@@ -12,12 +12,24 @@ import {ProductCategories} from '../../ProductCategories';
 
 const ProductCompleted = ({
   styles,
+  unitsMap,
   itemToRender,
   onStatusPress,
+  onItemLongPress,
   selectedCategory,
 }) => {
+  const productUnit = unitsMap.get(itemToRender.unitId)
+    ? unitsMap.get(itemToRender.unitId).name
+    : '';
+
   const statusPressHandler = () => {
     onStatusPress(itemToRender.id, PRODUCT_NOT_COMPLETED);
+  };
+
+  const itemLongPressHandler = () => {
+    if (onItemLongPress) {
+      onItemLongPress(itemToRender);
+    }
   };
 
   const noteExistComponent = (
@@ -47,7 +59,8 @@ const ProductCompleted = ({
   return (
     <TouchableHighlight
       style={styles.touchable}
-      onPress={() => console.log('PRESS')}>
+      onPress={() => console.log('PRESS')}
+      onLongPress={itemLongPressHandler}>
       <View style={styles.mainContainer}>
         <View style={styles.infoContainer}>
           <View style={styles.majorInfoContainer}>
@@ -67,7 +80,7 @@ const ProductCompleted = ({
               </View>
               <View style={styles.quantityUnitContainer}>
                 <Text style={styles.quantityUnit} numberOfLines={1}>
-                  {itemToRender.unit}
+                  {productUnit}
                 </Text>
               </View>
             </View>

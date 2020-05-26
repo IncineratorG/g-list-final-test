@@ -29,6 +29,12 @@ export const useCollaboratorsScreenModel = () => {
     'https://play.google.com/store/apps/details?id=com.gllistfinaltest',
   );
 
+  const currentUserEmail = useSelector(
+    state => state.authentication.currentUser.email,
+  );
+  // const listAuthorId = useSelector(
+  //   state => state.currentShoppingList.currentShoppingList.id,
+  // );
   const serviceBusy = useSelector(state => state.collaboration.busy);
   let localCollaborators = useSelector(
     state => state.collaboration.localCollaborators,
@@ -50,6 +56,9 @@ export const useCollaboratorsScreenModel = () => {
 
   useEffect(() => {
     let contactsList = [...localCollaborators];
+    contactsList = contactsList.filter(
+      contact => contact.email !== currentUserEmail,
+    );
     contactsList.sort((c1, c2) => c1.id < c2.id);
 
     if (contactsList.length) {
@@ -72,7 +81,7 @@ export const useCollaboratorsScreenModel = () => {
     });
 
     setContacts(contactsList);
-  }, [localCollaborators, shoppingListReceivers]);
+  }, [currentUserEmail, localCollaborators, shoppingListReceivers]);
 
   useEffect(() => {
     const checkWhatsAppAndSms = async () => {

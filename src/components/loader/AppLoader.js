@@ -24,24 +24,37 @@ export default function AppLoader() {
   );
 
   useEffect(() => {
-    const appStateHandler = async nextAppState => {
-      if (nextAppState === 'active') {
-        await Authentication.init();
-        await Collaboration.init();
-        await Storage.init();
-        setIsReady(true);
-      } else if (nextAppState === 'background') {
-        Storage.off();
-        Authentication.off();
-        Collaboration.off();
-      }
+    const init = async () => {
+      console.log('init()');
+
+      await Authentication.init();
+      await Collaboration.init();
+      await Storage.init();
+      setIsReady(true);
     };
 
-    AppState.addEventListener('change', appStateHandler);
-    return () => {
-      AppState.removeEventListener('change', appStateHandler);
-    };
+    init();
   }, []);
+
+  // useEffect(() => {
+  //   const appStateHandler = async nextAppState => {
+  //     if (nextAppState === 'active') {
+  //       await Authentication.init();
+  //       await Collaboration.init();
+  //       await Storage.init();
+  //       setIsReady(true);
+  //     } else if (nextAppState === 'background') {
+  //       Storage.off();
+  //       Authentication.off();
+  //       Collaboration.off();
+  //     }
+  //   };
+  //
+  //   AppState.addEventListener('change', appStateHandler);
+  //   return () => {
+  //     AppState.removeEventListener('change', appStateHandler);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (!signedIn) {
