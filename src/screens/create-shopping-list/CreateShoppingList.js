@@ -1,7 +1,7 @@
 import React from 'react';
 import {createShoppingListViewStyles} from './styles/createShoppingListViewStyles';
 import {useCreateShoppingListScreenModel} from './models/createShoppingListViewModel';
-import {useCreateShoppingListScreenController} from './controllers/createShoppingListViewController';
+import {useCreateShoppingListScreenController} from './controllers/createShoppingListViewController_V2';
 import CreateShoppingListView from './views/CreateShoppingListView';
 
 const CreateShoppingList = () => {

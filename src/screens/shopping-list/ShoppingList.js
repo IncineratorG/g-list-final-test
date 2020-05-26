@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import {shoppingLIstViewStyles} from './styles/shoppingLIstViewStyles';
 import ShoppingListView from './views/ShoppingListView';
-import {useShoppingListScreenModel} from './models/shoppingListViewModel';
-import {useShoppingListScreenController} from './controllers/shoppingListViewController';
+import {useShoppingListScreenModel} from './models/shoppingListViewModel_V2';
+import {useShoppingListScreenController} from './controllers/shoppingListViewController_V2';
 import CollaborationButton from '../../components/shopping-list-screen/CollaborationButton';
 
 const ShoppingList = () => {

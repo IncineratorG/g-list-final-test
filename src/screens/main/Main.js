@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import MainView from './views/MainView';
 import {mainViewStyles} from './styles/mainViewStyles';
-import {useMainScreenModel} from './models/mainViewModel';
-import {useMainScreenController} from './controllers/mainViewController';
+import {useMainScreenModel} from './models/mainViewModel_V2';
+import {useMainScreenController} from './controllers/mainViewController_V2';
 import MenuButton from '../../components/main-screen/MenuButton';
 
 const Main = () => {
