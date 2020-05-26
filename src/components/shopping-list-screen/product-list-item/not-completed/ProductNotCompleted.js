@@ -12,6 +12,7 @@ const ProductNotCompleted = ({
   styles,
   itemToRender,
   classesMap,
+  unitsMap,
   onStatusPress,
   onItemPress,
   onItemLongPress,
@@ -27,6 +28,10 @@ const ProductNotCompleted = ({
 
   const classDescription = classesMap.get(itemToRender.classId);
   const classColor = classDescription ? classDescription.color : 'lightgrey';
+
+  const productUnit = unitsMap.get(itemToRender.unitId)
+    ? unitsMap.get(itemToRender.unitId).name
+    : '';
 
   const itemPressHandler = () => {
     if (onItemPress) {
@@ -94,7 +99,7 @@ const ProductNotCompleted = ({
               </View>
               <View style={styles.quantityUnitContainer}>
                 <Text style={styles.quantityUnit} numberOfLines={1}>
-                  {itemToRender.unit}
+                  {productUnit}
                 </Text>
               </View>
             </View>

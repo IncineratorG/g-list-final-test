@@ -1,6 +1,11 @@
 import {StyleSheet} from 'react-native';
 
 export const productStylesCompleted = StyleSheet.create({
+  touchable: {
+    flex: 1,
+    marginTop: 7,
+    borderRadius: 4,
+  },
   mainContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -9,10 +14,6 @@ export const productStylesCompleted = StyleSheet.create({
     // marginTop: 7,
     backgroundColor: 'white',
     borderRadius: 4,
-  },
-  touchable: {
-    flex: 1,
-    marginTop: 7,
   },
   statusContainer: {
     width: 60,

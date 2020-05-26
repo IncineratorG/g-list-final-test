@@ -13,16 +13,14 @@ import {
   UPDATE_RECEIVERS,
 } from '../types/collaborationTypes';
 import {Storage} from '../../services/storage/Storage';
-import {
-  removeShoppingList,
-  subscribeToShoppingList,
-} from './shoppingListActions';
 import {StorageIdResolver} from '../../services/storage/StorageIdResolver';
+import {sl_removeShoppingList} from './shoppingListsActions';
+import {csl_subscribeToShoppingList} from './currentShoppingListActions';
 
 export const subscribeToCurrentShoppingListReceivers = () => {
   return async (dispatch, getState) => {
     const receiversChangeHandler = listOfShoppingLists => {
-      const {id} = getState().shoppingList.currentShoppingList;
+      const {id} = getState().currentShoppingList.currentShoppingList;
       dispatch({type: UPDATE_RECEIVERS, payload: {id, listOfShoppingLists}});
     };
 
@@ -34,7 +32,7 @@ export const subscribeToCurrentShoppingListReceivers = () => {
     dispatch({
       type: SUBSCRIBE_TO_CURRENT_SHOPPING_LIST_RECEIVERS,
       payload: {
-        id: getState().shoppingList.currentShoppingList.id,
+        id: getState().currentShoppingList.currentShoppingList.id,
         listOfShoppingLists: subscription.data,
         unsubscribe: subscription.unsubscribe,
       },
@@ -158,8 +156,10 @@ export const shareShoppingListWithUser = ({
         console.log('ACTION_WAS: SHARE_SHOPPING_LIST: ' + sharedListId);
 
         if (result.success) {
-          await dispatch(subscribeToShoppingList(sharedListId));
-          await dispatch(removeShoppingList(shoppingListId));
+          await dispatch(csl_subscribeToShoppingList(sharedListId));
+          await dispatch(sl_removeShoppingList(shoppingListId));
+          // await dispatch(subscribeToShoppingList(sharedListId));
+          // await dispatch(removeShoppingList(shoppingListId));
           dispatch({type: SET_COLLABORATOR_SELECTED, payload: collaborator.id});
         } else {
           dispatch({type: SET_COLLABORATOR_ERROR, payload: collaborator.id});
@@ -244,8 +244,8 @@ export const cancelShareShoppingListWithUser = ({
           useListTimestamps: true,
           useListCompletionStatus: true,
         });
-        await dispatch(subscribeToShoppingList(copiedShoppingListId));
-        dispatch(removeShoppingList(shoppingListId));
+        await dispatch(csl_subscribeToShoppingList(copiedShoppingListId));
+        dispatch(sl_removeShoppingList(shoppingListId));
       }
 
       dispatch({type: SET_COLLABORATOR_UNSELECTED, payload: collaborator.id});

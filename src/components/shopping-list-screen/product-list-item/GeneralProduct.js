@@ -20,30 +20,33 @@ const GeneralProduct = ({
   classesMap,
   selectedCategory,
 }) => {
-  let productItem = {...product};
-  productItem.unit = unitsMap.get(product.unitId)
-    ? unitsMap.get(product.unitId).name
-    : '';
-  productItem.category = classesMap.get(product.classId)
-    ? classesMap.get(product.classId).name
-    : '';
+  // let productItem = {...product};
+  // productItem.unit = unitsMap.get(product.unitId)
+  //   ? unitsMap.get(product.unitId).name
+  //   : '';
+  // productItem.category = classesMap.get(product.classId)
+  //   ? classesMap.get(product.classId).name
+  //   : '';
 
   const completedProduct = (
     <ProductCompleted
       styles={productStylesCompleted}
-      itemToRender={productItem}
+      itemToRender={product}
       onStatusPress={onStatusPress}
+      onItemLongPress={onItemLongPress}
       selectedCategory={selectedCategory}
+      unitsMap={unitsMap}
     />
   );
 
   const notCompletedProduct = (
     <ProductNotCompleted
       styles={productStylesNotCompleted}
-      itemToRender={productItem}
+      itemToRender={product}
       onItemPress={onItemPress}
       onItemLongPress={onItemLongPress}
       onStatusPress={onStatusPress}
+      unitsMap={unitsMap}
       classesMap={classesMap}
       selectedCategory={selectedCategory}
     />
@@ -52,15 +55,15 @@ const GeneralProduct = ({
   const extraProduct = (
     <ProductExtra
       styles={productStylesExtra}
-      itemToRender={productItem}
+      itemToRender={product}
       onStatusPress={onStatusPress}
     />
   );
 
-  const productExtra = productItem.extra;
-  const productCompleted = productItem.completionStatus === PRODUCT_COMPLETED;
+  const productExtra = product.extra;
+  const productCompleted = product.completionStatus === PRODUCT_COMPLETED;
   const productNotCompleted =
-    productItem.completionStatus === PRODUCT_NOT_COMPLETED;
+    product.completionStatus === PRODUCT_NOT_COMPLETED;
 
   if (productExtra) {
     return extraProduct;
