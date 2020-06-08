@@ -154,6 +154,31 @@ export const useShoppingListScreenController = model => {
     model.setters.setSelectedProductClass(category.id);
   };
 
+  const inputAreaShowSelectColorDialogHandler = () => {
+    console.log('inputAreaShowSelectColorDialogHandler()');
+    model.setters.setSelectColorDialogVisible(
+      !model.data.selectColorDialogVisible,
+    );
+  };
+
+  const selectColorDialogTouchOutsideHandler = () => {
+    console.log('selectColorDialogTouchOutsideHandler()');
+    model.setters.setSelectColorDialogVisible(false);
+  };
+
+  const selectColorDialogCancelButtonHandler = () => {
+    console.log('selectColorDialogCancelButtonHandler()');
+    model.setters.setSelectColorDialogVisible(false);
+
+    model.setters.setInputAreaEditMode(false);
+    model.setters.setInputAreaEditModeData(undefined);
+    model.setters.setInputAreaVisible(true);
+  };
+
+  const selectColorDialogConfirmButtonHandler = () => {
+    console.log('selectColorDialogConfirmButtonHandler()');
+  };
+
   return {
     addProductButtonHandler,
     inputAreaSubmitValuesHandler,
@@ -167,5 +192,9 @@ export const useShoppingListScreenController = model => {
     removeConfirmationDialogCancelRemoveHandler,
     shadedBackgroundPressHandler,
     selectCategoryHandler,
+    inputAreaShowSelectColorDialogHandler,
+    selectColorDialogConfirmButtonHandler,
+    selectColorDialogCancelButtonHandler,
+    selectColorDialogTouchOutsideHandler,
   };
 };

@@ -28,6 +28,7 @@ const ShoppingListView = ({styles, model, controller}) => {
     selectedProductClass,
     online,
     shared,
+    selectColorDialogVisible,
   } = model;
 
   const {
@@ -42,7 +43,32 @@ const ShoppingListView = ({styles, model, controller}) => {
     removeConfirmationDialogCancelRemoveHandler,
     shadedBackgroundPressHandler,
     selectCategoryHandler,
+    inputAreaShowSelectColorDialogHandler,
+    selectColorDialogConfirmButtonHandler,
+    selectColorDialogCancelButtonHandler,
+    selectColorDialogTouchOutsideHandler,
   } = controller;
+
+  console.log('DIALOG_VISIBLE: ' + selectColorDialogVisible);
+
+  const selectCategoryColorDialog = (
+    <ConfirmDialog
+      title="Выбор цвета"
+      message={'Список цветов'}
+      visible={selectColorDialogVisible}
+      onTouchOutside={selectColorDialogTouchOutsideHandler}
+      positiveButton={{
+        title: 'Да',
+        titleStyle: {color: 'red'},
+        onPress: selectColorDialogConfirmButtonHandler,
+      }}
+      negativeButton={{
+        title: 'Отмена',
+        titleStyle: {color: 'grey'},
+        onPress: selectColorDialogCancelButtonHandler,
+      }}
+    />
+  );
 
   const removeConfirmationDialog = (
     <ConfirmDialog
@@ -110,6 +136,7 @@ const ShoppingListView = ({styles, model, controller}) => {
   const inputAreaComponent = inputAreaVisible ? (
     <View style={styles.inputAreaContainer}>
       <ProductInputArea
+        onShowSelectColorDialog={inputAreaShowSelectColorDialogHandler}
         onInputAreaHide={inputAreaHideHandler}
         onSubmitValues={inputAreaSubmitValuesHandler}
         editMode={inputAreaEditMode}
@@ -161,6 +188,7 @@ const ShoppingListView = ({styles, model, controller}) => {
       {productCategoriesComponent}
       {shoppingListScreenContent}
       {removeConfirmationDialog}
+      {selectCategoryColorDialog}
       <View style={styles.addShoppingListItemButtonContainer}>
         {addButtonComponent}
       </View>

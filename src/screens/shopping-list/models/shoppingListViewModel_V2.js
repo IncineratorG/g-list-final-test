@@ -9,6 +9,9 @@ export const useShoppingListScreenModel = () => {
 
   const dispatch = useDispatch();
 
+  const [selectColorDialogVisible, setSelectColorDialogVisible] = useState(
+    false,
+  );
   const [inputAreaVisible, setInputAreaVisible] = useState(false);
   const [inputAreaEditMode, setInputAreaEditMode] = useState(false);
   const [inputAreaEditModeData, setInputAreaEditModeData] = useState(undefined);
@@ -194,6 +197,7 @@ export const useShoppingListScreenModel = () => {
       usedProductsClasses,
       selectedProductClass,
       online,
+      selectColorDialogVisible,
     },
     setters: {
       setInputAreaVisible,
@@ -203,6 +207,7 @@ export const useShoppingListScreenModel = () => {
       setRemoveProductId,
       setRemoveConfirmationDialogVisible,
       setSelectedProductClass,
+      setSelectColorDialogVisible,
     },
     navigation,
     dispatch,
