@@ -8,6 +8,8 @@ import ShoppingList from '../../screens/shopping-list/ShoppingList';
 import Authentication from '../../screens/authentication/Authentication';
 import Collaborators from '../../screens/collaborators/Collaborators';
 import DrawerMenu from '../common/drawer-menu/DrawerMenu';
+import Apartments from '../../screens/apartments/Apartments';
+import ApartmentPayments from '../../screens/apartment-payments/ApartmentPayments';
 
 const MainStack = createStackNavigator(
   {
@@ -52,7 +54,17 @@ const DrawerNavigator = createDrawerNavigator(
   },
 );
 
+const PaymentsNavigator = createStackNavigator(
+  {
+    Apartments: Apartments,
+    ApartmentPayments: ApartmentPayments,
+  },
+  {
+    initialRouteName: 'Apartments',
+  },
+);
+
 // const AppNavigation = createAppContainer(ModalStack);
-const AppNavigation = createAppContainer(DrawerNavigator);
+const AppNavigation = createAppContainer(PaymentsNavigator);
 
 export default AppNavigation;

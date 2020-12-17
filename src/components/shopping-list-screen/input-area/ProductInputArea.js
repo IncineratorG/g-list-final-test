@@ -9,7 +9,7 @@ import {
   TouchableHighlight,
   Picker,
 } from 'react-native';
-import {IconButton} from '../../../components/common/IconButton';
+import {IconButton} from '../../common/IconButton';
 import {icons} from '../../../assets/icons';
 import {initialState} from './store/inputAreaState';
 import {reducer} from './store/inputAreaReducer';

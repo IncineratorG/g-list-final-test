@@ -1,15 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import {View, AppState, StatusBar} from 'react-native';
+import React from 'react';
+import {StatusBar} from 'react-native';
+import {MenuProvider} from 'react-native-popup-menu';
 import {Provider} from 'react-redux';
 import store from './src/store';
 import AppLoader from './src/components/loader/AppLoader';
-import {Storage} from './src/services/storage/Storage';
-import {Authentication} from './src/services/authentication/Authentication';
-import {Collaboration} from './src/services/collaboration/Collaboration';
-import {MenuProvider} from 'react-native-popup-menu';
 
 export default function App() {
-  const [isReady, setIsReady] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
 
   // useEffect(() => {
   //   const appStateHandler = async nextAppState => {

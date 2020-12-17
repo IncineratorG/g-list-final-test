@@ -10,26 +10,26 @@ import {Storage} from '../../services/storage/Storage';
 import {AppState, View} from 'react-native';
 
 export default function AppLoader() {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [isReady, setIsReady] = useState(false);
 
-  const signedIn = useSelector(
-    state => state.authentication.currentUser.signedIn,
-  );
-  const phone = useSelector(state => state.authentication.currentUser.phone);
-  const email = useSelector(state => state.authentication.currentUser.email);
-  const password = useSelector(
-    state => state.authentication.currentUser.password,
-  );
+  // const signedIn = useSelector(
+  //   state => state.authentication.currentUser.signedIn,
+  // );
+  // const phone = useSelector(state => state.authentication.currentUser.phone);
+  // const email = useSelector(state => state.authentication.currentUser.email);
+  // const password = useSelector(
+  //   state => state.authentication.currentUser.password,
+  // );
 
   useEffect(() => {
     const init = async () => {
       console.log('init()');
 
-      await Authentication.init();
-      await Collaboration.init();
-      await Storage.init();
+      // await Authentication.init();
+      // await Collaboration.init();
+      // await Storage.init();
       setIsReady(true);
     };
 
@@ -56,32 +56,32 @@ export default function AppLoader() {
   //   };
   // }, []);
 
-  useEffect(() => {
-    if (!signedIn) {
-      dispatch(subscribeToLocalSignInInfo());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signedIn]);
+  // useEffect(() => {
+  //   if (!signedIn) {
+  //     dispatch(subscribeToLocalSignInInfo());
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [signedIn]);
 
-  useEffect(() => {
-    console.log('APP_LOADER_EFFECT');
-    if (email && password) {
-      console.log('WILL_SIGN_IN');
-    } else {
-      console.log('NO_SIGN_IN');
-    }
-  }, [email, password, phone]);
-
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      dispatch(setOnline({online: state.isConnected}));
-    });
-
-    return () => {
-      unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   console.log('APP_LOADER_EFFECT');
+  //   if (email && password) {
+  //     console.log('WILL_SIGN_IN');
+  //   } else {
+  //     console.log('NO_SIGN_IN');
+  //   }
+  // }, [email, password, phone]);
+  //
+  // useEffect(() => {
+  //   const unsubscribe = NetInfo.addEventListener(state => {
+  //     dispatch(setOnline({online: state.isConnected}));
+  //   });
+  //
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   if (!isReady) {
     return <View style={{backgroundColor: 'black'}} />;
