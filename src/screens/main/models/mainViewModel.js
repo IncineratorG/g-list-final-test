@@ -2,7 +2,7 @@ import {useState, useEffect, useCallback} from 'react';
 import {useNavigation, useFocusEffect} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
 import {subscribeToListOfShoppingLists} from '../../../store/actions/shoppingListActions';
-import {ListTypes} from '../../../components/main-screen/ListTypes';
+import {ListTypes} from '../../../components/specific/main-screen/ListTypes';
 
 export const useMainScreenModel = () => {
   const navigation = useNavigation();
@@ -137,7 +137,7 @@ export const useMainScreenModel = () => {
       console.log('LOADED_SUCCESSFULLY');
       setListsLoading(false);
     }
-  }, [localListsLoading, sharedListsLoading])
+  }, [localListsLoading, sharedListsLoading]);
   // ===
 
   useFocusEffect(
@@ -303,7 +303,7 @@ export const useMainScreenModel = () => {
 //       });
 //     }
 //
-//     list.collaborators = listCollaborators;
+//     list.collaborators-screen = listCollaborators;
 //   });
 //   // ===
 //

@@ -3,7 +3,7 @@ import {StatusBar} from 'react-native';
 import {MenuProvider} from 'react-native-popup-menu';
 import {Provider} from 'react-redux';
 import store from './src/store';
-import AppLoader from './src/components/loader/AppLoader';
+import AppLoader from './src/components/common/loader/AppLoader';
 
 export default function App() {
   // const [isReady, setIsReady] = useState(false);

@@ -3,7 +3,7 @@ import MainView from './views/MainView';
 import {mainViewStyles} from './styles/mainViewStyles';
 import {useMainScreenModel} from './models/mainViewModel_V2';
 import {useMainScreenController} from './controllers/mainViewController_V2';
-import MenuButton from '../../components/main-screen/MenuButton';
+import MenuButton from '../../components/specific/main-screen/MenuButton';
 
 const Main = () => {
   const styles = mainViewStyles;

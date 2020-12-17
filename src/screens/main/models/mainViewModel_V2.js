@@ -1,7 +1,7 @@
 import {useState, useEffect, useCallback} from 'react';
 import {useNavigation, useFocusEffect} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
-import {ListTypes} from '../../../components/main-screen/ListTypes';
+import {ListTypes} from '../../../components/specific/main-screen/ListTypes';
 import {sl_subscribeToListOfShoppingLists} from '../../../store/actions/shoppingListsActions';
 
 export const useMainScreenModel = () => {
@@ -290,7 +290,7 @@ export const useMainScreenModel = () => {
 //       });
 //     }
 //
-//     list.collaborators = listCollaborators;
+//     list.collaborators-screen = listCollaborators;
 //   });
 //   // ===
 //

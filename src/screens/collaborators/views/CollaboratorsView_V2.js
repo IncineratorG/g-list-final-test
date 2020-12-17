@@ -1,12 +1,12 @@
 import React from 'react';
 import {View, TouchableWithoutFeedback} from 'react-native';
-import {ContactsList} from '../../../components/collaborators/ContactsList';
+import {ContactsList} from '../../../components/specific/collaborators-screen/ContactsList';
 import LinearGradient from 'react-native-linear-gradient';
 import {AddButton} from '../../../components/common/AddButton';
-import CollaboratorInputArea from '../../../components/collaborators/collaborator-input-area/CollaboratorInputArea';
-import {EmptyCollaboratorsScreen} from '../../../components/collaborators/EmptyCollaboratorsScreen';
+import CollaboratorInputArea from '../../../components/specific/collaborators-screen/collaborator-input-area/CollaboratorInputArea';
+import {EmptyCollaboratorsScreen} from '../../../components/specific/collaborators-screen/EmptyCollaboratorsScreen';
 import {ProgressDialog} from 'react-native-simple-dialogs';
-import {SendOptionsPanel} from '../../../components/collaborators/SendOptionsPanel';
+import {SendOptionsPanel} from '../../../components/specific/collaborators-screen/SendOptionsPanel';
 
 const CollaboratorsView_V2 = ({styles, model, controller}) => {
   const {

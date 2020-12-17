@@ -1,8 +1,13 @@
 import React from 'react';
-import {View} from 'react-native';
+import useApartmentPaymentsController from './controllers/apartmentPaymentsController';
+import ApartmentPaymentsView from './views/ApartmentPaymentsView';
+import useApartmentPaymentsModel from './models/apartmentPaymentsModel';
 
 const ApartmentPayments = () => {
-  return <View style={{flex: 1, backgroundColor: 'grey'}} />;
+  const model = useApartmentPaymentsModel();
+  const controller = useApartmentPaymentsController(model);
+
+  return <ApartmentPaymentsView model={model} controller={controller} />;
 };
 
 ApartmentPayments.navigationOptions = ({navigation}) => {

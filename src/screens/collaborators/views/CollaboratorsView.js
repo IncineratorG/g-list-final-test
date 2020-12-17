@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, TextInput, Button} from 'react-native';
 import {ProgressDialog} from 'react-native-simple-dialogs';
-import {ContactsList} from '../../../components/collaborators/ContactsList';
+import {ContactsList} from '../../../components/specific/collaborators-screen/ContactsList';
 
 const CollaboratorsView = ({styles, model, controller}) => {
   const {

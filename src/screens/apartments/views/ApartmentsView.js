@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {AddButton} from '../../../components/common/AddButton';
-import ApartmentsList from '../../../components/apartments-screen/apartments-list/ApartmentsList';
+import ApartmentsList from '../../../components/specific/apartments-screen/apartments-list/ApartmentsList';
 
 const ApartmentsView = ({model, controller}) => {
   const {

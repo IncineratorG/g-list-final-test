@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useNavigation} from 'react-navigation-hooks';
 import {useDispatch, useSelector} from 'react-redux';
-import {ProductCategories} from '../../../components/shopping-list-screen/ProductCategories';
+import {ProductCategories} from '../../../components/specific/shopping-list-screen/ProductCategories';
 import {PRODUCT_COMPLETED} from '../../../services/storage/data/productStatus';
 
 export const useShoppingListScreenModel = () => {

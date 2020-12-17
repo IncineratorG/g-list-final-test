@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import {AuthenticationButton} from '../../../components/authentication-screen/AuthenticationButton';
-import {SignUpComponent} from '../../../components/authentication-screen/SignUpComponent';
-import {SignInComponent} from '../../../components/authentication-screen/SignInComponent';
-import {GradientText} from '../../../components/authentication-screen/GradientText';
+import {AuthenticationButton} from '../../../components/specific/authentication-screen/AuthenticationButton';
+import {SignUpComponent} from '../../../components/specific/authentication-screen/SignUpComponent';
+import {SignInComponent} from '../../../components/specific/authentication-screen/SignInComponent';
+import {GradientText} from '../../../components/specific/authentication-screen/GradientText';
 import {ScrollView} from 'react-navigation';
 import {ProgressDialog} from 'react-native-simple-dialogs';
 

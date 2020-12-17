@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import ListCreationDialog from '../../../components/create-shopping-list-screen/ListCreationDialog';
+import ListCreationDialog from '../../../components/specific/create-shopping-list-screen/ListCreationDialog';
 
 const CreateShoppingListView = ({styles, model, controller}) => {
   const {listName} = model;

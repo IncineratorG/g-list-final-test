@@ -1,13 +1,13 @@
 import React from 'react';
 import {View, TouchableWithoutFeedback} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {EmptyShoppingListScreen} from '../../../components/shopping-list-screen/EmptyShoppingListScreen';
-import {ProductsList} from '../../../components/shopping-list-screen/ProductsList';
-import ProductInputArea from '../../../components/shopping-list-screen/input-area/ProductInputArea';
+import {EmptyShoppingListScreen} from '../../../components/specific/shopping-list-screen/EmptyShoppingListScreen';
+import {ProductsList} from '../../../components/specific/shopping-list-screen/ProductsList';
+import ProductInputArea from '../../../components/specific/shopping-list-screen/input-area/ProductInputArea';
 import {AddButton} from '../../../components/common/AddButton';
 import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
-import BusyIndicator from '../../../components/main-screen/BusyIndicator';
-import {ProductCategoriesList} from '../../../components/shopping-list-screen/ProductCategoriesList';
+import BusyIndicator from '../../../components/specific/main-screen/BusyIndicator';
+import {ProductCategoriesList} from '../../../components/specific/shopping-list-screen/ProductCategoriesList';
 
 const ShoppingListView = ({styles, model, controller}) => {
   const {

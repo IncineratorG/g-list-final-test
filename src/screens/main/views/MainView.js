@@ -2,12 +2,12 @@ import React from 'react';
 import {View} from 'react-native';
 import ConfirmDialog from 'react-native-simple-dialogs/src/ConfirmDialog';
 import LinearGradient from 'react-native-linear-gradient';
-import {EmptyMainScreen} from '../../../components/main-screen/EmptyMainScreen';
-import {ListOfShoppingLists} from '../../../components/main-screen/ListOfShoppingLists';
+import {EmptyMainScreen} from '../../../components/specific/main-screen/EmptyMainScreen';
+import {ListOfShoppingLists} from '../../../components/specific/main-screen/ListOfShoppingLists';
 import {AddButton} from '../../../components/common/AddButton';
-import {ListTypesList} from '../../../components/main-screen/ListTypesList';
-import BusyIndicator from '../../../components/main-screen/BusyIndicator';
-import {LoadingMainScreen} from '../../../components/main-screen/LoadingMainScreen';
+import {ListTypesList} from '../../../components/specific/main-screen/ListTypesList';
+import BusyIndicator from '../../../components/specific/main-screen/BusyIndicator';
+import {LoadingMainScreen} from '../../../components/specific/main-screen/LoadingMainScreen';
 
 const MainView = ({styles, model, controller}) => {
   const {
